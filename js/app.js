@@ -237,20 +237,45 @@ async function downloadSiteData() {
 
   const dataJsContent = `// === БАЗА ДАННЫХ СВЕЧЕЙ ===\nwindow.DB_CANDLES = ${JSON.stringify(window.DB_CANDLES, null, 2)};\n\n// === БАЗА ДАННЫХ ФОТОГАЛЕРЕЙ И ПОДПИСЕЙ ===\nwindow.DB_GALLERIES = ${JSON.stringify(updatedGalleries, null, 2)};`;
 
-  // 2. АВТОРИЗАЦИЯ GITHUB API (Извлекаем из памяти устройства)
+  // --- ПОДГОТОВКА И ОЧИСТКА HTML ---
+  const clonedDoc = document.documentElement.cloneNode(true);
+  const clonedBody = clonedDoc.querySelector('body');
+  clonedBody.classList.remove('admin-mode');
+  clonedBody.style.overflow = 'auto'; 
+
+  const clonedAdminPanel = clonedDoc.querySelector('#adminPanel');
+  if (clonedAdminPanel) clonedAdminPanel.style.display = 'none'; 
+
+  clonedDoc.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
+  clonedDoc.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'false'));
+  
+  const candlesGrid = clonedDoc.querySelector('#candlesGrid');
+  if (candlesGrid) candlesGrid.innerHTML = '';
+  clonedDoc.querySelectorAll('.c-sparks-wrap').forEach(wrap => wrap.innerHTML = '');
+  ['fatherGallery', 'motherGallery'].forEach(galId => {
+    const gal = clonedDoc.querySelector(`#${galId}`);
+    if (gal) gal.innerHTML = '';
+  });
+  clonedDoc.querySelectorAll('img[id]').forEach(img => {
+    const srcAttr = img.getAttribute('src');
+    if (srcAttr && srcAttr.startsWith('blob:')) {
+      img.setAttribute('src', img.id + '.webp'); 
+    }
+  });
+
+  const htmlContent = "<!DOCTYPE html>\n" + clonedDoc.outerHTML;
+
+  // 2. АВТОРИЗАЦИЯ GITHUB API
   let ghOwner = localStorage.getItem('gh_owner');
   let ghRepo = localStorage.getItem('gh_repo');
   let ghToken = localStorage.getItem('gh_token');
 
-  // Если данных нет, запрашиваем их у администратора (один раз)
   if (!ghOwner || !ghRepo || !ghToken) {
-    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub (например, Golotrina):", ghOwner || "");
+    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub:", ghOwner || "");
     if (!ghOwner) return;
-    
-    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория (например, memorial):", ghRepo || "");
+    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория:", ghRepo || "");
     if (!ghRepo) return;
-    
-    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token (начинается с ghp_...):", ghToken || "");
+    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token:", ghToken || "");
     if (!ghToken) return;
 
     localStorage.setItem('gh_owner', ghOwner.trim());
@@ -258,63 +283,48 @@ async function downloadSiteData() {
     localStorage.setItem('gh_token', ghToken.trim());
   }
 
-  showToast(currentLang === 'ua' ? 'Відправка на GitHub...' : 'Отправка на GitHub...');
+  showToast(currentLang === 'ua' ? 'Відправка файлів на GitHub...' : 'Отправка файлов на GitHub...');
 
-  // 3. ОТПРАВКА ДАННЫХ ЧЕРЕЗ GITHUB REST API
+  // 3. ОТПРАВКА ДВУХ ФАЙЛОВ ЧЕРЕЗ GITHUB REST API
   try {
-    const filePath = 'js/data.js';
-    const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filePath}`;
-
-    // Сначала получаем SHA (уникальный хеш) текущего файла (это требование GitHub для перезаписи)
-    const getRes = await fetch(url, {
-      headers: { 
-        'Authorization': `token ${ghToken}`, 
-        'Accept': 'application/vnd.github.v3+json' 
+    // Вспомогательная функция для загрузки файла
+    const uploadFile = async (filePath, content, commitMessage) => {
+      const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filePath}`;
+      
+      const getRes = await fetch(url, { headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' } });
+      if (!getRes.ok && getRes.status !== 404) throw new Error(`Ошибка доступа к ${filePath}`);
+      
+      let sha = null;
+      if (getRes.ok) {
+        const fileData = await getRes.json();
+        sha = fileData.sha;
       }
-    });
 
-    if (!getRes.ok) {
-      if (getRes.status === 401 || getRes.status === 404) {
-        throw new Error('Ошибка доступа! Неверный логин, репозиторий или Токен устарел.');
-      }
-      throw new Error('Не удалось связаться с репозиторием GitHub.');
-    }
-    
-    const fileData = await getRes.json();
-    const sha = fileData.sha;
+      const encodedContent = btoa(unescape(encodeURIComponent(content)));
+      
+      const putRes = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: commitMessage, content: encodedContent, sha: sha })
+      });
 
-    // Кодируем текст в Base64 с поддержкой кириллицы (UTF-8)
-    const encodedContent = btoa(unescape(encodeURIComponent(dataJsContent)));
+      if (!putRes.ok) throw new Error(`Ошибка при записи ${filePath}`);
+    };
 
-    // Отправляем обновленный файл
-    const putRes = await fetch(url, {
-      method: 'PUT',
-      headers: { 
-        'Authorization': `token ${ghToken}`, 
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: 'Обновление Мемориала: новые свечи/фото/текст (Авто-коммит)',
-        content: encodedContent,
-        sha: sha
-      })
-    });
-
-    if (!putRes.ok) throw new Error('Ошибка при записи файла в репозиторий.');
+    // Загружаем по очереди оба файла!
+    await uploadFile('js/data.js', dataJsContent, 'Обновление Мемориала: база данных (Авто-коммит)');
+    await uploadFile('index.html', htmlContent, 'Обновление Мемориала: тексты и верстка (Авто-коммит)');
 
     hasUnsavedChanges = false;
     showToast(currentLang === 'ua' ? '✅ Збережено! Сайт оновиться через хвилину.' : '✅ Сохранено! Сайт обновится через минуту.');
 
   } catch (error) {
     console.error(error);
-    alert(`Ошибка: ${error.message}\n\nВозможно, вы ввели неверные данные. Настройки GitHub будут сброшены для повторного ввода.`);
-    // Сброс кэша при ошибке авторизации
+    alert(`Ошибка: ${error.message}\n\nНастройки GitHub будут сброшены для повторного ввода.`);
     localStorage.removeItem('gh_token');
-    localStorage.removeItem('gh_owner');
-    localStorage.removeItem('gh_repo');
   }
 }
+
 
 
 function triggerFileDownload(filename, content, mimeType) {
