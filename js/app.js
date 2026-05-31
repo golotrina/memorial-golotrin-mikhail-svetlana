@@ -456,9 +456,6 @@ function toggleCandleForm() {
   }
 }
 
-
-
-
 async function handleCandleSubmit(e) {
   e.preventDefault();
   const form = e.target;
@@ -649,7 +646,15 @@ function closeQrModal() { document.getElementById('qrModal').classList.remove('a
 function generateQr() {
   const url = document.getElementById('qrUrlInput').value.trim();
   if (!url) { showToast(currentLang === 'ua' ? 'Введіть посилання!' : 'Введите ссылку!'); return; }
+  
   const qrImg = document.getElementById('qrCodeImg');
+  
+  // Добавляем текст ссылки под QR-код
+  const urlDisplay = document.getElementById('qrUrlDisplay');
+  if (urlDisplay) {
+    urlDisplay.innerText = url;
+  }
+  
   qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}&color=322108&bgcolor=ffffff&t=${Date.now()}`;
   qrImg.onload = () => { 
     document.getElementById('qrPrintArea').style.display = 'flex'; 
@@ -678,7 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (savedTheme === 'dark') toggleTheme(); 
   setLang('ua');
 
-  // ПУНКТ 4: Вход в админку по секретной ссылке (например, site.com/?admin=pwd)
+  // Вход в админку по секретной ссылке (например, site.com/?admin=pwd)
   const urlParams = new URLSearchParams(window.location.search);
   const adminParam = urlParams.get('admin');
   // Хешируем полученный из ссылки параметр перед сравнением

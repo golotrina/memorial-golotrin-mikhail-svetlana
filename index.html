@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="uk" data-darkreader-proxy-injected="true"><plasmo-csui></plasmo-csui><head>
+<html lang="uk">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -10,14 +11,15 @@
   <meta property="og:image" content="https://golotrin-memorial.netlify.app/photo-family.webp">
   <meta property="og:type" content="website">
   
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;⚜️&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚜️</text></svg>">
   
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Montserrat:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
-<body class="dark-theme" style="overflow: auto;">
+<body class="dark-theme">
 
   <header>
     <div class="header-controls">
@@ -34,7 +36,7 @@
         <button class="zoom-btn" onclick="changeZoom(-2)" data-title-ru="Уменьшить шрифт" data-title-ua="Зменшити шрифт" title="Зменшити шрифт">A−</button>
         <span class="zoom-value" id="zoomValueDisplay">100%</span>
         <button class="zoom-btn" onclick="changeZoom(2)" data-title-ru="Увеличить шрифт" data-title-ua="Збільшити шрифт" title="Збільшити шрифт">A+</button>
-        <button class="zoom-btn" onclick="toggleTheme()" data-title-ru="Светлая тема" data-title-ua="Світла тема" title="Світла тема" style="margin-left: 5px; border-left: 1px solid rgba(194, 155, 73, 0.2); padding-left: 15px; --darkreader-inline-border-left: var(--darkreader-border-c29b4933, rgba(196, 155, 66, 0.2));" data-darkreader-inline-border-left="">
+        <button class="zoom-btn" onclick="toggleTheme()" data-title-ru="Светлая тема" data-title-ua="Світла тема" title="Світла тема" style="margin-left: 5px; border-left: 1px solid rgba(194, 155, 73, 0.2); padding-left: 15px;">
           <span class="icon-3d" id="theme-icon">☀️</span>
         </button>
       </div>
@@ -45,7 +47,7 @@
     </div>
   </header>
 
-<section class="hero fade-up visible" style="transition-delay: 0.1s;">
+  <section class="hero fade-up">
     <div class="family-crest-wrapper-new" onclick="openLightbox(this)">
       <img id="photo-crest" class="family-crest" src="photo-crest.webp" alt="Герб роду">
       <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-crest'); event.stopPropagation();">📷 Загрузить герб</button>
@@ -54,14 +56,14 @@
     <p class="editable-text" data-ru="СЕМЬИ ГОЛОТРИНЫХ" data-ua="РОДИНИ ГОЛОТРІНИХ" style="letter-spacing: 4px; font-weight: 500;" contenteditable="false">РОДИНИ ГОЛОТРІНИХ</p>
     <div class="separator"></div>
     <div class="intro-quote editable-text" data-ru="Люди живы, пока жива память о них. Эта страница создана с любовью и благодарностью моим родителям, чтобы сохранить их историю для будущих поколений." data-ua="Люди живі, поки жива пам'ять про них. Ця сторінка створена з любов'ю та вдячністю моїм батькам, щоб зберегти їхню історію для майбутніх поколінь." contenteditable="false">Люди живі, поки жива пам'ять про них. Ця сторінка створена з любов'ю та вдячністю моїм батькам, щоб зберегти їхню історію для майбутніх поколінь.</div>
-    <div class="family-photo fade-up visible" style="transition-delay: 0.3s;" onclick="openLightbox(this)">
+    <div class="family-photo fade-up" onclick="openLightbox(this)">
       <img id="photo-family" src="photo-family.webp" alt="Сім'я" loading="lazy">
       <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-family'); event.stopPropagation();">📷 Загрузить общее фото</button>
     </div>
   </section>
   
   <section id="parents" class="memorial-grid">
-    <div class="parent-card fade-up visible">
+    <div class="parent-card fade-up">
       <div class="photo-wrapper" onclick="openLightbox(this)">
         <img id="photo-father" src="photo-father.webp" alt="Батько" loading="lazy">
         <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-father'); event.stopPropagation();">📷 Загрузить фото</button>
@@ -72,7 +74,7 @@
       <button class="read-more-btn" onclick="openBio('father-bio')"><span class="editable-text" data-ru="История Папы" data-ua="Історія Тата" contenteditable="false">Історія Тата</span></button>
     </div>
 
-    <div class="parent-card fade-up visible" style="transition-delay: 0.2s;">
+    <div class="parent-card fade-up">
       <div class="photo-wrapper" onclick="openLightbox(this)">
         <img id="photo-mother" src="photo-mother.webp" alt="Мати" loading="lazy">
         <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-mother'); event.stopPropagation();">📷 Загрузить фото</button>
@@ -84,14 +86,14 @@
     </div>
   </section>
 
-  <section id="timeline" class="timeline-section fade-up visible">
+<section id="timeline" class="timeline-section fade-up">
     <div class="timeline-header">
       <h2 class="editable-text" data-ru="Линия жизни" data-ua="Лінія життя" contenteditable="false">Лінія життя</h2>
       <p class="editable-text" data-ru="Главные вехи истории семьи" data-ua="Головні віхи історії сім'ї" contenteditable="false">Головні віхи історії сім'ї</p>
     </div>
     
     <div class="timeline">
-      <div class="timeline-item fade-up visible">
+      <div class="timeline-item fade-up">
         <span class="timeline-date editable-text" data-ru="1700-е" data-ua="1700-ті" contenteditable="false">1700-ті</span>
         <div class="timeline-content">
           <h4 class="editable-text" data-ru="Истоки рода" data-ua="Витоки роду" contenteditable="false">Витоки роду</h4>
@@ -99,7 +101,7 @@
         </div>
       </div>
 
-      <div class="timeline-item fade-up visible">
+      <div class="timeline-item fade-up">
         <span class="timeline-date editable-text" data-ru="1943" data-ua="1943" contenteditable="false">1943</span>
         <div class="timeline-content">
           <h4 class="editable-text" data-ru="Рождение Светланы" data-ua="Народження Світлани" contenteditable="false">Народження Світлани</h4>
@@ -107,7 +109,7 @@
         </div>
       </div>
 
-      <div class="timeline-item fade-up visible">
+      <div class="timeline-item fade-up">
         <span class="timeline-date editable-text" data-ru="1945" data-ua="1945" contenteditable="false">1945</span>
         <div class="timeline-content">
           <h4 class="editable-text" data-ru="Рождение Михаила" data-ua="Народження Михайла" contenteditable="false">Народження Михайла</h4>
@@ -115,7 +117,7 @@
         </div>
       </div>
       
-      <div class="timeline-item fade-up visible">
+      <div class="timeline-item fade-up">
         <span class="timeline-date editable-text" data-ru="1967" data-ua="1967" contenteditable="false">1967</span>
         <div class="timeline-content">
           <h4 class="editable-text" data-ru="Встреча в Одессе" data-ua="Зустріч в Одесі" contenteditable="false">Зустріч в Одесі</h4>
@@ -123,7 +125,7 @@
         </div>
       </div>
 
-      <div class="timeline-item fade-up visible">
+      <div class="timeline-item fade-up">
         <span class="timeline-date editable-text" data-ru="1978" data-ua="1978" contenteditable="false">1978</span>
         <div class="timeline-content">
           <h4 class="editable-text" data-ru="Рождение дочери" data-ua="Народження доньки" contenteditable="false">Народження доньки</h4>
@@ -131,7 +133,7 @@
         </div>
       </div>
       
-      <div class="timeline-item fade-up visible">
+      <div class="timeline-item fade-up">
         <span class="timeline-date editable-text" data-ru="1995" data-ua="1995" contenteditable="false">1995</span>
         <div class="timeline-content">
           <h4 class="editable-text" data-ru="Взгляд в будущее" data-ua="Погляд у майбутнє" contenteditable="false">Погляд у майбутнє</h4>
@@ -139,7 +141,7 @@
         </div>
       </div>
 
-      <div class="timeline-item fade-up visible">
+      <div class="timeline-item fade-up">
         <span class="timeline-date editable-text" data-ru="2000" data-ua="2000" contenteditable="false">2000</span>
         <div class="timeline-content">
           <h4 class="editable-text" data-ru="Создание новой семьи" data-ua="Створення нової сім'ї" contenteditable="false">Створення нової сім'ї</h4>
@@ -147,7 +149,7 @@
         </div>
       </div>
 
-      <div class="timeline-item fade-up visible">
+      <div class="timeline-item fade-up">
         <span class="timeline-date editable-text" data-ru="2007" data-ua="2007" contenteditable="false">2007</span>
         <div class="timeline-content">
           <h4 class="editable-text" data-ru="Новое поколение" data-ua="Нове покоління" contenteditable="false">Нове покоління</h4>
@@ -155,7 +157,7 @@
         </div>
       </div>
 
-      <div class="timeline-item fade-up visible">
+      <div class="timeline-item fade-up">
         <span class="timeline-date editable-text" data-ru="2010" data-ua="2010" contenteditable="false">2010</span>
         <div class="timeline-content">
           <h4 class="editable-text" data-ru="Продолжение рода" data-ua="Продовження роду" contenteditable="false">Продовження роду</h4>
@@ -163,7 +165,7 @@
         </div>
       </div>
       
-      <div class="timeline-item fade-up visible">
+      <div class="timeline-item fade-up">
         <span class="timeline-date editable-text" data-ru="2021" data-ua="2021" contenteditable="false">2021</span>
         <div class="timeline-content">
           <h4 class="editable-text" data-ru="Вместе навсегда" data-ua="Разом назавжди" contenteditable="false">Разом назавжди</h4>
@@ -186,7 +188,7 @@
         </div>
       </div>
 
-      <div class="timeline-item fade-up visible">
+      <div class="timeline-item fade-up">
         <span class="timeline-date editable-text" data-ru="Сегодня" data-ua="Сьогодні" contenteditable="false">Сьогодні</span>
         <div class="timeline-content">
           <h4 class="editable-text" data-ru="Цифровое наследие" data-ua="Цифровий спадок" contenteditable="false">Цифровий спадок</h4>
@@ -207,7 +209,7 @@
 
 Я запрошую вас – друзів, рідних, усіх, хто знав маму та тата – згадати. Відчути. 
 Запалити свою свічку пам'яті там, де не існує часу та відстаней." contenteditable="false">Рід продовжується.&nbsp;
-Глибоке генеалогічне дослідження (понад 250 імен), підкріплене ДНК-експертизою та роботою з міжнародними архівами (MyHeritage), набуває форми. 
+Глубоке генеалогічне дослідження (понад 250 імен), підкріплене ДНК-експертизою та роботою з міжнародними архівами (MyHeritage), набуває форми. 
 
 Я пройшла довгий шлях – від коріння до теплих, живих спогадів про моїх батьків. І згодом цей Меморіал став частиною мого великого проекту - Цифрової спадщини (Digital Legacy), в якому&nbsp;поступово вплітаються гілки рідних моєї родини та сім'ї мого чоловіка. 
 
@@ -220,19 +222,19 @@
     </div>
   </section>
 
-<section id="ritual" class="ritual-section fade-up visible">
+  <section id="ritual" class="ritual-section fade-up">
     <div class="ritual-header">
       <h2><span class="icon-3d title-candle-glow">🕯️</span> <span class="editable-text" data-ru="Ритуал зажжения свечи памяти" data-ua="Ритуал запалювання свічки пам'яті" contenteditable="false">Ритуал запалювання свічки пам'яті</span></h2>
       <p class="editable-text" data-ru="Каждое доброе слово - это невидимый огонек, согревающий сквозь холод утраты. Зажгите свечу и поделитесь воспоминанием. Пусть свет нашей памяти продолжает согревать их души." data-ua="Кожне добре слово - це невидимий вогник, що зігріває крізь холод втрати. Запаліть свічку та поділіться спогадом. Нехай світло нашої пам'яті продовжує зігрівати їхні душі." contenteditable="false">Кожне добре слово - це невидимий вогник, що зігріває крізь холод втрати. Запаліть свічку та поділіться спогадом. Нехай світло нашої пам'яті продовжує зігрівати їхні душі.</p>
     </div>
     
-    <div class="lit-candles-grid fade-up visible" id="candlesGrid" style="transition-delay: 0.2s;"></div>
+    <div class="lit-candles-grid fade-up" id="candlesGrid"></div>
     
-    <div style="text-align: center; margin-top: 20px; display: none;" id="showMoreCandlesWrapper" class="fade-up visible">
-      <button class="read-more-btn" onclick="toggleCandlesExpand()" id="showMoreCandlesBtn">Показать еще (1)</button>
+    <div style="text-align: center; margin-top: 20px; display: block;" id="showMoreCandlesWrapper" class="fade-up">
+      <button class="read-more-btn" onclick="toggleCandlesExpand()" id="showMoreCandlesBtn">Показати ще (1)</button>
     </div>
 
-    <div style="text-align: center; margin-top: 40px; margin-bottom: 20px; display: block;" id="openFormBtnWrapper" class="fade-up visible">
+    <div style="text-align: center; margin-top: 40px; margin-bottom: 20px; display: block;" id="openFormBtnWrapper" class="fade-up">
       <button class="submit-btn" onclick="toggleCandleForm()"><span class="editable-text" data-ru="Зажечь свечу памяти" data-ua="Запалити свічку пам'яті" contenteditable="false">Запалити свічку пам'яті</span></button>
     </div>
 
@@ -241,8 +243,7 @@
         <div class="candle-form-container">
           <div class="form-title"><span class="icon-3d">✨</span> <span id="formTitleTag" class="editable-text" data-ru="НОВАЯ ТИХАЯ СВЕЧА" data-ua="НОВА ТИХА СВІЧКА" contenteditable="false">НОВА ТИХА СВІЧКА</span></div>
           
-          <form id="candleForm" method="POST" name="candles" onsubmit="handleCandleSubmit(event)">
-            <input type="hidden" name="form-name" value="candles">
+          <form id="candleForm" method="POST" onsubmit="handleCandleSubmit(event)">
             
             <div class="form-row">
               <div class="input-group">
@@ -272,17 +273,17 @@
       </div>
     </div>
 
-    <div class="tombstone-wrapper fade-up visible" style="text-align: center; margin-top: 50px;">
-      <div style="position: relative; display: block; margin: 0px auto; max-width: 800px; padding: 8px; background: var(--btn-volumetric-bg); box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 35px, rgba(255, 255, 255, 0.9) 0px 2px 5px inset, rgba(0, 0, 0, 0.2) 0px -3px 6px inset; border-radius: 24px; cursor: zoom-in; --darkreader-inline-bg: var(--darkreader-bgimg--btn-volumetric-bg); --darkreader-inline-boxshadow: var(--darkreader-background-00000026, rgba(0, 0, 0, 0.15)) 0px 15px 35px, var(--darkreader-background-ffffffe6, rgba(36, 39, 41, 0.9)) 0px 2px 5px inset, var(--darkreader-background-00000033, rgba(0, 0, 0, 0.2)) 0px -3px 6px inset;" onclick="openLightbox(this)" data-darkreader-inline-bg="" data-darkreader-inline-boxshadow="">
-        <img id="photo-tombstone" src="photo-tombstone.webp" alt="Памятник" style="width: 100%; aspect-ratio: 16/9; border-radius: 16px; object-fit: cover; display: block; filter: none !important;">
+    <div class="tombstone-wrapper fade-up" style="text-align: center; margin-top: 50px;">
+      <div style="position: relative; display: block; margin: 0px auto; max-width: 800px; padding: 8px; background: var(--btn-volumetric-bg); box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 35px, rgba(255, 255, 255, 0.9) 0px 2px 5px inset, rgba(0, 0, 0, 0.2) 0px -3px 6px inset; border-radius: 24px; cursor: zoom-in;" onclick="openLightbox(this)">
+        <img id="photo-tombstone" src="photo-tombstone.webp" alt="Памятник" style="width: 100%; aspect-ratio: 16/9; border-radius: 16px; object-fit: cover; display: block;">
         <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-tombstone'); event.stopPropagation();">📷 Загрузить фото памятника</button>
       </div>
     </div>
 
   </section>
 
-  <button id="scrollTopBtn" class="scroll-top-btn visible" onclick="scrollToTop()">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" data-darkreader-inline-stroke="" style="--darkreader-inline-stroke: currentColor;"><polyline points="18 15 12 9 6 15"></polyline></svg>
+<button id="scrollTopBtn" class="scroll-top-btn" onclick="scrollToTop()">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
   </button>
 
   <div class="bio-modal" id="father-bio">
@@ -290,7 +291,7 @@
       <div class="c-sparks-wrap" style="border-radius: 24px; opacity: 0.8; z-index: 0;"></div>
 
       <span class="bio-modal-close" onclick="closeBio('father-bio')">×</span>
-      <h2 class="editable-text" style="text-align: center; color: var(--gold); font-size: 2.5rem; position: relative; z-index: 1; --darkreader-inline-color: var(--darkreader-text--gold, var(--darkreader-text-000000, #ffffff));" data-ru="Михаил Григорьевич Голотрин" data-ua="Михайло Григорович Голотрін" contenteditable="false" data-darkreader-inline-color="">Михайло Григорович Голотрін</h2>
+      <h2 class="editable-text" style="text-align: center; color: var(--gold); font-size: 2.5rem; position: relative; z-index: 1;" data-ru="Михаил Григорьевич Голотрин" data-ua="Михайло Григорович Голотрін" contenteditable="false">Михайло Григорович Голотрін</h2>
       <div class="modal-dates editable-text" style="position: relative; z-index: 1;" data-ru="1945 - 2021" data-ua="1945 - 2021" contenteditable="false">1945 - 2021</div>
       
       <div class="bio-text">
@@ -301,7 +302,7 @@
           <div class="accordion-item">
             <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Между небом и сценой жизни" data-ua="Між небом і сценою життя" contenteditable="false">Між небом і сценою життя</span><span class="accordion-icon">+</span></button>
             <div class="accordion-content"><div class="accordion-inner">
-                <p class="fade-up visible editable-text" data-ru="В папе удивительным образом сочетались сила и легкость. Первый разряд по боксу, третий - по парашютному спорту. В юности он мечтал стать пилотом гражданской авиации. У него уже были «напрыганы» необходимые часы практики, но мама боялась опасной профессии и сложности обучения на нее. Поэтому они приняли совместное решение, что его стихией станет театр. И сцена заменил ему небо." data-ua="У таті дивним чином поєднувалися сила та легкість. Перший розряд з боксу, третій - з парашутного спорту. В юності він мріяв стати пілотом цивільної авіації. У нього вже був «настрибаний» необхідний годинник практики, але мама боялася небезпечної професії та складності навчання на неї. Тому вони ухвалили спільне рішення, що його стихією стане театр. І сцена замінила йому небо." contenteditable="false">У таті дивним чином поєднувалися сила та легкість. Перший розряд з боксу, третій - з парашутного спорту. В юності він мріяв стати пілотом цивільної авіації. У нього вже був «настрибаний» необхідний годинник практики, але мама боялася небезпечної професії та складності навчання на неї. Тому вони ухвалили спільне рішення, що його стихією стане театр. І сцена замінила йому небо.</p>
+                <p class="fade-up editable-text" data-ru="В папе удивительным образом сочетались сила и легкость. Первый разряд по боксу, третий - по парашютному спорту. В юности он мечтал стать пилотом гражданской авиации. У него уже были «напрыганы» необходимые часы практики, но мама боялась опасной профессии и сложности обучения на нее. Поэтому они приняли совместное решение, что его стихией станет театр. И сцена заменил ему небо." data-ua="У таті дивним чином поєднувалися сила та легкість. Перший розряд з боксу, третій - з парашутного спорту. В юності він мріяв стати пілотом цивільної авіації. У нього вже був «настрибаний» необхідний годинник практики, але мама боялася небезпечної професії та складності навчання на неї. Тому вони ухвалили спільне рішення, що його стихією стане театр. І сцена замінила йому небо." contenteditable="false">У таті дивним чином поєднувалися сила та легкість. Перший розряд з боксу, третій - з парашутного спорту. В юності він мріяв стати пілотом цивільної авіації. У нього вже був «настрибаний» необхідний годинник практики, але мама боялася небезпечної професії та складності навчання на неї. Тому вони ухвалили спільне рішення, що його стихією стане театр. І сцена замінила йому небо.</p>
             </div></div>
           </div>
           
@@ -346,17 +347,17 @@
         </div>
 
         <div class="quotes-section">
-          <div class="quote-card fade-up visible">
+          <div class="quote-card fade-up">
             <span class="quote-icon">“</span>
             <p class="quote-text editable-text" data-ru="Вся жизнь - игра, а люди в ней - актеры." data-ua="Життя - це гра, а люди в ній - актори." contenteditable="false">Життя - це гра, а люди в ній - актори.</p>
             <p class="quote-author editable-text" data-ru="ЖИЗНЕННОЕ НАПУТСТВИЕ" data-ua="ЖИТТЄВА НАПУТНІСТЬ" contenteditable="false">ЖИТТЄВА НАПУТНІСТЬ</p>
           </div>
-          <div class="quote-card fade-up visible">
+          <div class="quote-card fade-up">
             <span class="quote-icon">“</span>
             <p class="quote-text editable-text" data-ru="Не бойся хулиганов. Мысленно возвышайся над ними, максимально распрямляясь. Не бойся защищать себя." data-ua="Не бійся хуліганів. Подумки височій над ними, максимально розпрямляючись. Не бійся захищати себе." contenteditable="false">Не бійся хуліганів. Подумки височій над ними, максимально розпрямляючись. Не бійся захищати себе.</p>
             <p class="quote-author editable-text" data-ru="УРОК БОКСА ДЛЯ ДОЧКИ В ДЕТСКОМ САДУ" data-ua="УРОК БОКСУ ДЛЯ ДОЧКИ У ДИТЯЧОМУ САДУ" contenteditable="false">УРОК БОКСУ ДЛЯ ДОЧКИ У ДИТЯЧОМУ САДУ</p>
           </div>
-          <div class="quote-card fade-up visible">
+          <div class="quote-card fade-up">
             <span class="quote-icon">“</span>
             <p class="quote-text editable-text" data-ru="Счастлива ли ты?" data-ua="Чи щаслива ти?" contenteditable="false">Чи щаслива ти?</p>
             <p class="quote-author editable-text" data-ru="ГЛАВНЫЙ ВОПРОС В ЖИЗНИ" data-ua="ГОЛОВНЕ ПИТАННЯ ЖИТТЯ" contenteditable="false">ГОЛОВНЕ ПИТАННЯ ЖИТТЯ</p>
@@ -372,7 +373,7 @@
         </div>
         
         <div style="text-align: center; display: block;" id="showMoreGalleryWrapperFather">
-          <button class="read-more-btn" style="margin-top: 0; margin-bottom: 30px;" onclick="toggleGalleryExpand('fatherGallery')" id="showMoreGalleryBtnFather"><span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показати ще (15)</span></button>
+          <button class="read-more-btn" style="margin-top: 0; margin-bottom: 30px;" onclick="toggleGalleryExpand('fatherGallery')" id="showMoreGalleryBtnFather"><span class="editable-text" data-ru="Показать еще" data-ua="Показати ще" contenteditable="false">Показати ще (15)</span></button>
         </div>
         
         <div class="admin-only-flex">
@@ -388,7 +389,7 @@
       <div class="c-sparks-wrap" style="border-radius: 24px; opacity: 0.8; z-index: 0;"></div>
 
       <span class="bio-modal-close" onclick="closeBio('mother-bio')">×</span>
-      <h2 class="editable-text" style="text-align: center; color: var(--gold); font-size: 2.5rem; position: relative; z-index: 1; --darkreader-inline-color: var(--darkreader-text--gold, var(--darkreader-text-000000, #ffffff));" data-ru="Светлана Владимировна Голотрина" data-ua="Світлана Володимирівна Голотріна" contenteditable="false" data-darkreader-inline-color="">Світлана Володимирівна Голотріна</h2>
+      <h2 class="editable-text" style="text-align: center; color: var(--gold); font-size: 2.5rem; position: relative; z-index: 1;" data-ru="Светлана Владимировна Голотрина" data-ua="Світлана Володимирівна Голотріна" contenteditable="false">Світлана Володимирівна Голотріна</h2>
       <div class="modal-dates editable-text" style="position: relative; z-index: 1;" data-ru="1943 - 2021" data-ua="1943 - 2021" contenteditable="false">1943 - 2021</div>
       
       <div class="bio-text">
@@ -422,7 +423,8 @@
                 <p class="editable-text" data-ru="Когда меня отдали на художественную гимнастику в холодный зал советского здания, и я после занятий заболела бронхитом, мама забрала меня из гимнастики, впоследствии отдав предпочтение плаванию." data-ua="Коли мене віддали на художню гімнастику в холодну залу радянської будівлі, і я після занять захворіла на бронхіт, мама забрала мене з гімнастики, згодом віддавши перевагу плаванню." contenteditable="false">Коли мене віддали на художню гімнастику в холодну залу радянської будівлі, і я після занять захворіла на бронхіт, мама забрала мене з гімнастики, згодом віддавши перевагу плаванню.</p>
                 <p class="editable-text" data-ru="Несмотря на занятость, именно она заложила фундамент моего образования: помогала в учебе, развивала языки, ставила английское произношение, формировала системное мышление." data-ua="Незважаючи на зайнятість, саме вона заклала фундамент моєї освіти: допомагала в навчанні, розвивала мови, ставила англійську вимову, формувала системне мислення." contenteditable="false">Незважаючи на зайнятість, саме вона заклала фундамент моєї освіти: допомагала в навчанні, розвивала мови, ставила англійську вимову, формувала системне мислення.</p>
                 <p class="editable-text" data-ru="А в 1995 году мама с папой проявили дальновидность: поняв, что будущее за компьютерами и информационными технологиями, они организовали мой перевод в другую школу, где выпускные экзамены засчитывались как вступительные на факультет информационных технологий в университет. План сработал безупречно." data-ua="А 1995 року мама з татом виявили далекоглядність: зрозумівши, що майбутнє за комп'ютерами та інформаційними технологіями, вони організували мій переклад до іншої школи, де випускні іспити зараховувалися як вступні на факультет інформаційних технологій до університету. План спрацював бездоганно." contenteditable="false">А 1995 року мама з татом виявили далекоглядність: зрозумівши, що майбутнє за комп'ютерами та інформаційними технологіями, вони організували мій переклад до іншої школи, де випускні іспити зараховувалися як вступні на факультет інформаційних технологій до університету. План спрацював бездоганно.</p>
-                <p class="editable-text" data-ru="На заработанные сметами деньги она купила мне, уже студентке, красивую заячью шубу-манто, желая, чтобы ее Танюшка чувствовала себя уверенно и красиво.&nbsp; Вся ее жизнь была посвящена тому, чтобы дать мне больше возможностей, больше уверенности, больше будущего." data-ua="На зароблені кошторисами гроші вона купила мені, вже студентці, гарну заячу шубу-манто, бажаючи, щоб її Танюшка почувала себе впевнено та красиво.&nbsp;
+                <p class="editable-text" data-ru="На заработанные сметами деньги она купила мне, уже студентке, красивую заячью шубу-манто, желая, чтобы ее Танюшка чувствовала себя уверенно и красиво.&nbsp; 
+Вся ее жизнь была посвящена тому, чтобы дать мне больше возможностей, больше уверенности, больше будущего." data-ua="На зароблені кошторисами гроші вона купила мені, вже студентці, гарну заячу шубу-манто, бажаючи, щоб її Танюшка почувала себе впевнено та красиво.&nbsp;
 Все її життя було присвячене тому, щоб дати мені більше можливостей, більше впевненості, більше майбутнього." contenteditable="false">На зароблені кошторисами гроші вона купила мені, вже студентці, гарну заячу шубу-манто, бажаючи, щоб її Танюшка почувала себе впевнено та красиво.&nbsp;
 Все її життя було присвячене тому, щоб дати мені більше можливостей, більше впевненості, більше майбутнього.</p>
             </div></div>
@@ -449,17 +451,17 @@
         </div>
 
         <div class="quotes-section">
-          <div class="quote-card fade-up visible">
+          <div class="quote-card fade-up">
             <span class="quote-icon">“</span>
             <p class="quote-text editable-text" data-ru="Я своё дело чётко знаю." data-ua="Я свою справу чітко знаю." contenteditable="false">Я свою справу чітко знаю.</p>
             <p class="quote-author editable-text" data-ru="ЖИЗНЕННЫЙ ПРИНЦИП" data-ua="ЖИТТЄВИЙ ПРИНЦИП" contenteditable="false">ЖИТТЄВИЙ ПРИНЦИП</p>
           </div>
-          <div class="quote-card fade-up visible">
+          <div class="quote-card fade-up">
             <span class="quote-icon">“</span>
             <p class="quote-text editable-text" data-ru="Ищи глазами меня и смотри только на меня, когда выступаешь." data-ua="Шукай очима мене і дивися тільки на мене, коли виступаєш." contenteditable="false">Шукай очима мене і дивися тільки на мене, коли виступаєш.</p>
             <p class="quote-author editable-text" data-ru="СОВЕТ УСПЕХА ДОЧЕРИ В ДЕТСКОМ САДИКЕ" data-ua="ПОРАДА УСПІХУ ДОЧКИ У ДИТЯЧОМУ САДУ" contenteditable="false">ПОРАДА УСПІХУ ДОЧКИ У ДИТЯЧОМУ САДУ</p>
           </div>
-          <div class="quote-card fade-up visible">
+          <div class="quote-card fade-up">
             <span class="quote-icon">“</span>
             <p class="quote-text editable-text" data-ru="Делай вид, что ты очень строгая и грозная, но всегда давай детям время со смехом убежать!" data-ua="Роби вигляд, що ти дуже сувора і грізна, але завжди давай дітям час зі сміхом втекти!" contenteditable="false">Роби вигляд, що ти дуже сувора і грізна, але завжди давай дітям час зі сміхом втекти!</p>
             <p class="quote-author editable-text" data-ru="МУДРОСТЬ ВОСПИТАНИЯ БАБУШКИ" data-ua="МУДРІСТЬ ВИХОВАННЯ БАБУСІ" contenteditable="false">МУДРІСТЬ ВИХОВАННЯ БАБУСІ</p>
@@ -475,7 +477,7 @@
         </div>
         
         <div style="text-align: center; display: block;" id="showMoreGalleryWrapper">
-          <button class="read-more-btn" style="margin-top: 0; margin-bottom: 30px;" onclick="toggleGalleryExpand('motherGallery')" id="showMoreGalleryBtn"><span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показати ще (18)</span></button>
+          <button class="read-more-btn" style="margin-top: 0; margin-bottom: 30px;" onclick="toggleGalleryExpand('motherGallery')" id="showMoreGalleryBtn"><span class="editable-text" data-ru="Показать еще" data-ua="Показати ще" contenteditable="false">Показати ще (18)</span></button>
         </div>
         
         <div class="admin-only-flex">
@@ -490,11 +492,11 @@
 
     <span class="lightbox-close">×</span>
     <span class="lightbox-nav lightbox-prev" onclick="prevImage(event)" style="display: none;">❮</span>
-    <img id="lightbox-img" src="file:///C:/Users/golot/Downloads/%D0%A1%D0%B0%D0%B9%D1%82-%D0%BC%D0%B5%D0%BC%D0%BE%D1%80%D0%B8%D0%B0%D0%BB%20%D1%80%D0%BE%D0%B4%D0%B8%D1%82%D0%B5%D0%BB%D1%8F%D0%BC/photo-crest.webp" alt="Full photo" onclick="event.stopPropagation();" style="position: relative; z-index: 10;">
+    <img id="lightbox-img" src="photo-crest.webp" alt="Full photo" onclick="event.stopPropagation();" style="position: relative; z-index: 10;">
     <span class="lightbox-nav lightbox-next" onclick="nextImage(event)" style="display: none;">❯</span>
   </div>
 
-  <footer class="site-footer fade-up visible">
+  <footer class="site-footer fade-up">
     <div class="c-sparks-wrap" style="border-radius: 0; opacity: 0.8; z-index: 0;"></div>
     <div class="footer-content">
       <p class="footer-quote editable-text" data-ru="Бесконечно благодарю. Бесконечно люблю. Бесконечно прошу прощения. Ваша Таня (Tanya-Tango)." data-ua="Безмежно дякую. Безмежно люблю. Безмежно прошу вибачення. 
@@ -518,8 +520,8 @@
 
   <div class="admin-panel" id="adminPanel" style="display: none;">
     <button class="admin-btn" id="adminToggleBtn" onclick="toggleAdmin()">⚙️ Режим редактора</button>
-    <button class="admin-btn" onclick="openQrModal()" style="background: rgba(44, 42, 41, 0.9); --darkreader-inline-bgimage: initial; --darkreader-inline-bgcolor: var(--darkreader-background-2c2a29e6, rgba(48, 53, 54, 0.9));" data-darkreader-inline-bgimage="" data-darkreader-inline-bgcolor="">📱 QR-код</button>
-    <button class="admin-btn" onclick="downloadSiteData()" style="background: rgba(194, 155, 73, 0.9); color: rgb(255, 255, 255); font-weight: bold; --darkreader-inline-bgimage: initial; --darkreader-inline-bgcolor: var(--darkreader-background-c29b49e6, rgba(167, 131, 56, 0.9)); --darkreader-inline-color: var(--darkreader-text-ffffff, #ffffff);" data-darkreader-inline-bgimage="" data-darkreader-inline-bgcolor="" data-darkreader-inline-color="">💾 Сохранить изменения</button>
+    <button class="admin-btn" onclick="openQrModal()">📱 QR-код</button>
+    <button class="admin-btn" onclick="downloadSiteData()">💾 Сохранить изменения</button>
   </div>
   
   <input type="file" id="file-uploader" accept="image/*" style="display: none;">
@@ -527,10 +529,10 @@
   <div class="qr-modal" id="adminAuthModal">
     <div class="qr-container" style="max-width: 350px; padding: 30px;">
       <span class="qr-close" onclick="document.getElementById('adminAuthModal').classList.remove('active')">×</span>
-      <h3 class="editable-text" style="font-family: &quot;Playfair Display&quot;, serif; color: var(--gold); margin-bottom: 20px; font-size: 1.5rem; --darkreader-inline-color: var(--darkreader-text--gold, var(--darkreader-text-000000, #ffffff));" data-ru="Доступ редактора" data-ua="Доступ редактора" contenteditable="false" data-darkreader-inline-color="">Доступ редактора</h3>
+      <h3 class="editable-text" style="color: var(--gold); margin-bottom: 20px; font-size: 1.5rem;" data-ru="Доступ редактора" data-ua="Доступ редактора" contenteditable="false">Доступ редактора</h3>
       <input type="password" id="adminPwdInput" class="qr-input" style="text-align: center; font-size: 1.2rem; letter-spacing: 5px; margin-bottom: 15px;" placeholder="****">
       <button class="submit-btn" style="width: 100%; padding: 12px;" onclick="checkAdminPassword()"><span class="editable-text" data-ru="Войти" data-ua="Увійти" contenteditable="false">Увійти</span></button>
-      <p id="adminPwdError" class="editable-text" style="color: rgb(220, 53, 69); display: none; margin-top: 15px; font-size: 0.85rem; font-weight: 500; --darkreader-inline-color: var(--darkreader-text-dc3545, #ff6980);" data-ru="Неверный пароль!" data-ua="Невірний пароль!" contenteditable="false" data-darkreader-inline-color="">Невірний пароль!</p>
+      <p id="adminPwdError" class="editable-text" style="color: rgb(220, 53, 69); display: none; margin-top: 15px; font-size: 0.85rem; font-weight: 500;" data-ru="Неверный пароль!" data-ua="Невірний пароль!" contenteditable="false">Невірний пароль!</p>
     </div>
   </div>
 
@@ -538,32 +540,34 @@
     <div class="qr-container" style="max-width: 500px; padding: 40px; text-align: left;">
       <span class="qr-close" onclick="closeQrModal()">×</span>
       
-      <h2 class="qr-title editable-text" style="margin-bottom: 10px; color: var(--gold-dark); font-family: &quot;Playfair Display&quot;, serif; --darkreader-inline-color: var(--darkreader-text--gold-dark, var(--darkreader-text-000000, #ffffff));" data-ru="Табличка с QR-кодом" data-ua="Табличка з QR-кодом" contenteditable="false" data-darkreader-inline-color="">Табличка з QR-кодом</h2>
-      <p class="qr-title editable-text" style="font-size: 0.95rem; color: rgb(119, 119, 119); margin-bottom: 25px; line-height: 1.5; --darkreader-inline-color: var(--darkreader-text-777777, #ecdecc);" data-ru="Введите финальную ссылку на ваш сайт (например, на Netlify), чтобы создать код для памятника." data-ua="Введіть фінальне посилання на ваш сайт (наприклад, на Netlify), щоб створити код для пам'ятника." contenteditable="false" data-darkreader-inline-color="">Введіть фінальне посилання на ваш сайт (наприклад, на Netlify), щоб створити код для пам'ятника.</p>
+      <h2 class="qr-title editable-text" style="margin-bottom: 10px; color: var(--gold-dark);" data-ru="Табличка с QR-кодом" data-ua="Табличка з QR-кодом" contenteditable="false">Табличка з QR-кодом</h2>
+      <p class="qr-title editable-text" style="font-size: 0.95rem; color: rgb(119, 119, 119); margin-bottom: 25px; line-height: 1.5;" data-ru="Введите финальную ссылку на ваш сайт, чтобы создать код для памятника." data-ua="Введіть фінальне посилання на ваш сайт, щоб створити код для пам'ятника." contenteditable="false">Введіть фінальне посилання на ваш сайт, щоб створити код для пам'ятника.</p>
 
       <div class="qr-input-group" style="display: flex; gap: 15px; margin-bottom: 30px;">
-        <input type="text" id="qrUrlInput" class="qr-input" style="flex-grow: 1; padding: 12px 15px; border: 1px solid rgb(235, 229, 217); border-radius: 12px; font-family: Montserrat, sans-serif; --darkreader-inline-border-top: var(--darkreader-border-ebe5d9, #75633e); --darkreader-inline-border-right: var(--darkreader-border-ebe5d9, #75633e); --darkreader-inline-border-bottom: var(--darkreader-border-ebe5d9, #75633e); --darkreader-inline-border-left: var(--darkreader-border-ebe5d9, #75633e);" placeholder="тест" data-darkreader-inline-border-top="" data-darkreader-inline-border-right="" data-darkreader-inline-border-bottom="" data-darkreader-inline-border-left="">
-        <button class="qr-btn" style="background: var(--gold-gradient); color: rgb(50, 33, 8); border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 600; font-family: Montserrat, sans-serif; box-shadow: rgba(194, 155, 73, 0.3) 0px 4px 10px; --darkreader-inline-bg: var(--darkreader-bgimg--gold-gradient); --darkreader-inline-color: var(--darkreader-text-322108, #ffffff); --darkreader-inline-boxshadow: var(--darkreader-background-c29b494d, rgba(167, 131, 56, 0.3)) 0px 4px 10px;" onclick="generateQr()" data-darkreader-inline-bg="" data-darkreader-inline-color="" data-darkreader-inline-boxshadow=""><span class="editable-text" data-ru="Создать" data-ua="Створити" contenteditable="false">Створити</span></button>
+        <input type="text" id="qrUrlInput" class="qr-input" style="flex-grow: 1; padding: 12px 15px; border: 1px solid rgb(235, 229, 217); border-radius: 12px;" placeholder="тест">
+        <button class="qr-btn" style="background: var(--gold-gradient); color: rgb(50, 33, 8); border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 600; box-shadow: rgba(194, 155, 73, 0.3) 0px 4px 10px;" onclick="generateQr()"><span class="editable-text" data-ru="Создать" data-ua="Створити" contenteditable="false">Створити</span></button>
       </div>
 
-      <div class="qr-print-area" id="qrPrintArea" style="border: 2px dashed var(--gold); border-radius: 16px; padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; background: rgb(255, 255, 255); --darkreader-inline-border-short: 2px dashed var(--darkreader-border--gold); --darkreader-inline-bgimage: initial; --darkreader-inline-bgcolor: var(--darkreader-background-ffffff, #242729);" data-darkreader-inline-border-short="" data-darkreader-inline-bgimage="" data-darkreader-inline-bgcolor="">
-        <h1 class="editable-text" style="font-family: &quot;Playfair Display&quot;, serif; color: var(--gold-dark); font-size: 2.2rem; margin-bottom: 5px; line-height: 1; --darkreader-inline-color: var(--darkreader-text--gold-dark, var(--darkreader-text-000000, #ffffff));" data-ru="Цифровой Мемориал" data-ua="Цифровий Меморіал" contenteditable="false" data-darkreader-inline-color="">Цифровий Меморіал</h1>
-        <p class="editable-text" style="font-family: Montserrat, sans-serif; font-size: 0.8rem; font-weight: 700; color: rgb(136, 136, 136); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px; --darkreader-inline-color: var(--darkreader-text-888888, #ecdecc);" data-ru="СЕМЬИ ГОЛОТРИНЫХ" data-ua="РОДИНИ ГОЛОТРІНИХ" contenteditable="false" data-darkreader-inline-color="">РОДИНИ ГОЛОТРІНИХ</p>
+      <div class="qr-print-area" id="qrPrintArea" style="border: 2px dashed var(--gold); border-radius: 16px; padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; background: rgb(255, 255, 255);">
+        <h1 class="editable-text" style="color: var(--gold-dark); font-size: 2.2rem; margin-bottom: 5px; line-height: 1;" data-ru="Цифровой Мемориал" data-ua="Цифровий Меморіал" contenteditable="false">Цифровий Меморіал</h1>
+        <p class="editable-text" style="font-size: 0.8rem; font-weight: 700; color: rgb(136, 136, 136); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px;" data-ru="СЕМЬИ ГОЛОТРИНЫХ" data-ua="РОДИНИ ГОЛОТРІНИХ" contenteditable="false">РОДИНИ ГОЛОТРІНИХ</p>
         
-        <p class="editable-text" style="font-family: Montserrat, sans-serif; font-size: 0.9rem; color: rgb(102, 102, 102); max-width: 250px; margin: 0px auto 20px; line-height: 1.4; --darkreader-inline-color: var(--darkreader-text-666666, #fcf0e0);" data-ru="Наведите камеру смартфона на код, чтобы открыть страницу памяти" data-ua="Наведіть камеру смартфона на код, щоб відкрити сторінку пам'яті" contenteditable="false" data-darkreader-inline-color="">Наведіть камеру смартфона на код, щоб відкрити сторінку пам'яті</p>
+        <p class="editable-text" style="font-size: 0.9rem; color: rgb(102, 102, 102); max-width: 250px; margin: 0px auto 20px; line-height: 1.4;" data-ru="Наведите камеру смартфона на код, чтобы открыть страницу памяти" data-ua="Наведіть камеру смартфона на код, щоб відкрити сторінку пам'яті" contenteditable="false">Наведіть камеру смартфона на код, щоб відкрити сторінку пам'яті</p>
         
-        <img id="qrCodeImg" crossorigin="anonymous" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&amp;data=https%3A%2F%2Fgolotrin-memorial.netlify.app%2F&amp;color=322108&amp;bgcolor=ffffff" alt="QR Code" style="width: 200px; height: 200px; margin-bottom: 20px; border-radius: 12px;">
+        <img id="qrCodeImg" crossorigin="anonymous" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fgolotrin-memorial.netlify.app%2F&color=322108&bgcolor=ffffff" alt="QR Code" style="width: 200px; height: 200px; margin-bottom: 20px; border-radius: 12px;">
         
-        <p class="editable-text" style="font-family: Montserrat, sans-serif; font-size: 0.85rem; font-weight: 600; color: rgb(153, 153, 153); --darkreader-inline-color: var(--darkreader-text-999999, #fcf0e0);" data-ru="Здесь бережно сохранена история нашей семьи" data-ua="Тут дбайливо збережена історія нашої родини" contenteditable="false" data-darkreader-inline-color="">Тут дбайливо збережена історія нашої родини</p>
+        <p id="qrUrlDisplay" style="font-size: 0.85rem; font-weight: 600; color: rgb(50, 33, 8); margin-bottom: 15px; letter-spacing: 0.5px;"></p>
+
+        <p class="editable-text" style="font-size: 0.85rem; font-weight: 600; color: rgb(153, 153, 153);" data-ru="Здесь бережно сохранена история нашей семьи" data-ua="Тут дбайливо збережена історія нашої родини" contenteditable="false">Тут дбайливо збережена історія нашої родини</p>
       </div>
 
       <div class="print-btn-wrap" id="printBtnWrap" style="display: flex; justify-content: space-between; gap: 15px; margin-top: 25px;">
-        <button style="flex: 1 1 0%; padding: 14px; border-radius: 12px; background: rgb(200, 169, 98); color: rgb(50, 33, 8); font-weight: 600; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; cursor: pointer; font-family: Montserrat, sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; --darkreader-inline-bgimage: initial; --darkreader-inline-bgcolor: var(--darkreader-background-c8a962, #957735); --darkreader-inline-color: var(--darkreader-text-322108, #ffffff);" onclick="window.print()" data-darkreader-inline-bgimage="" data-darkreader-inline-bgcolor="" data-darkreader-inline-color="">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-darkreader-inline-stroke="" style="--darkreader-inline-stroke: currentColor;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        <button style="flex: 1 1 0%; padding: 14px; border-radius: 12px; background: rgb(200, 169, 98); color: rgb(50, 33, 8); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="window.print()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
           <span class="editable-text" data-ru="Распечатать" data-ua="Роздрукувати" contenteditable="false">Роздрукувати</span>
         </button>
-        <button style="flex: 1 1 0%; padding: 14px; border-radius: 12px; background: rgb(17, 17, 17); color: rgb(255, 255, 255); font-weight: 600; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; cursor: pointer; font-family: Montserrat, sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; --darkreader-inline-bgimage: initial; --darkreader-inline-bgcolor: var(--darkreader-background-111111, #141515); --darkreader-inline-color: var(--darkreader-text-ffffff, #ffffff);" onclick="downloadQr()" data-darkreader-inline-bgimage="" data-darkreader-inline-bgcolor="" data-darkreader-inline-color="">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-darkreader-inline-stroke="" style="--darkreader-inline-stroke: currentColor;"><path d="M21 15v4a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <button style="flex: 1 1 0%; padding: 14px; border-radius: 12px; background: rgb(17, 17, 17); color: rgb(255, 255, 255); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="downloadQr()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           <span class="editable-text" data-ru="Скачать код" data-ua="Завантажити" contenteditable="false">Завантажити</span>
         </button>
       </div>
@@ -572,7 +576,7 @@
 
   <div class="qr-modal" id="confirmModal">
     <div class="qr-container" style="max-width: 400px; padding: 30px;">
-      <h3 style="font-family: &quot;Playfair Display&quot;, serif; color: var(--text-color); margin-bottom: 25px; font-size: 1.2rem; --darkreader-inline-color: var(--darkreader-text--text-color, var(--darkreader-text-000000, #ffffff));" id="confirmModalText" data-darkreader-inline-color="">Обновить перевод другой версии автоматически? (Отмените, чтобы сохранить ручные правки)</h3>
+      <h3 style="color: var(--text-color); margin-bottom: 25px; font-size: 1.2rem;" id="confirmModalText">Обновить перевод другой версии автоматически? (Отмените, чтобы сохранить ручные правки)</h3>
       <div style="display: flex; gap: 15px; justify-content: center;">
         <button class="cancel-btn" onclick="document.getElementById('confirmModal').classList.remove('active')"><span class="editable-text" data-ru="Отмена" data-ua="Скасувати" contenteditable="false">Скасувати</span></button>
         <button class="submit-btn" style="padding: 10px 25px;" onclick="if(window.currentConfirmCallback) window.currentConfirmCallback();"><span class="editable-text" data-ru="Да" data-ua="Так" contenteditable="false">Так</span></button>
@@ -593,6 +597,5 @@
 
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
-
-
-<a id="bottomBar" style="position: fixed; bottom: -40px; left: 0px; z-index: 9999; transform: translateX(-50%); background-color: transparent; border-radius: 5px 5px 0px 0px; opacity: 0.3; padding: 5px; transition: 0.3s; cursor: pointer; max-height: 100px; max-width: 45px;"><img src="chrome-extension://kobncfkmjelbefaoohoblamnbackjggk/icon/icon_32.png" style="width: 32px; height: 32px;"></a></body></html>
+</body>
+</html>
