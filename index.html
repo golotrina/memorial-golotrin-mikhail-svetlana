@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="uk"><head>
+<html lang="uk">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -10,24 +11,23 @@
   <meta property="og:image" content="https://golotrin-memorial.netlify.app/photo-family.webp">
   <meta property="og:type" content="website">
   
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;⚜️&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚜️</text></svg>">
   
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
-  
+   
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="js/html2canvas.min.js"></script>
+  <script src="js/qrcode.min.js"></script>
 </head>
-<body class="dark-theme" style="overflow: auto;">
+<body class="dark-theme">
 
   <header>
     <div class="header-controls">
       <button class="hamburger-btn" onclick="toggleMobileMenu()">☰</button>
       
       <nav class="control-pill desktop-nav" style="padding: 4px 10px;">
-        <a href="#parents" class="nav-link editable-text" data-ru="Родители" data-ua="Батьки" contenteditable="false">Родители</a>
-        <a href="#timeline" class="nav-link editable-text" data-ru="Линия жизни" data-ua="Лінія життя" contenteditable="false">Линия жизни</a>
-        <a href="#ritual" class="nav-link editable-text" data-ru="Свеча" data-ua="Свічка" contenteditable="false">Свеча</a>
+        <a href="#parents" class="nav-link editable-text" data-ru="Родители" data-ua="Батьки">Родители</a>
+        <a href="#timeline" class="nav-link editable-text" data-ru="Линия жизни" data-ua="Лінія життя">Линия жизни</a>
+        <a href="#ritual" class="nav-link editable-text" data-ru="Свеча" data-ua="Свічка">Свеча</a>
         <button class="zoom-btn" onclick="shareSite()" data-title-ru="Поделиться ссылкой" data-title-ua="Поділитися посиланням" title="Поделиться ссылкой"><span class="icon-3d">🔗</span></button>
       </nav>
       
@@ -51,10 +51,10 @@
       <img id="photo-crest" class="family-crest" src="photo-crest.webp" alt="Герб роду">
       <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-crest'); event.stopPropagation();">📷 Загрузить герб</button>
     </div>
-    <h1 class="editable-text" data-ru="Цифровой Мемориал" data-ua="Цифровий Меморіал" contenteditable="false">Цифровой Мемориал</h1>
-    <p class="editable-text" data-ru="СЕМЬИ ГОЛОТРИНЫХ" data-ua="РОДИНИ ГОЛОТРІНИХ" style="letter-spacing: 4px; font-weight: 500;" contenteditable="false">СЕМЬИ ГОЛОТРИНЫХ</p>
+    <h1 class="editable-text" data-ru="Цифровой Мемориал" data-ua="Цифровий Меморіал">Цифровой Мемориал</h1>
+    <p class="editable-text" data-ru="СЕМЬИ ГОЛОТРИНЫХ" data-ua="РОДИНИ ГОЛОТРІНИХ" style="letter-spacing: 4px; font-weight: 500;">СЕМЬИ ГОЛОТРИНЫХ</p>
     <div class="separator"></div>
-    <div class="intro-quote editable-text" data-ru="Люди живы, пока жива память о них. Эта страница создана с любовью и благодарностью моим родителям, чтобы сохранить их историю для будущих поколений." data-ua="Люди живі, поки жива пам'ять про них. Ця сторінка створена з любов'ю та вдячністю моїм батькам, щоб зберегти їхню історію для майбутніх поколінь." contenteditable="false">Люди живы, пока жива память о них. Эта страница создана с любовью и благодарностью моим родителям, чтобы сохранить их историю для будущих поколений.</div>
+    <div class="intro-quote editable-text" data-ru="Люди живы, пока жива память о них. Эта страница создана с любовью и благодарностью моим родителям, чтобы сохранить их историю для будущих поколений." data-ua="Люди живі, поки жива пам'ять про них. Ця сторінка створена з любов'ю та вдячністю моїм батькам, щоб зберегти їхню історію для майбутніх поколінь.">Люди живы, пока жива память о них. Эта страница создана с любовью и благодарностью моим родителям, чтобы сохранить их историю для будущих поколений.</div>
     <div class="family-photo fade-up visible" onclick="openLightbox(this)">
       <img id="photo-family" src="photo-family.webp" alt="Сім'я" loading="lazy">
       <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-family'); event.stopPropagation();">📷 Загрузить общее фото</button>
@@ -67,10 +67,10 @@
         <img id="photo-father" src="photo-father.webp" alt="Батько" loading="lazy">
         <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-father'); event.stopPropagation();">📷 Загрузить фото</button>
       </div>
-      <h2 class="parent-name editable-text" data-ru="Михаил Григорьевич Голотрин" data-ua="Михайло Григорович Голотрін" contenteditable="false">Михаил Григорьевич Голотрин</h2>
-      <div class="parent-dates editable-text" data-ru="1945 - 2021" data-ua="1945 - 2021" contenteditable="false">1945 - 2021</div>
-      <p class="parent-bio editable-text" data-ru="Заведующий постановочной частью Одесской филармонии, заслуженный деятель эстрадного искусства Украины, творческий человек и мудрый, любящий отец." data-ua="Завідувач постановочної частини Одеської філармонії, заслужений діяч естрадного мистецтва України, творча людина, мудрий та люблячий батько." contenteditable="false">Заведующий постановочной частью Одесской филармонии, заслуженный деятель эстрадного искусства Украины, творческий человек и мудрый, любящий отец.</p>
-      <button class="read-more-btn" onclick="openBio('father-bio')"><span class="editable-text" data-ru="История Папы" data-ua="Історія Тата" contenteditable="false">История Папы</span></button>
+      <h2 class="parent-name editable-text" data-ru="Михаил Григорьевич Голотрин" data-ua="Михайло Григорович Голотрін">Михаил Григорьевич Голотрин</h2>
+      <div class="parent-dates editable-text" data-ru="1945 - 2021" data-ua="1945 - 2021">1945 - 2021</div>
+      <p class="parent-bio editable-text" data-ru="Заведующий постановочной частью Одесской филармонии, заслуженный деятель эстрадного искусства Украины, творческий человек и мудрый, любящий отец." data-ua="Завідувач постановочної частини Одеської філармонії, заслужений діяч естрадного мистецтва України, творча людина, мудрий та люблячий батько.">Заведующий постановочной частью Одесской филармонии, заслуженный деятель эстрадного искусства Украины, творческий человек и мудрый, любящий отец.</p>
+      <button class="read-more-btn" onclick="openBio('father-bio')"><span class="editable-text" data-ru="История Папы" data-ua="Історія Тата">История Папы</span></button>
     </div>
 
     <div class="parent-card fade-up visible">
@@ -78,96 +78,96 @@
         <img id="photo-mother" src="photo-mother.webp" alt="Мати" loading="lazy">
         <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-mother'); event.stopPropagation();">📷 Загрузить фото</button>
       </div>
-      <h2 class="parent-name editable-text" data-ru="Светлана Владимировна Голотрина" data-ua="Світлана Володимирівна Голотріна" contenteditable="false">Светлана Владимировна Голотрина</h2>
-      <div class="parent-dates editable-text" data-ru="1943 - 2021" data-ua="1943 - 2021" contenteditable="false">1943 - 2021</div>
-      <p class="parent-bio editable-text" data-ru="Инженер-сметчик с непреклонным сибирским характером. Строгая, но глубоко любящая мать, посвятившая свою жизнь заботе о будущем семьи." data-ua="Інженер-кошторисник із незламним сибірським характером. Сувора, але глибоко любляча мати, яка присвятила своє життя турботі про майбутнє родини." contenteditable="false">Инженер-сметчик с непреклонным сибирским характером. Строгая, но глубоко любящая мать, посвятившая свою жизнь заботе о будущем семьи.</p>
-      <button class="read-more-btn" onclick="openBio('mother-bio')"><span class="editable-text" data-ru="История Мамы" data-ua="Історія Мами" contenteditable="false">История Мамы</span></button>
+      <h2 class="parent-name editable-text" data-ru="Светлана Владимировна Голотрина" data-ua="Світлана Володимирівна Голотріна">Светлана Владимировна Голотрина</h2>
+      <div class="parent-dates editable-text" data-ru="1943 - 2021" data-ua="1943 - 2021">1943 - 2021</div>
+      <p class="parent-bio editable-text" data-ru="Инженер-сметчик с непреклонным сибирским характером. Строгая, но глубоко любящая мать, посвятившая свою жизнь заботе о будущем семьи." data-ua="Інженер-кошторисник із незламним сибірським характером. Сувора, але глибоко любляча мати, яка присвятила своє життя турботі про майбутнє родини.">Инженер-сметчик с непреклонным сибирским характером. Строгая, но глубоко любящая мать, посвятившая свою жизнь заботе о будущем семьи.</p>
+      <button class="read-more-btn" onclick="openBio('mother-bio')"><span class="editable-text" data-ru="История Мамы" data-ua="Історія Мами">История Мамы</span></button>
     </div>
   </section>
 
-<section id="timeline" class="timeline-section fade-up visible">
+  <section id="timeline" class="timeline-section fade-up visible">
     <div class="timeline-header">
-      <h2 class="editable-text" data-ru="Линия жизни" data-ua="Лінія життя" contenteditable="false">Линия жизни</h2>
-      <p class="editable-text" data-ru="Главные вехи истории семьи" data-ua="Головні віхи історії сім'ї" contenteditable="false">Главные вехи истории семьи</p>
+      <h2 class="editable-text" data-ru="Линия жизни" data-ua="Лінія життя">Линия жизни</h2>
+      <p class="editable-text" data-ru="Главные вехи истории семьи" data-ua="Головні віхи історії сім'ї">Главные вехи истории семьи</p>
     </div>
     
     <div class="timeline">
       <div class="timeline-item fade-up visible">
-        <span class="timeline-date editable-text" data-ru="1700-е" data-ua="1700-ті" contenteditable="false">1700-е</span>
+        <span class="timeline-date editable-text" data-ru="1700-е" data-ua="1700-ті">1700-е</span>
         <div class="timeline-content">
-          <h4 class="editable-text" data-ru="Истоки рода" data-ua="Витоки роду" contenteditable="false">Истоки рода</h4>
-          <p class="editable-text" data-ru="Начало документально подтвержденной генеалогической ветви. Более 300 лет непрерывной истории, объединяющей поколения предков по материнской и отцовской линиям." data-ua="Початок документально підтвердженої генеалогічної гілки. Понад 300 років безперервної історії, що об'єднує покоління предків по материнській та батьківській лініях." contenteditable="false">Начало документально подтвержденной генеалогической ветви. Более 300 лет непрерывной истории, объединяющей поколения предков по материнской и отцовской линиям.</p>
+          <h4 class="editable-text" data-ru="Истоки рода" data-ua="Витоки роду">Истоки рода</h4>
+          <p class="editable-text" data-ru="Начало документально подтвержденной генеалогической ветви. Более 300 лет непрерывной истории, объединяющей поколения предков по материнской и отцовской линиям." data-ua="Початок документально підтвердженої генеалогічної гілки. Понад 300 років безперервної історії, що об'єднує покоління предків по материнській та батьківській лініях.">Начало документально подтвержденной генеалогической ветви. Более 300 лет непрерывной истории, объединяющей поколения предков по материнской и отцовской линиям.</p>
         </div>
       </div>
 
       <div class="timeline-item fade-up visible">
-        <span class="timeline-date editable-text" data-ru="1943" data-ua="1943" contenteditable="false">1943</span>
+        <span class="timeline-date editable-text" data-ru="1943" data-ua="1943">1943</span>
         <div class="timeline-content">
-          <h4 class="editable-text" data-ru="Рождение Светланы" data-ua="Народження Світлани" contenteditable="false">Рождение Светланы</h4>
-          <p class="editable-text" data-ru="Иркутск. Трудные послевоенные годы, закалившие сибирский характер и здоровье." data-ua="Іркутськ. Важкі повоєнні роки, що загартували сибірський характер і здоров'я." contenteditable="false">Иркутск. Трудные послевоенные годы, закалившие сибирский характер и здоровье.</p>
+          <h4 class="editable-text" data-ru="Рождение Светланы" data-ua="Народження Світлани">Рождение Светланы</h4>
+          <p class="editable-text" data-ru="Иркутск. Трудные послевоенные годы, закалившие сибирский характер и здоровье." data-ua="Іркутськ. Важкі повоєнні роки, що загартували сибірський характер і здоров'я.">Иркутск. Трудные послевоенные годы, закалившие сибирский характер и здоровье.</p>
         </div>
       </div>
 
       <div class="timeline-item fade-up visible">
-        <span class="timeline-date editable-text" data-ru="1945" data-ua="1945" contenteditable="false">1945</span>
+        <span class="timeline-date editable-text" data-ru="1945" data-ua="1945">1945</span>
         <div class="timeline-content">
-          <h4 class="editable-text" data-ru="Рождение Михаила" data-ua="Народження Михайла" contenteditable="false">Рождение Михаила</h4>
-          <p class="editable-text" data-ru="Евпатория. Начало пути творческого человека, влюбленного в сцену и небо." data-ua="Євпаторія. Початок шляху творчої людини, закоханої у сцену та небо." contenteditable="false">Евпатория. Начало пути творческого человека, влюбленного в сцену и небо.</p>
+          <h4 class="editable-text" data-ru="Рождение Михаила" data-ua="Народження Михайла">Рождение Михаила</h4>
+          <p class="editable-text" data-ru="Евпатория. Начало пути творческого человека, влюбленного в сцену и небо." data-ua="Євпаторія. Початок шляху творчої людини, закоханої у сцену та небо.">Евпатория. Начало пути творческого человека, влюбленного в сцену и небо.</p>
         </div>
       </div>
       
       <div class="timeline-item fade-up visible">
-        <span class="timeline-date editable-text" data-ru="1967" data-ua="1967" contenteditable="false">1967</span>
+        <span class="timeline-date editable-text" data-ru="1967" data-ua="1967">1967</span>
         <div class="timeline-content">
-          <h4 class="editable-text" data-ru="Встреча в Одессе" data-ua="Зустріч в Одесі" contenteditable="false">Встреча в Одессе</h4>
-          <p class="editable-text" data-ru="Свадьба Михаила и Светланы." data-ua="Весілля Михайла та Світлани." contenteditable="false">Свадьба Михаила и Светланы.</p>
+          <h4 class="editable-text" data-ru="Встреча в Одессе" data-ua="Зустріч в Одесі">Встреча в Одессе</h4>
+          <p class="editable-text" data-ru="Свадьба Михаила и Светланы." data-ua="Весілля Михайла та Світлани.">Свадьба Михаила и Светланы.</p>
         </div>
       </div>
 
       <div class="timeline-item fade-up visible">
-        <span class="timeline-date editable-text" data-ru="1978" data-ua="1978" contenteditable="false">1978</span>
+        <span class="timeline-date editable-text" data-ru="1978" data-ua="1978">1978</span>
         <div class="timeline-content">
-          <h4 class="editable-text" data-ru="Рождение дочери" data-ua="Народження доньки" contenteditable="false">Рождение дочери</h4>
-          <p class="editable-text" data-ru="Рождение дочери Татьяны." data-ua="Народження доньки Тетяни." contenteditable="false">Рождение дочери Татьяны.</p>
+          <h4 class="editable-text" data-ru="Рождение дочери" data-ua="Народження доньки">Рождение дочери</h4>
+          <p class="editable-text" data-ru="Рождение дочери Татьяны." data-ua="Народження доньки Тетяни.">Рождение дочери Татьяны.</p>
         </div>
       </div>
       
       <div class="timeline-item fade-up visible">
-        <span class="timeline-date editable-text" data-ru="1995" data-ua="1995" contenteditable="false">1995</span>
+        <span class="timeline-date editable-text" data-ru="1995" data-ua="1995">1995</span>
         <div class="timeline-content">
-          <h4 class="editable-text" data-ru="Взгляд в будущее" data-ua="Погляд у майбутнє" contenteditable="false">Взгляд в будущее</h4>
-          <p class="editable-text" data-ru="Родители принимают стратегическое решение, определив профессию дочери." data-ua="Батьки ухвалюють стратегічне рішення, визначивши професію доньки." contenteditable="false">Родители принимают стратегическое решение, определив профессию дочери.</p>
+          <h4 class="editable-text" data-ru="Взгляд в будущее" data-ua="Погляд у майбутнє">Взгляд в будущее</h4>
+          <p class="editable-text" data-ru="Родители принимают стратегическое решение, определив профессию дочери." data-ua="Батьки ухвалюють стратегічне рішення, визначивши професію доньки.">Родители принимают стратегическое решение, определив профессию дочери.</p>
         </div>
       </div>
 
       <div class="timeline-item fade-up visible">
-        <span class="timeline-date editable-text" data-ru="2000" data-ua="2000" contenteditable="false">2000</span>
+        <span class="timeline-date editable-text" data-ru="2000" data-ua="2000">2000</span>
         <div class="timeline-content">
-          <h4 class="editable-text" data-ru="Создание новой семьи" data-ua="Створення нової сім'ї" contenteditable="false">Создание новой семьи</h4>
-          <p class="editable-text" data-ru="Свадьба Татьяны и Владислава." data-ua="Весілля Тетяни та Владіслава." contenteditable="false">Свадьба Татьяны и Владислава.</p>
+          <h4 class="editable-text" data-ru="Создание новой семьи" data-ua="Створення нової сім'ї">Создание новой семьи</h4>
+          <p class="editable-text" data-ru="Свадьба Татьяны и Владислава." data-ua="Весілля Тетяни та Владіслава.">Свадьба Татьяны и Владислава.</p>
         </div>
       </div>
 
       <div class="timeline-item fade-up visible">
-        <span class="timeline-date editable-text" data-ru="2007" data-ua="2007" contenteditable="false">2007</span>
+        <span class="timeline-date editable-text" data-ru="2007" data-ua="2007">2007</span>
         <div class="timeline-content">
-          <h4 class="editable-text" data-ru="Новое поколение" data-ua="Нове покоління" contenteditable="false">Новое поколение</h4>
-          <p class="editable-text" data-ru="Рождение внучки Наташеньки." data-ua="Народження онучки Наталочки." contenteditable="false">Рождение внучки Наташеньки.</p>
+          <h4 class="editable-text" data-ru="Новое поколение" data-ua="Нове покоління">Новое поколение</h4>
+          <p class="editable-text" data-ru="Рождение внучки Наташеньки." data-ua="Народження онучки Наталочки.">Рождение внучки Наташеньки.</p>
         </div>
       </div>
 
       <div class="timeline-item fade-up visible">
-        <span class="timeline-date editable-text" data-ru="2010" data-ua="2010" contenteditable="false">2010</span>
+        <span class="timeline-date editable-text" data-ru="2010" data-ua="2010">2010</span>
         <div class="timeline-content">
-          <h4 class="editable-text" data-ru="Продолжение рода" data-ua="Продовження роду" contenteditable="false">Продолжение рода</h4>
-          <p class="editable-text" data-ru="Рождение внука Игореши." data-ua="Народження онука Ігоря." contenteditable="false">Рождение внука Игореши.</p>
+          <h4 class="editable-text" data-ru="Продолжение рода" data-ua="Продовження роду">Продолжение рода</h4>
+          <p class="editable-text" data-ru="Рождение внука Игореши." data-ua="Народження онука Ігоря.">Рождение внука Игореши.</p>
         </div>
       </div>
       
       <div class="timeline-item fade-up visible">
-        <span class="timeline-date editable-text" data-ru="2021" data-ua="2021" contenteditable="false">2021</span>
+        <span class="timeline-date editable-text" data-ru="2021" data-ua="2021">2021</span>
         <div class="timeline-content">
-          <h4 class="editable-text" data-ru="Вместе навсегда" data-ua="Разом назавжди" contenteditable="false">Вместе навсегда</h4>
+          <h4 class="editable-text" data-ru="Вместе навсегда" data-ua="Разом назавжди">Вместе навсегда</h4>
           <div class="timeline-epitaph no-auto-translate editable-text" style="white-space: pre-wrap;" data-ru="Жизнь прожита. И прожита достойно.
 Вы шли вперёд, не ведая преград.
 Ушли вы в вечность поступью спокойной,
@@ -178,7 +178,7 @@
 Пішли у вічність гордою ходою,
 Пізнавши істини прихований секрет.
 
-В цій грі Життя ми всі актори..." contenteditable="false">Жизнь прожита. И прожита достойно.
+В цій грі Життя ми всі актори...">Жизнь прожита. И прожита достойно.
 Вы шли вперёд, не ведая преград.
 Ушли вы в вечность поступью спокойной,
 Оставив свет, что в сердце навсегда.
@@ -188,18 +188,18 @@
       </div>
 
       <div class="timeline-item fade-up visible">
-        <span class="timeline-date editable-text" data-ru="Сегодня" data-ua="Сьогодні" contenteditable="false">Сегодня</span>
+        <span class="timeline-date editable-text" data-ru="Сегодня" data-ua="Сьогодні">Сегодня</span>
         <div class="timeline-content">
-          <h4 class="editable-text" data-ru="Цифровое наследие" data-ua="Цифровий спадок" contenteditable="false">Цифровое наследие</h4>
-          <p class="editable-text" data-ru="Род продолжается.&nbsp;
+          <h4 class="editable-text" data-ru="Цифровое наследие" data-ua="Цифровий спадок">Цифровое наследие</h4>
+          <p class="editable-text" data-ru="Род продолжается. 
 Глубокое генеалогическое исследование (более 250 имен), подкрепленное ДНК-экспертизой и работой с международными архивами (MyHeritage), принимает форму. 
 
 Я прошла долгий путь – от поиска семейных корней до теплых, живых воспоминаний о моих родителях. 
-Этот Мемориал стал частью моего большого проекта - Цифрового наследия (Digital Legacy), в который&nbsp;постепенно вплетаются ветви родных моей семьи. 
+Этот Мемориал стал частью моего большого проекта - Цифрового наследия (Digital Legacy), в который постепенно вплетаются ветви родных моей семьи. 
 
 Но для меня это прежде всего место, где живут воспоминания о самых близких людях. 
 
-Я приглашаю вас - друзей, родных, всех, кто знал маму и папу - зажечь свою Свечу Памяти в этом месте, где не существует времени и расстояний." data-ua="Рід продовжується.&nbsp;
+Я приглашаю вас - друзей, родных, всех, кто знал маму и папу - зажечь свою Свечу Памяти в этом месте, где не существует времени и расстояний." data-ua="Рід продовжується. 
 Глибоке генеалогічне дослідження (понад 250 імен), підкріплене ДНК-експертизою та роботою з міжнародними архівами (MyHeritage), набуває форми. 
 
 Я пройшла довгий шлях – від пошуку сімейного коріння до теплих, живих спогадів про моїх батьків. 
@@ -207,11 +207,11 @@
 
 Але для мене це насамперед місце, де живуть спогади про найближчих людей. 
 
-Я запрошую вас – друзів, рідних, усіх, хто знав маму та тата – запалити свою Свічку Пам'яті у цьому місці, де не існує часу та відстаней." contenteditable="false">Род продолжается.&nbsp;
+Я запрошую вас – друзів, рідних, усіх, хто знав маму та тата – запалити свою Свічку Пам'яті у цьому місці, де не існує часу та відстаней.">Род продолжается. 
 Глубокое генеалогическое исследование (более 250 имен), подкрепленное ДНК-экспертизой и работой с международными архивами (MyHeritage), принимает форму. 
 
 Я прошла долгий путь – от поиска семейных корней до теплых, живых воспоминаний о моих родителях. 
-Этот Мемориал стал частью моего большого проекта - Цифрового наследия (Digital Legacy), в который&nbsp;постепенно вплетаются ветви родных моей семьи. 
+Этот Мемориал стал частью моего большого проекта - Цифрового наследия (Digital Legacy), в который постепенно вплетаются ветви родных моей семьи. 
 
 Но для меня это прежде всего место, где живут воспоминания о самых близких людях. 
 
@@ -221,51 +221,51 @@
     </div>
   </section>
 
-  <section id="ritual" class="ritual-section fade-up visible">
+<section id="ritual" class="ritual-section fade-up visible">
     <div class="ritual-header">
-      <h2><span class="icon-3d title-candle-glow">🕯️</span> <span class="editable-text" data-ru="Ритуал зажжения свечи памяти" data-ua="Ритуал запалювання свічки пам'яті" contenteditable="false">Ритуал зажжения свечи памяти</span></h2>
-      <p class="editable-text" data-ru="Каждое доброе слово - это невидимый огонек, согревающий сквозь холод утраты. Зажгите свечу и поделитесь воспоминанием. Пусть свет нашей памяти продолжает согревать их души." data-ua="Кожне добре слово - це невидимий вогник, що зігріває крізь холод втрати. Запаліть свічку та поділіться спогадом. Нехай світло нашої пам'яті продовжує зігрівати їхні душі." contenteditable="false">Каждое доброе слово - это невидимый огонек, согревающий сквозь холод утраты. Зажгите свечу и поделитесь воспоминанием. Пусть свет нашей памяти продолжает согревать их души.</p>
+      <h2><span class="icon-3d title-candle-glow">🕯️</span> <span class="editable-text" data-ru="Ритуал зажжения свечи памяти" data-ua="Ритуал запалювання свічки пам'яті">Ритуал зажжения свечи памяти</span></h2>
+      <p class="editable-text" data-ru="Каждое доброе слово - это невидимый огонек, согревающий сквозь холод утраты. Зажгите свечу и поделитесь воспоминанием. Пусть свет нашей памяти продолжает согревать их души." data-ua="Кожне добре слово - це невидимий вогник, що зігріває крізь холод втрати. Запаліть свічку та поділіться спогадом. Нехай світло нашої пам'яті продовжує зігрівати їхні душі.">Каждое доброе слово - это невидимый огонек, согревающий сквозь холод утраты. Зажгите свечу и поделитесь воспоминанием. Пусть свет нашей памяти продолжает согревать их души.</p>
     </div>
     
     <div class="lit-candles-grid fade-up visible" id="candlesGrid"></div>
     
     <div style="text-align: center; margin-top: 20px; display: block;" id="showMoreCandlesWrapper" class="fade-up visible">
-      <button class="read-more-btn" onclick="toggleCandlesExpand()" id="showMoreCandlesBtn">Показать еще (1)</button>
+      <button class="read-more-btn" onclick="toggleCandlesExpand()" id="showMoreCandlesBtn">Показать еще</button>
     </div>
 
     <div style="text-align: center; margin-top: 40px; margin-bottom: 20px; display: block;" id="openFormBtnWrapper" class="fade-up visible">
-      <button class="submit-btn" onclick="toggleCandleForm()"><span class="editable-text" data-ru="Зажечь свечу памяти" data-ua="Запалити свічку пам'яті" contenteditable="false">Зажечь свечу памяти</span></button>
+      <button class="submit-btn" onclick="toggleCandleForm()"><span class="editable-text" data-ru="Зажечь свечу памяти" data-ua="Запалити свічку пам'яті">Зажечь свечу памяти</span></button>
     </div>
 
     <div class="candle-form-wrapper" id="candleFormWrapper">
       <div class="candle-form-inner">
         <div class="candle-form-container">
-          <div class="form-title"><span class="icon-3d">✨</span> <span id="formTitleTag" class="editable-text" data-ru="НОВАЯ ТИХАЯ СВЕЧА" data-ua="НОВА ТИХА СВІЧКА" contenteditable="false">НОВАЯ ТИХАЯ СВЕЧА</span></div>
+          <div class="form-title"><span class="icon-3d">✨</span> <span id="formTitleTag" class="editable-text" data-ru="НОВАЯ ТИХАЯ СВЕЧА" data-ua="НОВА ТИХА СВІЧКА">НОВАЯ ТИХАЯ СВЕЧА</span></div>
           
           <form id="candleForm" method="POST" onsubmit="handleCandleSubmit(event)">
             
             <div class="form-row">
               <div class="input-group">
-                <label><span class="icon-3d">👤</span> <span class="editable-text" data-ru="КТО ЗАЖИГАЕТ (НАПРИМЕР: ДОЧЬ АННА, ВНУКИ)" data-ua="ХТО ЗАПАЛЮЄ (НАПРИКЛАД: ДОНЬКА АННА, ОНУКИ)" contenteditable="false">КТО ЗАЖИГАЕТ (НАПРИМЕР: ДОЧЬ АННА, ВНУКИ)</span></label>
+                <label><span class="icon-3d">👤</span> <span class="editable-text" data-ru="КТО ЗАЖИГАЕТ (НАПРИМЕР: ДОЧЬ АННА, ВНУКИ)" data-ua="ХТО ЗАПАЛЮЄ (НАПРИКЛАД: ДОНЬКА АННА, ОНУКИ)">КТО ЗАЖИГАЕТ (НАПРИМЕР: ДОЧЬ АННА, ВНУКИ)</span></label>
                 <input type="text" name="name" id="cName" required="" placeholder="Например: Дочь Анна, внуки" data-placeholder-ru="Например: Дочь Анна, внуки" data-placeholder-ua="Наприклад: Донька Анна, онуки">
               </div>
               <div class="input-group">
-                <label><span class="icon-3d">📝</span> <span class="editable-text" data-ru="СЛОВА ПАМЯТИ ИЛИ МОЛИТВА (НЕОБЯЗАТЕЛЬНО)" data-ua="СЛОВА ПАМ'ЯТІ АБО МОЛИТВА (НЕОБОВ'ЯЗКОВО)" contenteditable="false">СЛОВА ПАМЯТИ ИЛИ МОЛИТВА (НЕОБЯЗАТЕЛЬНО)</span></label>
+                <label><span class="icon-3d">📝</span> <span class="editable-text" data-ru="СЛОВА ПАМЯТИ ИЛИ МОЛИТВА (НЕОБЯЗАТЕЛЬНО)" data-ua="СЛОВА ПАМ'ЯТІ АБО МОЛИТВА (НЕОБОВ'ЯЗКОВО)">СЛОВА ПАМЯТИ ИЛИ МОЛИТВА (НЕОБЯЗАТЕЛЬНО)</span></label>
                 <textarea name="message" id="cMessage" rows="2" placeholder="Например: Помню, люблю, благодарю за всё..." data-placeholder-ru="Например: Помню, люблю, благодарю за всё..." data-placeholder-ua="Наприклад: Пам'ятаю, люблю, дякую за все..."></textarea>
               </div>
             </div>
             
-            <div class="types-title editable-text" data-ru="ВЫБЕРИТЕ ОБРАЗ СВЕЧИ" data-ua="ОБЕРІТЬ ОБРАЗ СВІЧКИ" contenteditable="false">ВЫБЕРИТЕ ОБРАЗ СВЕЧИ</div>
+            <div class="types-title editable-text" data-ru="ВЫБЕРИТЕ ОБРАЗ СВЕЧИ" data-ua="ОБЕРІТЬ ОБРАЗ СВІЧКИ">ВЫБЕРИТЕ ОБРАЗ СВЕЧИ</div>
             <div class="candle-types">
-              <label class="type-label"><input type="radio" name="cType" value="classic" checked=""><div class="type-card"><div class="sphere-3d sphere-classic"></div><strong class="editable-text" data-ru="Свеча памяти" data-ua="Свічка пам'яті" contenteditable="false">Свеча памяти</strong><span class="editable-text" data-ru="Тихий, классический огонек светлой тоски." data-ua="Тихий, класичний вогник світлої туги." contenteditable="false">Тихий, классический огонек светлой тоски.</span></div></label>
-              <label class="type-label"><input type="radio" name="cType" value="amber"><div class="type-card"><div class="sphere-3d sphere-amber"></div><strong class="editable-text" data-ru="Янтарный свет" data-ua="Бурштинове світло" contenteditable="false">Янтарный свет</strong><span class="editable-text" data-ru="Глубокий золотой свет уютного домашнего тепла." data-ua="Глибоке золоте світло затишного домашнього тепла." contenteditable="false">Глубокий золотой свет уютного домашнего тепла.</span></div></label>
-              <label class="type-label"><input type="radio" name="cType" value="heavenly"><div class="type-card"><div class="sphere-3d sphere-heavenly"></div><strong class="editable-text" data-ru="Небесное сияние" data-ua="Небесне сяйво" contenteditable="false">Небесное сияние</strong><span class="editable-text" data-ru="Мягкий свет вечного душевного покоя." data-ua="М'яке світло вічного душевного спокою." contenteditable="false">Мягкий свет вечного душевного покоя.</span></div></label>
-              <label class="type-label"><input type="radio" name="cType" value="unquenchable"><div class="type-card"><div class="sphere-3d sphere-unquenchable"></div><strong class="editable-text" data-ru="Неугасаемое пламя" data-ua="Незгасне полум'я" contenteditable="false">Неугасаемое пламя</strong><span class="editable-text" data-ru="Яркий свет неугасаемой благодарности." data-ua="Яскраве світло незгасної вдячності." contenteditable="false">Яркий свет неугасаемой благодарности.</span></div></label>
+              <label class="type-label"><input type="radio" name="cType" value="classic" checked=""><div class="type-card"><div class="sphere-3d sphere-classic"></div><strong class="editable-text" data-ru="Свеча памяти" data-ua="Свічка пам'яті">Свеча памяти</strong><span class="editable-text" data-ru="Тихий, классический огонек светлой тоски." data-ua="Тихий, класичний вогник світлої туги.">Тихий, классический огонек светлой тоски.</span></div></label>
+              <label class="type-label"><input type="radio" name="cType" value="amber"><div class="type-card"><div class="sphere-3d sphere-amber"></div><strong class="editable-text" data-ru="Янтарный свет" data-ua="Бурштинове світло">Янтарный свет</strong><span class="editable-text" data-ru="Глубокий золотой свет уютного домашнего тепла." data-ua="Глибоке золоте світло затишного домашнього тепла.">Глубокий золотой свет уютного домашнего тепла.</span></div></label>
+              <label class="type-label"><input type="radio" name="cType" value="heavenly"><div class="type-card"><div class="sphere-3d sphere-heavenly"></div><strong class="editable-text" data-ru="Небесное сияние" data-ua="Небесне сяйво">Небесное сияние</strong><span class="editable-text" data-ru="Мягкий свет вечного душевного покоя." data-ua="М'яке світло вічного душевного спокою.">Мягкий свет вечного душевного покоя.</span></div></label>
+              <label class="type-label"><input type="radio" name="cType" value="unquenchable"><div class="type-card"><div class="sphere-3d sphere-unquenchable"></div><strong class="editable-text" data-ru="Неугасаемое пламя" data-ua="Незгасне полум'я">Неугасаемое пламя</strong><span class="editable-text" data-ru="Яркий свет неугасаемой благодарности." data-ua="Яскраве світло незгасної вдячності.">Яркий свет неугасаемой благодарности.</span></div></label>
             </div>
             
             <div class="form-actions">
-              <button type="button" class="cancel-btn editable-text" onclick="toggleCandleForm()" data-ru="Отмена" data-ua="Скасувати" contenteditable="false">Отмена</button>
-              <button type="submit" class="submit-btn"><span class="editable-text" id="candleSubmitBtn" data-ru="Зажечь свечу памяти" data-ua="Запалити свічку пам'яті" contenteditable="false">Зажечь свечу памяти</span></button>
+              <button type="button" class="cancel-btn editable-text" onclick="toggleCandleForm()" data-ru="Отмена" data-ua="Скасувати">Отмена</button>
+              <button type="submit" class="submit-btn"><span class="editable-text" id="candleSubmitBtn" data-ru="Зажечь свечу памяти" data-ua="Запалити свічку пам'яті">Зажечь свечу памяти</span></button>
             </div>
           </form>
         </div>
@@ -278,10 +278,9 @@
         <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-tombstone'); event.stopPropagation();">📷 Загрузить фото памятника</button>
       </div>
     </div>
-
   </section>
 
-<button id="scrollTopBtn" class="scroll-top-btn visible" onclick="scrollToTop()">
+  <button id="scrollTopBtn" class="scroll-top-btn visible" onclick="scrollToTop()">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
   </button>
 
@@ -290,57 +289,57 @@
       <div class="c-sparks-wrap" style="border-radius: 24px; opacity: 0.8; z-index: 0;"></div>
 
       <span class="bio-modal-close" onclick="closeBio('father-bio')">×</span>
-      <h2 class="editable-text" style="text-align: center; color: var(--gold); font-size: 2.5rem; position: relative; z-index: 1;" data-ru="Михаил Григорьевич Голотрин" data-ua="Михайло Григорович Голотрін" contenteditable="false">Михаил Григорьевич Голотрин</h2>
-      <div class="modal-dates editable-text" style="position: relative; z-index: 1;" data-ru="1945 - 2021" data-ua="1945 - 2021" contenteditable="false">1945 - 2021</div>
+      <h2 class="editable-text" style="text-align: center; color: var(--gold); font-size: 2.5rem; position: relative; z-index: 1;" data-ru="Михаил Григорьевич Голотрин" data-ua="Михайло Григорович Голотрін">Михаил Григорьевич Голотрин</h2>
+      <div class="modal-dates editable-text" style="position: relative; z-index: 1;" data-ru="1945 - 2021" data-ua="1945 - 2021">1945 - 2021</div>
       
       <div class="bio-text">
-        <p class="modal-personal-quote editable-text" data-ru="«Вся жизнь - игра, а люди в ней - актеры»" data-ua="«В цій грі Життя ми всі актори»" contenteditable="false">«Вся жизнь - игра, а люди в ней - актеры»</p>
-        <p class="editable-text" data-ru="Михаил Григорьевич родился в 1945 году в солнечной Евпатории. Для коллег он был выпускником театрально-художественного училища, заведующим постановочной частью Одесской филармонии и заслуженным деятелем эстрадного искусства Украины. А для меня он навсегда остался мудрым папой, которого я ласково называла Пундиком, и нежным дедушкой." data-ua="Михайло Григорович народився 1945 року в сонячній Євпаторії. Для колег він був випускником театрально-мистецького училища, завідувачем постановочної частини Одеської філармонії та заслуженим діячем естрадного мистецтва України. А для мене він назавжди залишився мудрим татом, якого я ласкаво називала Пундиком, та ніжним дідусем." contenteditable="false">Михаил Григорьевич родился в 1945 году в солнечной Евпатории. Для коллег он был выпускником театрально-художественного училища, заведующим постановочной частью Одесской филармонии и заслуженным деятелем эстрадного искусства Украины. А для меня он навсегда остался мудрым папой, которого я ласково называла Пундиком, и нежным дедушкой.</p>
+        <p class="modal-personal-quote editable-text" data-ru="«Вся жизнь - игра, а люди в ней - актеры»" data-ua="«В цій грі Життя ми всі актори»">«Вся жизнь - игра, а люди в ней - актеры»</p>
+        <p class="editable-text" data-ru="Михаил Григорьевич родился в 1945 году в солнечной Евпатории. Для коллег он был выпускником театрально-художественного училища, заведующим постановочной частью Одесской филармонии и заслуженным деятелем эстрадного искусства Украины. А для меня он навсегда остался мудрым папой, которого я ласково называла Пундиком, и нежным дедушкой." data-ua="Михайло Григорович народився 1945 року в сонячній Євпаторії. Для колег він був випускником театрально-мистецького училища, завідувачем постановочної частини Одеської філармонії та заслуженим діячем естрадного мистецтва України. А для мене він назавжди залишився мудрим татом, якого я ласкаво називала Пундиком, та ніжним дідусем.">Михаил Григорьевич родился в 1945 году в солнечной Евпатории. Для коллег он был выпускником театрально-художественного училища, заведующим постановочной частью Одесской филармонии и заслуженным деятелем эстрадного искусства Украины. А для меня он навсегда остался мудрым папой, которого я ласково называла Пундиком, и нежным дедушкой.</p>
         
         <div class="accordion">
           <div class="accordion-item">
-            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Между небом и сценой жизни" data-ua="Між небом і сценою життя" contenteditable="false">Между небом и сценой жизни</span><span class="accordion-icon">+</span></button>
+            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Между небом и сценой жизни" data-ua="Між небом і сценою життя">Между небом и сценой жизни</span><span class="accordion-icon">+</span></button>
             <div class="accordion-content"><div class="accordion-inner">
-                <p class="fade-up editable-text" data-ru="В папе удивительным образом сочетались сила и легкость. Первый разряд по боксу, третий - по парашютному спорту. В юности он мечтал стать пилотом гражданской авиации. У него уже были «напрыганы» необходимые часы практики, но мама боялась опасной профессии и сложности обучения на нее. Поэтому они приняли совместное решение, что его стихией станет театр. И сцена заменил ему небо." data-ua="У таті дивним чином поєднувалися сила та легкість. Перший розряд з боксу, третій - з парашутного спорту. В юності він мріяв стати пілотом цивільної авіації. У нього вже був «настрибаний» необхідний годинник практики, але мама боялася небезпечної професії та складності навчання на неї. Тому вони ухвалили спільне рішення, що його стихією стане театр. І сцена замінила йому небо." contenteditable="false">В папе удивительным образом сочетались сила и легкость. Первый разряд по боксу, третий - по парашютному спорту. В юности он мечтал стать пилотом гражданской авиации. У него уже были «напрыганы» необходимые часы практики, но мама боялась опасной профессии и сложности обучения на нее. Поэтому они приняли совместное решение, что его стихией станет театр. И сцена заменил ему небо.</p>
+                <p class="fade-up editable-text" data-ru="В папе удивительным образом сочетались сила и легкость. Первый разряд по боксу, третий - по парашютному спорту. В юности он мечтал стать пилотом гражданской авиации. У него уже были «напрыганы» необходимые часы практики, но мама боялась опасной профессии и сложности обучения на нее. Поэтому они приняли совместное решение, что его стихией станет театр. И сцена заменил ему небо." data-ua="У таті дивним чином поєднувалися сила та легкість. Перший розряд з боксу, третій - з парашутного спорту. В юності він мріяв стати пілотом цивільної авіації. У нього вже був «настрибаний» необхідний годинник практики, але мама боялася небезпечної професії та складності навчання на неї. Тому вони ухвалили спільне рішення, що його стихією стане театр. І сцена замінила йому небо.">В папе удивительным образом сочетались сила и легкость. Первый разряд по боксу, третий - по парашютному спорту. В юности он мечтал стать пилотом гражданской авиации. У него уже были «напрыганы» необходимые часы практики, но мама боялась опасной профессии и сложности обучения на нее. Поэтому они приняли совместное решение, что его стихией станет театр. И сцена заменил ему небо.</p>
             </div></div>
           </div>
           
           <div class="accordion-item">
-            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Магия закулисья и Одесская богема" data-ua="Магия лаштунків та Одеська богема" contenteditable="false">Магия закулисья и Одесская богема</span><span class="accordion-icon">+</span></button>
+            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Магия закулисья и Одесская богема" data-ua="Магия лаштунків та Одеська богема">Магия закулисья и Одесская богема</span><span class="accordion-icon">+</span></button>
             <div class="accordion-content"><div class="accordion-inner">
-                <p class="editable-text" data-ru="Сначала папа работал в Одесском кукольном театре. Помню, как в моем детском саду объявляли карантин. Папа брал меня с собой и я спала в театре, завороженно смотрела репетиции, наблюдала, как делают кукол, играла с настоящей белкой, которая там жила. Позже он стал работать в Одесском областной филармонии. Я часто бывала у него за кулисами и на концертах. Я навсегда запомнила яркие выступления комик-труппы «Маски» и их знаменитую сценку с яйцом." data-ua="Спершу тато працював в Одеському ляльковому театрі. Пам'ятаю, як у моєму дитячому садку оголошували карантин. Тато брав мене з собою і я спала в театрі, заворожено дивилася репетиції, спостерігала, як роблять ляльок, грала зі справжньою білкою, яка там жила. Пізніше він почав працювати в Одеській обласній філармонії. Я часто бувала в нього за лаштунками та на концертах. Я назавжди запам'ятала яскраві виступи комік-трупи «Маски» та їхню знамениту сценку з яйцем." contenteditable="false">Сначала папа работал в Одесском кукольном театре. Помню, как в моем детском саду объявляли карантин. Папа брал меня с собой и я спала в театре, завороженно смотрела репетиции, наблюдала, как делают кукол, играла с настоящей белкой, которая там жила. Позже он стал работать в Одесском областной филармонии. Я часто бывала у него за кулисами и на концертах. Я навсегда запомнила яркие выступления комик-труппы «Маски» и их знаменитую сценку с яйцом.</p>
-                <p class="editable-text" data-ru="Папа был неотъемлемой частью настоящей творческой элиты. Он обладал каллиграфическим почерком и увлекался фотографией. В его объектив попадала наша семья, его друзья-фотографы и даже сам Владимир Высоцкий. Он дружил с главным художником Одессы того времени - Львом Вайсфельдом." data-ua="Папа був невід'ємною частиною справжньої творчої еліти. Він мав каліграфічний почерк і захоплювався фотографією. До його об'єктиву потрапляла наша родина, його друзі-фотографи і навіть сам Володимир Висоцький. Він дружив із головним художником Одеси того часу – Левом Вайсфельдом." contenteditable="false">Папа был неотъемлемой частью настоящей творческой элиты. Он обладал каллиграфическим почерком и увлекался фотографией. В его объектив попадала наша семья, его друзья-фотографы и даже сам Владимир Высоцкий. Он дружил с главным художником Одессы того времени - Львом Вайсфельдом.</p>
-                <p class="editable-text" data-ru="Когда я вышла замуж и переехала в частный дом, папа приезжал помогать - копать землю или красить беседку для внуков. Он всегда был одет как с иголочки: пиджак, галстук, золотой перстень. Глядя на это, мой муж с иронией шутил: «Богема приехала!»." data-ua="Коли я вийшла заміж і переїхала до приватної оселі, тато приїжджав допомагати – копати землю чи фарбувати альтанку для онуків. Він завжди був одягнений як з голочки: піджак, краватка, золотий перстень. Дивлячись на це, мій чоловік із іронією жартував: «Богема приїхала!»." contenteditable="false">Когда я вышла замуж и переехала в частный дом, папа приезжал помогать - копать землю или красить беседку для внуков. Он всегда был одет как с иголочки: пиджак, галстук, золотой перстень. Глядя на это, мой муж с иронией шутил: «Богема приехала!».</p>
-                <p class="editable-text" data-ru="Позже этот папин перстень стал золотым кольцом с двумя жемчужинами на указательном пальчике - мой личный знак Венеры, в котором навсегда осталась память о папе, его любовь к красоте и связь с моим днем рождения в пятницу, в день Венеры." data-ua="Пізніше цей батьковий перстень став золотим кільцем з двома перлинами на вказівному пальчику - мій особистий знак Венери, в якому назавжди залишилася пам'ять про тата, його любов до краси та зв'язок з моїм днем ​​народження в п'ятницю, в день Венери." contenteditable="false">Позже этот папин перстень стал золотым кольцом с двумя жемчужинами на указательном пальчике - мой личный знак Венеры, в котором навсегда осталась память о папе, его любовь к красоте и связь с моим днем рождения в пятницу, в день Венеры.</p>
+                <p class="editable-text" data-ru="Сначала папа работал в Одесском кукольном театре. Помню, как в моем детском саду объявляли карантин. Папа брал меня с собой и я спала в театре, завороженно смотрела репетиции, наблюдала, как делают кукол, играла с настоящей белкой, которая там жила. Позже он стал работать в Одесском областной филармонии. Я часто бывала у него за кулисами и на концертах. Я навсегда запомнила яркие выступления комик-труппы «Маски» и их знаменитую сценку с яйцом." data-ua="Спершу тато працював в Одеському ляльковому театрі. Пам'ятаю, як у моєму дитячому садку оголошували карантин. Тато брав мене з собою і я спала в театрі, заворожено дивилася репетиції, спостерігала, як роблять ляльок, грала зі справжньою білкою, яка там жила. Пізніше він почав працювати в Одеській обласній філармонії. Я часто бувала в нього за лаштунками та на концертах. Я назавжди запам'ятала яскраві виступи комік-трупи «Маски» та їхню знамениту сценку з яйцем.">Сначала папа работал в Одесском кукольном театре. Помню, как в моем детском саду объявляли карантин. Папа брал меня с собой и я спала в театре, завороженно смотрела репетиции, наблюдала, как делают кукол, играла с настоящей белкой, которая там жила. Позже он стал работать в Одесском областной филармонии. Я часто бывала у него за кулисами и на концертах. Я навсегда запомнила яркие выступления комик-труппы «Маски» и их знаменитую сценку с яйцом.</p>
+                <p class="editable-text" data-ru="Папа был неотъемлемой частью настоящей творческой элиты. Он обладал каллиграфическим почерком и увлекался фотографией. В его объектив попадала наша семья, его друзья-фотографы и даже сам Владимир Высоцкий. Он дружил с главным художником Одессы того времени - Львом Вайсфельдом." data-ua="Папа був невід'ємною частиною справжньої творчої еліти. Він мав каліграфічний почерк і захоплювався фотографією. До його об'єктиву потрапляла наша родина, його друзі-фотографи і навіть сам Володимир Висоцький. Він дружив із головним художником Одеси того часу – Левом Вайсфельдом.">Папа был неотъемлемой частью настоящей творческой элиты. Он обладал каллиграфическим почерком и увлекался фотографией. В его объектив попадала наша семья, его друзья-фотографы и даже сам Владимир Высоцкий. Он дружил с главным художником Одессы того времени - Львом Вайсфельдом.</p>
+                <p class="editable-text" data-ru="Когда я вышла замуж и переехала в частный дом, папа приезжал помогать - копать землю или красить беседку для внуков. Он всегда был одет как с иголочки: пиджак, галстук, золотой перстень. Глядя на это, мой муж с иронией шутил: «Богема приехала!»." data-ua="Коли я вийшла заміж і переїхала до приватної оселі, тато приїжджав допомагати – копати землю чи фарбувати альтанку для онуків. Він завжди був одягнений як з голочки: піджак, краватка, золотий перстень. Дивлячись на це, мій чоловік із іронією жартував: «Богема приїхала!».">Когда я вышла замуж и переехала в частный дом, папа приезжал помогать - копать землю или красить беседку для внуков. Он всегда был одет как с иголочки: пиджак, галстук, золотой перстень. Глядя на это, мой муж с иронией шутил: «Богема приехала!».</p>
+                <p class="editable-text" data-ru="Позже этот папин перстень стал золотым кольцом с двумя жемчужинами на указательном пальчике - мой личный знак Венеры, в котором навсегда осталась память о папе, его любовь к красоте и связь с моим днем рождения в пятницу, в день Венеры." data-ua="Пізніше цей батьковий перстень став золотим кільцем з двома перлинами на вказівному пальчику - мій особистий знак Венери, в якому назавжди залишилася пам'ять про тата, його любов до краси та зв'язок з моїм днем ​​народження в п'ятницю, в день Венери.">Позже этот папин перстень стал золотым кольцом с двумя жемчужинами на указательном пальчике - мой личный знак Венеры, в котором навсегда осталась память о папе, его любовь к красоте и связь с моим днем рождения в пятницу, в день Венеры.</p>
             </div></div>
           </div>
           
           <div class="accordion-item">
-            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Ласковый Пундик и уроки бокса" data-ua="Лагідний Пундік і уроки боксу" contenteditable="false">Ласковый Пундик и уроки бокса</span><span class="accordion-icon">+</span></button>
+            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Ласковый Пундик и уроки бокса" data-ua="Лагідний Пундік і уроки боксу">Ласковый Пундик и уроки бокса</span><span class="accordion-icon">+</span></button>
             <div class="accordion-content"><div class="accordion-inner">
-                <p class="editable-text" data-ru="Память о нем соткана из домашних мелочей. В выходные по утрам именно он готовил нам невероятно вкусные гренки, замочив хлеб в молоке и яйце и обжарив до золотистой корочки. Обычным вечером он мог принести домой торт и шампанское, устраивая нам праздник просто так. Он подарил мне страшненького на вид Чебурашку, но, видимо, с такой любовью, что я спала с этой игрушкой в обнимку еще в институте." data-ua="Пам'ять про нього виткана з домашніх дрібниць. У вихідні вранці саме він готував нам неймовірно смачні грінки, замочивши хліб у молоці та яйці та обсмаживши до золотистої скоринки. Звичайним вечором він міг принести додому торт та шампанське, влаштовуючи нам свято просто так. Він подарував мені страшненького на вигляд Чебурашку, але, мабуть, з такою любов'ю, що я спала з цією іграшкою в обіймі ще в інституті." contenteditable="false">Память о нем соткана из домашних мелочей. В выходные по утрам именно он готовил нам невероятно вкусные гренки, замочив хлеб в молоке и яйце и обжарив до золотистой корочки. Обычным вечером он мог принести домой торт и шампанское, устраивая нам праздник просто так. Он подарил мне страшненького на вид Чебурашку, но, видимо, с такой любовью, что я спала с этой игрушкой в обнимку еще в институте.</p>
-                <p class="editable-text" data-ru="Он учил меня быть сильной. Когда в садике, который находился прямо во дворе нашего дома, в младшей группе мальчишки меня обижали, папа-боксер повесил для меня турник, боксерскую грушу и начал учить боксировать. Он дал мне урок на всю жизнь: не бояться мальчишек, а перед защитой себя и дракой с ними мысленно возвышаться над ними, максимально распрямляясь, не боясь защищать себя. Это сработало: меня стали бояться все мальчики в группе, а самый балованный хулиган стал моим другом. К старшей группе я была уже грозой всех хулиганов." data-ua="Він вчив мене бути сильним. Коли в садку, який знаходився просто у дворі нашого будинку, у молодшій групі хлопчаки мене ображали, тато-боксер повісив для мене турнік, боксерську грушу і почав вчити боксувати. Він дав мені урок на все життя: не боятися хлопчаків, а перед захистом себе і бійкою з ними подумки височіти над ними, максимально розпрямляючись, не боячись захищати себе. Це спрацювало: мене почали боятися всі хлопчики в групі, а найбалованіший хуліган став моїм другом. До старшої групи я вже була грозою всіх хуліганів." contenteditable="false">Он учил меня быть сильной. Когда в садике, который находился прямо во дворе нашего дома, в младшей группе мальчишки меня обижали, папа-боксер повесил для меня турник, боксерскую грушу и начал учить боксировать. Он дал мне урок на всю жизнь: не бояться мальчишек, а перед защитой себя и дракой с ними мысленно возвышаться над ними, максимально распрямляясь, не боясь защищать себя. Это сработало: меня стали бояться все мальчики в группе, а самый балованный хулиган стал моим другом. К старшей группе я была уже грозой всех хулиганов.</p>
-                <p class="editable-text" data-ru="Папа придумал красивый ребус, чтобы я полюбила нашу фамилию. Когда у меня не получалось расположить рисунок на листе и мне ставили тройки на уроках рисования в школе, он виртуозно дорисовывал мои наброски своими оформительскими штрихами. А когда я падала без сил после двух тренировок в день по плаванию, папа ночами читал заданные по украинской литературе в старших классах книги, чтобы утром пересказать мне их суть." data-ua="Тато придумав гарний ребус, щоб я полюбила наше прізвище. Коли мені не виходило розмістити малюнок на аркуші і мені ставили трійки на уроках малювання в школі, він віртуозно домальовував мої начерки своїми оформлювальними штрихами. А коли я падала без сил після двох тренувань на день з плавання, тато ночами читав задані українською літературою у старших класах книги, щоб уранці переказати мені їхню суть." contenteditable="false">Папа придумал красивый ребус, чтобы я полюбила нашу фамилию. Когда у меня не получалось расположить рисунок на листе и мне ставили тройки на уроках рисования в школе, он виртуозно дорисовывал мои наброски своими оформительскими штрихами. А когда я падала без сил после двух тренировок в день по плаванию, папа ночами читал заданные по украинской литературе в старших классах книги, чтобы утром пересказать мне их суть.</p>
-                <p class="editable-text" data-ru="А еще именно папа придумал мой бренд Tanya-Tango. И всегда мечтал, чтобы у меня была машина - черная Волга.&nbsp; Родители мне подарили её за красный диплом на втором образовании." data-ua="А ще саме тато вигадав мій бренд Tanya-Tango. І завжди мріяв, щоб у мене була машина – чорна Волга.&nbsp; Батьки мені подарували її за червоний диплом на другій освіті." contenteditable="false">А еще именно папа придумал мой бренд Tanya-Tango. И всегда мечтал, чтобы у меня была машина - черная Волга.&nbsp; Родители мне подарили её за красный диплом на втором образовании.</p>
+                <p class="editable-text" data-ru="Память о нем соткана из домашних мелочей. В выходные по утрам именно он готовил нам невероятно вкусные гренки, замочив хлеб в молоке и яйце и обжарив до золотистой корочки. Обычным вечером он мог принести домой торт и шампанское, устраивая нам праздник просто так. Он подарил мне страшненького на вид Чебурашку, но, видимо, с такой любовью, что я спала с этой игрушкой в обнимку еще в институте." data-ua="Пам'ять про нього виткана з домашніх дрібниць. У вихідні вранці саме він готував нам неймовірно смачні грінки, замочивши хліб у молоці та яйці та обсмаживши до золотистої скоринки. Звичайним вечором він міг принести додому торт та шампанське, влаштовуючи нам свято просто так. Він подарував мені страшненького на вигляд Чебурашку, але, мабуть, з такою любов'ю, що я спала з цією іграшкою в обіймі ще в інституті.">Память о нем соткана из домашних мелочей. В выходные по утрам именно он готовил нам невероятно вкусные гренки, замочив хлеб в молоке и яйце и обжарив до золотистой корочки. Обычным вечером он мог принести домой торт и шампанское, устраивая нам праздник просто так. Он подарил мне страшненького на вид Чебурашку, но, видимо, с такой любовью, что я спала с этой игрушкой в обнимку еще в институте.</p>
+                <p class="editable-text" data-ru="Он учил меня быть сильной. Когда в садике, который находился прямо во дворе нашего дома, в младшей группе мальчишки меня обижали, папа-боксер повесил для меня турник, боксерскую грушу и начал учить боксировать. Он дал мне урок на всю жизнь: не бояться мальчишек, а перед защитой себя и дракой с ними мысленно возвышаться над ними, максимально распрямляясь, не боясь защищать себя. Это сработало: меня стали бояться все мальчики в группе, а самый балованный хулиган стал моим другом. К старшей группе я была уже грозой всех хулиганов." data-ua="Він вчив мене бути сильним. Коли в садку, який знаходився просто у дворі нашого будинку, у молодшій групі хлопчаки мене ображали, тато-боксер повісив для мене турнік, боксерську грушу і почав вчити боксувати. Він дав мені урок на все життя: не боятися хлопчаків, а перед захистом себе і бійкою з ними подумки височіти над ними, максимально розпрямляючись, не боячись захищати себе. Це спрацювало: мене почали боятися всі хлопчики в групі, а найбалованіший хуліган став моїм другом. До старшої групи я вже була грозою всіх хуліганів.">Он учил меня быть сильной. Когда в садике, который находился прямо во дворе нашего дома, в младшей группе мальчишки меня обижали, папа-боксер повесил для меня турник, боксерскую грушу и начал учить боксировать. Он дал мне урок на всю жизнь: не бояться мальчишек, а перед защитой себя и дракой с ними мысленно возвышаться над ними, максимально распрямляясь, не боясь защищать себя. Это сработало: меня стали бояться все мальчики в группе, а самый балованный хулиган стал моим другом. К старшей группе я была уже грозой всех хулиганов.</p>
+                <p class="editable-text" data-ru="Папа придумал красивый ребус, чтобы я полюбила нашу фамилию. Когда у меня не получалось расположить рисунок на листе и мне ставили тройки на уроках рисования в школе, он виртуозно дорисовывал мои наброски своими оформительскими штрихами. А когда я падала без сил после двух тренировок в день по плаванию, папа ночами читал заданные по украинской литературе в старших классах книги, чтобы утром пересказать мне их суть." data-ua="Тато придумав гарний ребус, щоб я полюбила наше прізвище. Коли мені не виходило розмістити малюнок на аркуші і мені ставили трійки на уроках малювання в школі, він віртуозно домальовував мої начерки своїми оформлювальними штрихами. А коли я падала без сил після двох тренувань на день з плавання, тато ночами читав задані українською літературою у старших класах книги, щоб уранці переказати мені їхню суть.">Папа придумал красивый ребус, чтобы я полюбила нашу фамилию. Когда у меня не получалось расположить рисунок на листе и мне ставили тройки на уроках рисования в школе, он виртуозно дорисовывал мои наброски своими оформительскими штрихами. А когда я падала без сил после двух тренировок в день по плаванию, папа ночами читал заданные по украинской литературе в старших классах книги, чтобы утром пересказать мне их суть.</p>
+                <p class="editable-text" data-ru="А еще именно папа придумал мой бренд Tanya-Tango. И всегда мечтал, чтобы у меня была машина - черная Волга. Родители мне подарили её за красный диплом на втором образовании." data-ua="А ще саме тато вигадав мій бренд Tanya-Tango. І завжди мріяв, щоб у мене була машина – чорна Волга. Батьки мені подарували її за червоний диплом на другій освіті.">А еще именно папа придумал мой бренд Tanya-Tango. И всегда мечтал, чтобы у меня была машина - черная Волга. Родители мне подарили её за красный диплом на втором образовании.</p>
             </div></div>
           </div>
           
           <div class="accordion-item">
-            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Райский пляж Евпатории" data-ua="Райський пляж Євпаторії" contenteditable="false">Райский пляж Евпатории</span><span class="accordion-icon">+</span></button>
+            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Райский пляж Евпатории" data-ua="Райський пляж Євпаторії">Райский пляж Евпатории</span><span class="accordion-icon">+</span></button>
             <div class="accordion-content"><div class="accordion-inner">
-                <p class="editable-text" data-ru="Крым, Евпатория, пляж возле дома папы на Санаторской улице. Каждое лето мы 5 часов неслись туда из Одессы на комете на подводных крыльях. Папа позволял мне покупать и есть мороженое, если не было мамы. Я гуляла по набережной с детишками и купалась в фонтане).&nbsp; Там папа с мамой научили меня плавать, однажды вдруг опустив с головой под воду. Для меня это был шок, но тогда я впервые по-настоящему нырнула.&nbsp;&nbsp; Я запомнила навсегда один волшебный момент. Я в море, на электронном табло цифры погоды: сначала воздух теплее воды, а затем воздух 30, вода 32 градуса. Я выхожу из воды в такую жару и мне холодно...&nbsp;&nbsp; Это мой рай, который я воплощаю..." data-ua="Крим, Євпаторія, пляж біля будинку тата на вулиці Санаторії. Щоліта ми 5 годин мчали туди з Одеси на кометі на підводних крилах. Тато дозволяв мені купувати і їсти морозиво, якщо не було мами. Я гуляла набережною з діточками і купалася у фонтані).&nbsp; Там тато з мамою навчили мене плавати, якось раптом опустивши з головою під воду. Для мене це був шок, але тоді я вперше по-справжньому пірнула.&nbsp;&nbsp; Я запам'ятала назавжди одну чарівну мить. Я в морі, на електронному табло цифри погоди: спочатку повітря тепліше за воду, а потім повітря 30, вода 32 градуси. Я виходжу з води в таку спеку і мені холодно... Це мій рай, який я втілюю..." contenteditable="false">Крым, Евпатория, пляж возле дома папы на Санаторской улице. Каждое лето мы 5 часов неслись туда из Одессы на комете на подводных крыльях. Папа позволял мне покупать и есть мороженое, если не было мамы. Я гуляла по набережной с детишками и купалась в фонтане).&nbsp; Там папа с мамой научили меня плавать, однажды вдруг опустив с головой под воду. Для меня это был шок, но тогда я впервые по-настоящему нырнула.&nbsp;&nbsp; Я запомнила навсегда один волшебный момент. Я в море, на электронном табло цифры погоды: сначала воздух теплее воды, а затем воздух 30, вода 32 градуса. Я выхожу из воды в такую жару и мне холодно...&nbsp;&nbsp; Это мой рай, который я воплощаю...</p>
+                <p class="editable-text" data-ru="Крым, Евпатория, пляж возле дома папы на Санаторской улице. Каждое лето мы 5 часов неслись туда из Одессы на комете на подводных крыльях. Папа позволял мне покупать и есть мороженое, если не было мамы. Я гуляла по набережной с детишками и купалась в фонтане). Там папа с мамой научили меня плавать, однажды вдруг опустив с головой под воду. Для меня это был шок, но тогда я впервые по-настоящему нырнула." data-ua="Крим, Євпаторія, пляж біля будинку тата на вулиці Санаторії. Щоліта ми 5 годин мчали туди з Одеси на кометі на підводних крилах. Тато дозволяв мені купувати і їсти морозиво, якщо не було мами. Я гуляла набережною з діточками і купалася у фонтані). Там тато з мамою навчили мене плавати, якось раптом опустивши з головою під воду. Для мене це був шок, але тоді я вперше по-справжньому пірнула.">Крым, Евпатория, пляж возле дома папы на Санаторской улице. Каждое лето мы 5 часов неслись туда из Одессы на комете на подводных крыльях. Папа позволял мне покупать и есть мороженое, если не было мамы. Я гуляла по набережной с детишками и купалась в фонтане). Там папа с мамой научили меня плавать, однажды вдруг опустив с головой под воду. Для меня это был шок, но тогда я впервые по-настоящему нырнула.</p>
+                <p class="editable-text" data-ru="Я запомнила навсегда один волшебный момент. Я в море, на электронном табло цифры погоды: сначала воздух теплее воды, а затем воздух 30, вода 32 градуса. Я выхожу из воды в такую жару и мне холодно... Это мой рай, который я воплощаю..." data-ua="Я запам'ятала назавжди одну чарівну мить. Я в морі, на електронному табло цифри погоди: спочатку повітря тепліше за воду, а потім повітря 30, вода 32 градуси. Я виходжу з води в таку спеку і мені холодно... Це мій рай, який я втілюю...">Я запомнила навсегда один волшебный момент. Я в море, на электронном табло цифры погоды: сначала воздух теплее воды, а затем воздух 30, вода 32 градуса. Я выхожу из воды в такую жару и мне холодно... Это мой рай, который я воплощаю...</p>
             </div></div>
           </div>
           
           <div class="accordion-item">
-            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Последний акт его роли" data-ua="Останній акт його ролі" contenteditable="false">Последний акт его роли</span><span class="accordion-icon">+</span></button>
+            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Последний акт его роли" data-ua="Останній акт його ролі">Последний акт его роли</span><span class="accordion-icon">+</span></button>
             <div class="accordion-content"><div class="accordion-inner">
-                <p class="editable-text" data-ru="Он был мудрым. Я никогда не забуду, как он передавал мне философию жизни: вся жизнь - игра, а люди в ней - актёры. И какие глубокие, красивые тосты говорил&nbsp;на моей свадьбе. А потом водил уже своих внуков на новогодние утренники в филармонию, устроил в сад и школу.&nbsp;&nbsp; 
-Помню, как в кризисные 90-е годы этот интеллигентный театрал брался за тяжелый труд - стелил паркет и натирал его своей полотерной машиной." data-ua="Він був мудрим. Я ніколи не забуду, як він передавав мені філософію життя: все життя - гра, а люди в ньому - актори. І які глибокі, гарні тости говорили на моєму весіллі. А потім уже водив своїх онуків на новорічні ранки у філармонію, влаштував у садок та школу.&nbsp;&nbsp; 
-Пам'ятаю, як у кризові 90-ті роки цей інтелігентний театрал брався за важку працю – стелив паркет і натирав його полотерною машиною." contenteditable="false">Он был мудрым. Я никогда не забуду, как он передавал мне философию жизни: вся жизнь - игра, а люди в ней - актёры. И какие глубокие, красивые тосты говорил&nbsp;на моей свадьбе. А потом водил уже своих внуков на новогодние утренники в филармонию, устроил в сад и школу.&nbsp;&nbsp; <div>Помню, как в кризисные 90-е годы этот интеллигентный театрал брался за тяжелый труд - стелил паркет и натирал его своей полотерной машиной.</div></p>
-                <p class="editable-text" data-ru="Филармония была для него всем. Выйдя на пенсию, он продолжал работать, но когда из-за старости пришлось окончательно уйти, он словно потух: много спал и слабел. Незадолго до коронавирусной болезни я спросила его: «Доволен ли ты своей жизнью?». Мама предупредила, что он будет плакать, и на его глазах действительно заблестели слезы. Он ответил, что да, доволен." data-ua="Філармонія була для нього всім. Вийшовши на пенсію, він продовжував працювати, але коли через старість довелося остаточно піти, він ніби згас: багато спав і слаб. Незадовго до коронавірусної хвороби я запитала його: «Чи задоволений ти своїм життям?». Мама попередила, що він плакатиме, і на його очах справді заблищали сльози. Він відповів, що так, задоволений." contenteditable="false">Филармония была для него всем. Выйдя на пенсию, он продолжал работать, но когда из-за старости пришлось окончательно уйти, он словно потух: много спал и слабел. Незадолго до коронавирусной болезни я спросила его: «Доволен ли ты своей жизнью?». Мама предупредила, что он будет плакать, и на его глазах действительно заблестели слезы. Он ответил, что да, доволен.</p>
-                <p class="editable-text" data-ru="Родители ушли вместе, от Covid-19, в одной больнице, с разницей всего в три дня. Сначала папа, потом мама..." data-ua="Батьки пішли разом, від Covid-19, в одній лікарні, з різницею лише за три дні. Спочатку тато, потім мама..." contenteditable="false">Родители ушли вместе, от Covid-19, в одной больнице, с разницей всего в три дня. Сначала папа, потом мама...</p>
-                <p class="editable-text" data-ru="Главным вопросом, который родители часто мне задавали, был один: «Счастлива ли ты?» И сегодня я могу ответить спокойно и уверенно: да, папа - благодаря вам с мамой я счастлива." data-ua="Головним питанням, яке батьки часто мені ставили, було одне: «Чи ти щаслива?». І сьогодні я можу відповісти спокійно та впевнено: так, тато – завдяки вам з мамою я щаслива." contenteditable="false">Главным вопросом, который родители часто мне задавали, был один: «Счастлива ли ты?» И сегодня я могу ответить спокойно и уверенно: да, папа - благодаря вам с мамой я счастлива.</p>
+                <p class="editable-text" data-ru="Он был мудрым. Я никогда не забуду, как он передавал мне философию жизни: вся жизнь - игра, а люди в ней - актёры. И какие глубокие, красивые тосты говорил на моей свадьбе. А потом водил уже своих внуков на новогодние утренники в филармонию, устроил в сад и школу." data-ua="Він був мудрим. Я ніколи не забуду, як він передавав мені філософію життя: все життя - гра, а люди в ньому - актори. І які глибокі, гарні тости говорили на моєму весіллі. А потім уже водив своїх онуків на новорічні ранки у філармонію, влаштував у садок та школу.">Он был мудрым. Я никогда не забуду, как он передавал мне философию жизни: вся жизнь - игра, а люди в ней - актёры. И какие глубокие, красивые тосты говорил на моей свадьбе. А потом водил уже своих внуков на новогодние утренники в филармонию, устроил в сад и школу.</p>
+                <p class="editable-text" data-ru="Помню, как в кризисные 90-е годы этот интеллигентный театрал брался за тяжелый труд - стелил паркет и натирал его своей полотерной машиной." data-ua="Пам'ятаю, як у кризові 90-ті роки цей інтелігентний театрал брався за важку працю – стелив паркет і натирав його полотерною машиною.">Помню, как в кризисные 90-е годы этот интеллигентный театрал брался за тяжелый труд - стелил паркет и натирал его своей полотерной машиной.</p>
+                <p class="editable-text" data-ru="Филармония была для него всем. Выйдя на пенсию, он продолжал работать, но когда из-за старости пришлось окончательно уйти, он словно потух: много спал и слабел. Незадолго до коронавирусной болезни я спросила его: «Доволен ли ты своей жизнью?». Мама предупредила, что он будет плакать, и на его глазах действительно заблестели слезы. Он ответил, что да, доволен." data-ua="Філармонія була для нього всім. Вийшовши на пенсію, він продовжував працювати, але коли через старість довелося остаточно піти, він ніби згас: багато спав і слаб. Незадовго до коронавірусної хвороби я запитала його: «Чи задоволений ти своїм життям?». Мама попередила, що він плакатиме, і на його очах справді заблищали сльози. Він відповів, що так, задоволений.">Филармония была для него всем. Выйдя на пенсию, он продолжал работать, но когда из-за старости пришлось окончательно уйти, он словно потух: много спал и слабел. Незадолго до коронавирусной болезни я спросила его: «Доволен ли ты своей жизнью?». Мама предупредила, что он будет плакать, и на его глазах действительно заблестели слезы. Он ответил, что да, доволен.</p>
+                <p class="editable-text" data-ru="Родители ушли вместе, от Covid-19, в одной больнице, с разницей всего в три дня. Сначала папа, потом мама..." data-ua="Батьки пішли разом, від Covid-19, в одній лікарні, з різницею лише за три дні. Спочатку тато, потім мама...">Родители ушли вместе, от Covid-19, в одной больнице, с разницей всего в три дня. Сначала папа, потом мама...</p>
+                <p class="editable-text" data-ru="Главным вопросом, который родители часто мне задавали, был один: «Счастлива ли ты?» И сегодня я могу ответить спокойно и уверенно: да, папа - благодаря вам с мамой я счастлива." data-ua="Головним питанням, яке батьки часто мені ставили, було одне: «Чи ти щаслива?». І сьогодні я можу відповісти спокійно та впевнено: так, тато – завдяки вам з мамою я щаслива.">Главным вопросом, который родители часто мне задавали, был один: «Счастлива ли ты?» И сегодня я могу ответить спокойно и уверенно: да, папа - благодаря вам с мамой я счастлива.</p>
             </div></div>
           </div>
         </div>
@@ -348,22 +347,22 @@
         <div class="quotes-section">
           <div class="quote-card fade-up visible">
             <span class="quote-icon">“</span>
-            <p class="quote-text editable-text" data-ru="Вся жизнь - игра, а люди в ней - актеры." data-ua="Життя - це гра, а люди в ній - актори." contenteditable="false">Вся жизнь - игра, а люди в ней - актеры.</p>
-            <p class="quote-author editable-text" data-ru="ЖИЗНЕННОЕ НАПУТСТВИЕ" data-ua="ЖИТТЄВА НАПУТНІСТЬ" contenteditable="false">ЖИЗНЕННОЕ НАПУТСТВИЕ</p>
+            <p class="quote-text editable-text" data-ru="Вся жизнь - игра, а люди в ней - актеры." data-ua="Життя - це гра, а люди в ній - актори.">Вся жизнь - игра, а люди в ней - актеры.</p>
+            <p class="quote-author editable-text" data-ru="ЖИЗНЕННОЕ НАПУТСТВИЕ" data-ua="ЖИТТЄВА НАПУТНІСТЬ">ЖИЗНЕННОЕ НАПУТСТВИЕ</p>
           </div>
           <div class="quote-card fade-up visible">
             <span class="quote-icon">“</span>
-            <p class="quote-text editable-text" data-ru="Не бойся хулиганов. Мысленно возвышайся над ними, максимально распрямляясь. Не бойся защищать себя." data-ua="Не бійся хуліганів. Подумки височій над ними, максимально розпрямляючись. Не бійся захищати себе." contenteditable="false">Не бойся хулиганов. Мысленно возвышайся над ними, максимально распрямляясь. Не бойся защищать себя.</p>
-            <p class="quote-author editable-text" data-ru="УРОК БОКСА ДЛЯ ДОЧКИ В ДЕТСКОМ САДУ" data-ua="УРОК БОКСУ ДЛЯ ДОЧКИ У ДИТЯЧОМУ САДУ" contenteditable="false">УРОК БОКСА ДЛЯ ДОЧКИ В ДЕТСКОМ САДУ</p>
+            <p class="quote-text editable-text" data-ru="Не бойся хулиганов. Мысленно возвышайся над ними, максимально распрямляясь. Не бойся защищать себя." data-ua="Не бійся хуліганів. Подумки височій над ними, максимально розпрямляючись. Не бійся захищати себе.">Не бойся хулиганов. Мысленно возвышайся над ними, максимально распрямляясь. Не бойся защищать себя.</p>
+            <p class="quote-author editable-text" data-ru="УРОК БОКСА ДЛЯ ДОЧКИ В ДЕТСКОМ САДУ" data-ua="УРОК БОКСУ ДЛЯ ДОЧКИ У ДИТЯЧОМУ САДУ">УРОК БОКСА ДЛЯ ДОЧКИ В ДЕТСКОМ САДУ</p>
           </div>
           <div class="quote-card fade-up visible">
             <span class="quote-icon">“</span>
-            <p class="quote-text editable-text" data-ru="Счастлива ли ты?" data-ua="Чи щаслива ти?" contenteditable="false">Счастлива ли ты?</p>
-            <p class="quote-author editable-text" data-ru="ГЛАВНЫЙ ВОПРОС В ЖИЗНИ" data-ua="ГОЛОВНЕ ПИТАННЯ ЖИТТЯ" contenteditable="false">ГЛАВНЫЙ ВОПРОС В ЖИЗНИ</p>
+            <p class="quote-text editable-text" data-ru="Счастлива ли ты?" data-ua="Чи щаслива ти?">Счастлива ли ты?</p>
+            <p class="quote-author editable-text" data-ru="ГЛАВНЫЙ ВОПРОС В ЖИЗНИ" data-ua="ГОЛОВНЕ ПИТАННЯ ЖИТТЯ">ГЛАВНЫЙ ВОПРОС В ЖИЗНИ</p>
           </div>
         </div>
 
-        <h3 class="gallery-title editable-text" data-ru="Воспоминания" data-ua="Спогади" contenteditable="false">Воспоминания</h3>
+        <h3 class="gallery-title editable-text" data-ru="Воспоминания" data-ua="Спогади">Воспоминания</h3>
         
         <div style="position: relative; padding: 20px 0; margin-top: 10px;">
           <div class="c-sparks-wrap" style="border-radius: 16px; opacity: 1; z-index: 0; pointer-events: none;"></div>
@@ -372,7 +371,7 @@
         </div>
         
         <div style="text-align: center; display: block;" id="showMoreGalleryWrapperFather">
-          <button class="read-more-btn" style="margin-top: 0; margin-bottom: 30px;" onclick="toggleGalleryExpand('fatherGallery')" id="showMoreGalleryBtnFather"><span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показать еще (15)</span></button>
+          <button class="read-more-btn" style="margin-top: 0; margin-bottom: 30px;" onclick="toggleGalleryExpand('fatherGallery')" id="showMoreGalleryBtnFather"><span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показать еще</span></button>
         </div>
         
         <div class="admin-only-flex">
@@ -382,69 +381,69 @@
     </div>
   </div>
 
-  <div class="bio-modal" id="mother-bio">
+<div class="bio-modal" id="mother-bio">
     <div class="bio-modal-content">
       
       <div class="c-sparks-wrap" style="border-radius: 24px; opacity: 0.8; z-index: 0;"></div>
 
       <span class="bio-modal-close" onclick="closeBio('mother-bio')">×</span>
-      <h2 class="editable-text" style="text-align: center; color: var(--gold); font-size: 2.5rem; position: relative; z-index: 1;" data-ru="Светлана Владимировна Голотрина" data-ua="Світлана Володимирівна Голотріна" contenteditable="false">Светлана Владимировна Голотрина</h2>
-      <div class="modal-dates editable-text" style="position: relative; z-index: 1;" data-ru="1943 - 2021" data-ua="1943 - 2021" contenteditable="false">1943 - 2021</div>
+      <h2 class="editable-text" style="text-align: center; color: var(--gold); font-size: 2.5rem; position: relative; z-index: 1;" data-ru="Светлана Владимировна Голотрина" data-ua="Світлана Володимирівна Голотріна">Светлана Владимировна Голотрина</h2>
+      <div class="modal-dates editable-text" style="position: relative; z-index: 1;" data-ru="1943 - 2021" data-ua="1943 - 2021">1943 - 2021</div>
       
       <div class="bio-text">
-        <p class="modal-personal-quote editable-text" data-ru="«Так надо...»" data-ua="«Так треба...»" contenteditable="false">«Так надо...»</p>
-        <p class="editable-text" data-ru="Светлана Владимировна родилась в 1943 году в Иркутске. Для коллег она была незаменимым инженером-сметчиком с безупречной репутацией, а для нашей семьи - несокрушимым фундаментом, строгой, но безгранично любящей матерью и бабушкой." data-ua="Світлана Володимирівна народилася 1943 року в Іркутську. Для колег вона була незамінним інженером-кошторисником з бездоганною репутацією, а для нашої родини - незламним фундаментом, строгою, але безмежно люблячою матір'ю та бабусею." contenteditable="false">Светлана Владимировна родилась в 1943 году в Иркутске. Для коллег она была незаменимым инженером-сметчиком с безупречной репутацией, а для нашей семьи - несокрушимым фундаментом, строгой, но безгранично любящей матерью и бабушкой.</p>
+        <p class="modal-personal-quote editable-text" data-ru="«Так надо...»" data-ua="«Так треба...»">«Так надо...»</p>
+        <p class="editable-text" data-ru="Светлана Владимировна родилась в 1943 году в Иркутске. Для коллег она была незаменимым инженером-сметчиком с безупречной репутацией, а для нашей семьи - несокрушимым фундаментом, строгой, но безгранично любящей матерью и бабушкой." data-ua="Світлана Володимирівна народилася 1943 року в Іркутську. Для колег вона була незамінним інженером-кошторисником з бездоганною репутацією, а для нашої родини - незламним фундаментом, строгою, але безмежно люблячою матір'ю та бабусею.">Светлана Владимировна родилась в 1943 году в Иркутске. Для коллег она была незаменимым инженером-сметчиком с безупречной репутацией, а для нашей семьи - несокрушимым фундаментом, строгой, но безгранично любящей матерью и бабушкой.</p>
 
         <div class="accordion">
           <div class="accordion-item">
-            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Сибирские корни и характер" data-ua="Сибірське коріння та характер" contenteditable="false">Сибирские корни и характер</span><span class="accordion-icon">+</span></button>
+            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Сибирские корни и характер" data-ua="Сибірське коріння та характер">Сибирские корни и характер</span><span class="accordion-icon">+</span></button>
             <div class="accordion-content"><div class="accordion-inner">
-                <p class="fade-up visible editable-text" data-ru="Ее детство пришлось на трудные послевоенные годы, которые закалили в ней редкую силу духа, позволяющую достойно выдерживать любые испытания." data-ua="Її дитинство припало на важкі повоєнні роки, які загартували у ній рідкісну силу духу, що дозволяє гідно витримувати будь-які випробування." contenteditable="false">Ее детство пришлось на трудные послевоенные годы, которые закалили в ней редкую силу духа, позволяющую достойно выдерживать любые испытания.</p>
-                <p class="fade-up visible editable-text" data-ru="Я помню ее рассказы о том, как маленькой девочкой ей приходилось в сильные морозы пешком подниматься в гору, чтобы попасть в школу. Помощи ждать было неоткуда - и потому все, что она достигла в жизни, было результатом ее собственного ума, дисциплины и внутренней собранности." data-ua="Я пам'ятаю її розповіді про те, як маленькій дівчинці їй доводилося в сильні морози пішки підніматися вгору, щоб потрапити до школи. Допомоги чекати не було звідки - і тому все, що вона досягла в житті, було результатом її власного розуму, дисципліни та внутрішньої зібраності." contenteditable="false">Я помню ее рассказы о том, как маленькой девочкой ей приходилось в сильные морозы пешком подниматься в гору, чтобы попасть в школу. Помощи ждать было неоткуда - и потому все, что она достигла в жизни, было результатом ее собственного ума, дисциплины и внутренней собранности.</p>
-                <p class="fade-up visible editable-text" data-ru="Мама отлично училась, любила английский язык и на протяжении всей жизни сохраняла жажду знаний, передав эту любовь мне - своей дочери." data-ua="Мама чудово вчилася, любила англійську мову і протягом усього життя зберігала спрагу знань, передавши це кохання мені - своїй дочці." contenteditable="false">Мама отлично училась, любила английский язык и на протяжении всей жизни сохраняла жажду знаний, передав эту любовь мне - своей дочери.</p>
+                <p class="fade-up visible editable-text" data-ru="Ее детство пришлось на трудные послевоенные годы, которые закалили в ней редкую силу духа, позволяющую достойно выдерживать любые испытания." data-ua="Її дитинство припало на важкі повоєнні роки, які загартували у ній рідкісну силу духу, що дозволяє гідно витримувати будь-які випробування.">Ее детство пришлось на трудные послевоенные годы, которые закалили в ней редкую силу духа, позволяющую достойно выдерживать любые испытания.</p>
+                <p class="fade-up visible editable-text" data-ru="Я помню ее рассказы о том, как маленькой девочкой ей приходилось в сильные морозы пешком подниматься в гору, чтобы попасть в школу. Помощи ждать было неоткуда - и потому все, что она достигла в жизни, было результатом ее собственного ума, дисциплины и внутренней собранности." data-ua="Я пам'ятаю її розповіді про те, як маленькій дівчинці їй доводилося в сильні морози пішки підніматися вгору, щоб потрапити до школи. Допомоги чекати не було звідки - і тому все, що вона досягла в житті, було результатом її власного розуму, дисципліни та внутрішньої зібраності.">Я помню ее рассказы о том, как маленькой девочкой ей приходилось в сильные морозы пешком подниматься в гору, чтобы попасть в школу. Помощи ждать было неоткуда - и потому все, что она достигла в жизни, было результатом ее собственного ума, дисциплины и внутренней собранности.</p>
+                <p class="fade-up visible editable-text" data-ru="Мама отлично училась, любила английский язык и на протяжении всей жизни сохраняла жажду знаний, передав эту любовь мне - своей дочери." data-ua="Мама чудово вчилася, любила англійську мову і протягом усього життя зберігала спрагу знань, передавши це кохання мені - своїй дочці.">Мама отлично училась, любила английский язык и на протяжении всей жизни сохраняла жажду знаний, передав эту любовь мне - своей дочери.</p>
             </div></div>
           </div>
           <div class="accordion-item">
-            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Призвание и профессионализм" data-ua="Покликання та професіоналізм" contenteditable="false">Призвание и профессионализм</span><span class="accordion-icon">+</span></button>
+            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Призвание и профессионализм" data-ua="Покликання та професіоналізм">Призвание и профессионализм</span><span class="accordion-icon">+</span></button>
             <div class="accordion-content"><div class="accordion-inner">
-                <p class="editable-text" data-ru="Окончив инженерно-строительный факультет, мама выбрала непростую профессию инженера-сметчика. Способность превращать архитектурные проекты в точные и выверенные расчеты стала делом ее жизни." data-ua="Закінчивши інженерно-будівельний факультет, мама обрала непросту професію інженера-кошторисника. Здатність перетворювати архітектурні проекти на точні та вивірені розрахунки стала справою її життя." contenteditable="false">Окончив инженерно-строительный факультет, мама выбрала непростую профессию инженера-сметчика. Способность превращать архитектурные проекты в точные и выверенные расчеты стала делом ее жизни.</p>
-                <p class="editable-text" data-ru="Она продолжала работать в преклонные годы, вплоть до самых последних дней. Ее слова «Я свое дело четко знаю» звучали не как уверенность, а как принцип." data-ua="Вона продовжувала працювати в похилому віці, аж до останніх днів. Її слова &quot;Я свою справу чітко знаю&quot; звучали не як впевненість, а як принцип." contenteditable="false">Она продолжала работать в преклонные годы, вплоть до самых последних дней. Ее слова «Я свое дело четко знаю» звучали не как уверенность, а как принцип.</p>
-                <p class="editable-text" data-ru="Системность и ясность мышления проявлялись во всем - даже важнейшие жизненные события она умела планировать с поразительной точностью. Она рассчитала появление меня на свет, придя в медицинский институт ровно в запланированный день." data-ua="Системність і ясність мислення виявлялися у всьому - навіть найважливіші життєві події вона вміла планувати з вражаючою точністю. Вона розрахувала появу мене на світ, прийшовши до медичного інституту рівно запланований день." contenteditable="false">Системность и ясность мышления проявлялись во всем - даже важнейшие жизненные события она умела планировать с поразительной точностью. Она рассчитала появление меня на свет, придя в медицинский институт ровно в запланированный день.</p>
+                <p class="editable-text" data-ru="Окончив инженерно-строительный факультет, мама выбрала непростую профессию инженера-сметчика. Способность превращать архитектурные проекты в точные и выверенные расчеты стала делом ее жизни." data-ua="Закінчивши інженерно-будівельний факультет, мама обрала непросту професію інженера-кошторисника. Здатність перетворювати архітектурні проекти на точні та вивірені розрахунки стала справою її життя.">Окончив инженерно-строительный факультет, мама выбрала непростую профессию инженера-сметчика. Способность превращать архитектурные проекты в точные и выверенные расчеты стала делом ее жизни.</p>
+                <p class="editable-text" data-ru="Она продолжала работать в преклонные годы, вплоть до самых последних дней. Ее слова «Я свое дело четко знаю» звучали не как уверенность, а как принцип." data-ua="Вона продовжувала працювати в похилому віці, аж до останніх днів. Її слова «Я свою справу чітко знаю» звучали не як впевненість, а як принцип.">Она продолжала работать в преклонные годы, вплоть до самых последних дней. Ее слова «Я свое дело четко знаю» звучали не как уверенность, а как принцип.</p>
+                <p class="editable-text" data-ru="Системность и ясность мышления проявлялись во всем - даже важнейшие жизненные события она умела планировать с поразительной точностью. Она рассчитала появление меня на свет, придя в медицинский институт ровно в запланированный день." data-ua="Системність і ясність мислення виявлялися у всьому - навіть найважливіші життєві події вона вміла планувати з вражаючою точністю. Вона розрахувала появу мене на світ, прийшовши до медичного інституту рівно запланований день.">Системность и ясность мышления проявлялись во всем - даже важнейшие жизненные события она умела планировать с поразительной точностью. Она рассчитала появление меня на свет, придя в медицинский институт ровно в запланированный день.</p>
             </div></div>
           </div>
           <div class="accordion-item">
-            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Материнство как ответственность и любовь" data-ua="Материнство як відповідальність та любов" contenteditable="false">Материнство как ответственность и любовь</span><span class="accordion-icon">+</span></button>
+            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Материнство как ответственность и любовь" data-ua="Материнство як відповідальність та любов">Материнство как ответственность и любовь</span><span class="accordion-icon">+</span></button>
             <div class="accordion-content"><div class="accordion-inner">
-                <p class="editable-text" data-ru="В 1967 году в Одессе судьба связала сибирячку с творческим юношей из Крыма - Михаилом Григорьевичем Голотриным. Это был союз прагматичного инженера и человека искусства, который любил риск. Выросшие в суровом быте частных домов послевоенного времени, родители предпочитали городской комфорт. Им была чужда суета частного дома или дачи." data-ua="1967 року в Одесі доля пов'язала сибірячку з творчим юнаком із Криму - Михайлом Григоровичем Голотріним. Це була спілка прагматичного інженера та людини мистецтва, яка любила ризик. Батьки, які виросли в суворому побуті приватних будинків післявоєнного часу, віддавали перевагу міському комфорту. Їм була далека суєта приватного будинку чи дачі." contenteditable="false">В 1967 году в Одессе судьба связала сибирячку с творческим юношей из Крыма - Михаилом Григорьевичем Голотриным. Это был союз прагматичного инженера и человека искусства, который любил риск. Выросшие в суровом быте частных домов послевоенного времени, родители предпочитали городской комфорт. Им была чужда суета частного дома или дачи.</p>
-                <p class="editable-text" data-ru="Спустя годы история совершила удивительный виток: их дочь&nbsp; построила с мужем автономный частный дом." data-ua="Через роки історія зробила дивовижний виток: їхня дочка збудувала з чоловіком автономний приватний будинок." contenteditable="false">Спустя годы история совершила удивительный виток: их дочь&nbsp; построила с мужем автономный частный дом.</p>
-                <p class="editable-text" data-ru="Светлана Владимировна была строгой, но глубоко любящей матерью. Ее любовь выражалась не в словах, а в поступках - в заботе, защите и мудрых решениях, определявших будущее семьи. Ее материнская поддержка всегда была стратегической." data-ua="Світлана Володимирівна була суворою, але глибоко люблячою матір'ю. Її любов виражалася не в словах, а у вчинках - у турботі, захисті та мудрих рішеннях, що визначали майбутнє сім'ї. Її материнська підтримка завжди була стратегічною." contenteditable="false">Светлана Владимировна была строгой, но глубоко любящей матерью. Ее любовь выражалась не в словах, а в поступках - в заботе, защите и мудрых решениях, определявших будущее семьи. Ее материнская поддержка всегда была стратегической.</p>
-                <p class="editable-text" data-ru="Когда я до слез боялась выступать на утренниках в детском саду, мама дала мне совет: «Ищи глазами меня и смотри только на меня, когда выступаешь». И, найдя в зале уверенный и поддерживающий мамин взгляд, я поборола страх, выступила так, как мы с ней репетировали, и впоследствии стала ведущей утренников." data-ua="Коли я до сліз боялася виступати на ранках у дитячому садку, мама дала мені пораду: «Шукай очима мене і дивися тільки на мене, коли виступаєш». І, знайшовши в залі впевнений і підтримуючий маминий погляд, я поборола страх, виступила так, як ми з нею репетирували, і згодом стала ведучою ранку." contenteditable="false">Когда я до слез боялась выступать на утренниках в детском саду, мама дала мне совет: «Ищи глазами меня и смотри только на меня, когда выступаешь». И, найдя в зале уверенный и поддерживающий мамин взгляд, я поборола страх, выступила так, как мы с ней репетировали, и впоследствии стала ведущей утренников.</p>
-                <p class="editable-text" data-ru="Когда меня отдали на художественную гимнастику в холодный зал советского здания, и я после занятий заболела бронхитом, мама забрала меня из гимнастики, впоследствии отдав предпочтение плаванию." data-ua="Коли мене віддали на художню гімнастику в холодну залу радянської будівлі, і я після занять захворіла на бронхіт, мама забрала мене з гімнастики, згодом віддавши перевагу плаванню." contenteditable="false">Когда меня отдали на художественную гимнастику в холодный зал советского здания, и я после занятий заболела бронхитом, мама забрала меня из гимнастики, впоследствии отдав предпочтение плаванию.</p>
-                <p class="editable-text" data-ru="Несмотря на занятость, именно она заложила фундамент моего образования: помогала в учебе, развивала языки, ставила английское произношение, формировала системное мышление." data-ua="Незважаючи на зайнятість, саме вона заклала фундамент моєї освіти: допомагала в навчанні, розвивала мови, ставила англійську вимову, формувала системне мислення." contenteditable="false">Несмотря на занятость, именно она заложила фундамент моего образования: помогала в учебе, развивала языки, ставила английское произношение, формировала системное мышление.</p>
-                <p class="editable-text" data-ru="А в 1995 году мама с папой проявили дальновидность: поняв, что будущее за компьютерами и информационными технологиями, они организовали мой перевод в другую школу, где выпускные экзамены засчитывались как вступительные на факультет информационных технологий в университет. План сработал безупречно." data-ua="А 1995 року мама з татом виявили далекоглядність: зрозумівши, що майбутнє за комп'ютерами та інформаційними технологіями, вони організували мій переклад до іншої школи, де випускні іспити зараховувалися як вступні на факультет інформаційних технологій до університету. План спрацював бездоганно." contenteditable="false">А в 1995 году мама с папой проявили дальновидность: поняв, что будущее за компьютерами и информационными технологиями, они организовали мой перевод в другую школу, где выпускные экзамены засчитывались как вступительные на факультет информационных технологий в университет. План сработал безупречно.</p>
-                <p class="editable-text" data-ru="На заработанные сметами деньги она купила мне, уже студентке, красивую заячью шубу-манто, желая, чтобы ее Танюшка чувствовала себя уверенно и красиво.&nbsp; 
-Вся ее жизнь была посвящена тому, чтобы дать мне больше возможностей, больше уверенности, больше будущего." data-ua="На зароблені кошторисами гроші вона купила мені, вже студентці, гарну заячу шубу-манто, бажаючи, щоб її Танюшка почувала себе впевнено та красиво.&nbsp;
-Все її життя було присвячене тому, щоб дати мені більше можливостей, більше впевненості, більше майбутнього." contenteditable="false">На заработанные сметами деньги она купила мне, уже студентке, красивую заячью шубу-манто, желая, чтобы ее Танюшка чувствовала себя уверенно и красиво.&nbsp; 
+                <p class="editable-text" data-ru="В 1967 году в Одессе судьба связала сибирячку с творческим юношей из Крыма - Михаилом Григорьевичем Голотриным. Это был союз прагматичного инженера и человека искусства, который любил риск. Выросшие в суровом быте частных домов послевоенного времени, родители предпочитали городской комфорт. Им была чужда суета частного дома или дачи." data-ua="1967 року в Одесі доля пов'язала сибірячку з творчим юнаком із Криму - Михайлом Григоровичем Голотріним. Це була спілка прагматичного інженера та людини мистецтва, яка любила ризик. Батьки, які виросли в суворому побуті приватних будинків післявоєнного часу, віддавали перевагу міському комфорту. Їм була далека суєта приватного будинку чи дачі.">В 1967 году в Одессе судьба связала сибирячку с творческим юношей из Крыма - Михаилом Григорьевичем Голотриным. Это был союз прагматичного инженера и человека искусства, который любил риск. Выросшие в суровом быте частных домов послевоенного времени, родители предпочитали городской комфорт. Им была чужда суета частного дома или дачи.</p>
+                <p class="editable-text" data-ru="Спустя годы история совершила удивительный виток: их дочь построила с мужем автономный частный дом." data-ua="Через роки історія зробила дивовижний виток: їхня дочка збудувала з чоловіком автономний приватний будинок.">Спустя годы история совершила удивительный виток: их дочь построила с мужем автономный частный дом.</p>
+                <p class="editable-text" data-ru="Светлана Владимировна была строгой, но глубоко любящей матерью. Ее любовь выражалась не в словах, а в поступках - в заботе, защите и мудрых решениях, определявших будущее семьи. Ее материнская поддержка всегда была стратегической." data-ua="Світлана Володимирівна була суворою, але глибоко люблячою матір'ю. Її любов виражалася не в словах, а у вчинках - у турботі, захисті та мудрих рішеннях, що визначали майбутнє сім'ї. Її материнська підтримка завжди була стратегічною.">Светлана Владимировна была строгой, но глубоко любящей матерью. Ее любовь выражалась не в словах, а в поступках - в заботе, защите и мудрых решениях, определявших будущее семьи. Ее материнская поддержка всегда была стратегической.</p>
+                <p class="editable-text" data-ru="Когда я до слез боялась выступать на утренниках в детском саду, мама дала мне совет: «Ищи глазами меня и смотри только на меня, когда выступаешь». И, найдя в зале уверенный и поддерживающий мамин взгляд, я поборола страх, выступила так, как мы с ней репетировали, и впоследствии стала ведущей утренников." data-ua="Коли я до сліз боялася виступати на ранках у дитячому садку, мама дала мені пораду: «Шукай очима мене і дивися тільки на мене, коли виступаєш». І, знайшовши в залі впевнений і підтримуючий маминий погляд, я поборола страх, виступила так, як ми з нею репетирували, і згодом стала ведучою ранку.">Когда я до слез боялась выступать на утренниках в детском саду, мама дала мне совет: «Ищи глазами меня и смотри только на меня, когда выступаешь». И, найдя в зале уверенный и поддерживающий мамин взгляд, я поборола страх, выступила так, как мы с ней репетировали, и впоследствии стала ведущей утренников.</p>
+                <p class="editable-text" data-ru="Когда меня отдали на художественную гимнастику в холодный зал советского здания, и я после занятий заболела бронхитом, мама забрала меня из гимнастики, впоследствии отдав предпочтение плаванию." data-ua="Коли мене віддали на художню гімнастику в холодну залу радянської будівлі, і я після занять захворіла на бронхіт, мама забрала мене з гімнастики, згодом віддавши перевагу плаванню.">Когда меня отдали на художественную гимнастику в холодный зал советского здания, и я после занятий заболела бронхитом, мама забрала меня из гимнастики, впоследствии отдав предпочтение плаванию.</p>
+                <p class="editable-text" data-ru="Несмотря на занятость, именно она заложила фундамент моего образования: помогала в учебе, развивала языки, ставила английское произношение, формировала системное мышление." data-ua="Незважаючи на зайнятість, саме вона заклала фундамент моєї освіти: допомагала в навчанні, розвивала мови, ставила англійську вимову, формувала системне мислення.">Несмотря на занятость, именно она заложила фундамент моего образования: помогала в учебе, развивала языки, ставила английское произношение, формировала системное мышление.</p>
+                <p class="editable-text" data-ru="А в 1995 году мама с папой проявили дальновидность: поняв, что будущее за компьютерами и информационными технологиями, они организовали мой перевод в другую школу, где выпускные экзамены засчитывались как вступительные на факультет информационных технологий в университет. План сработал безупречно." data-ua="А 1995 року мама з татом виявили далекоглядність: зрозумівши, що майбутнє за комп'ютерами та інформаційними технологіями, вони організували мій переклад до іншої школи, де випускні іспити зараховувалися як вступні на факультет інформаційних технологій до університету. План спрацював бездоганно.">А в 1995 году мама с папой проявили дальновидность: поняв, что будущее за компьютерами и информационными технологиями, они организовали мой перевод в другую школу, где выпускные экзамены засчитывались как вступительные на факультет информационных технологий в университет. План сработал безупречно.</p>
+                <p class="editable-text" data-ru="На заработанные сметами деньги она купила мне, уже студентке, красивую заячью шубу-манто, желая, чтобы ее Танюшка чувствовала себя уверенно и красиво. 
+Вся ее жизнь была посвящена тому, чтобы дать мне больше возможностей, больше уверенности, больше будущего." data-ua="На зароблені кошторисами гроші вона купила мені, вже студентці, гарну заячу шубу-манто, бажаючи, щоб її Танюшка почувала себе впевнено та красиво. 
+Все її життя було присвячене тому, щоб дати мені більше можливостей, більше впевненості, більше майбутнього.">На заработанные сметами деньги она купила мне, уже студентке, красивую заячью шубу-манто, желая, чтобы ее Танюшка чувствовала себя уверенно и красиво. 
 Вся ее жизнь была посвящена тому, чтобы дать мне больше возможностей, больше уверенности, больше будущего.</p>
             </div></div>
           </div>
           <div class="accordion-item">
-            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Бабушкина мудрость и взгляд в будущее" data-ua="Бабусина мудрість та погляд у майбутнє" contenteditable="false">Бабушкина мудрость и взгляд в будущее</span><span class="accordion-icon">+</span></button>
+            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Бабушкина мудрость и взгляд в будущее" data-ua="Бабусина мудрість та погляд у майбутнє">Бабушкина мудрость и взгляд в будущее</span><span class="accordion-icon">+</span></button>
             <div class="accordion-content"><div class="accordion-inner">
-                <p class="editable-text" data-ru="Светлана Владимировна обладала безупречным стилем: носила изящные часы, шикарные меховые шапки и элегантную одежду." data-ua="Світлана Володимирівна мала бездоганний стиль: носила витончені годинники, шикарні хутряні шапки та елегантний одяг." contenteditable="false">Светлана Владимировна обладала безупречным стилем: носила изящные часы, шикарные меховые шапки и элегантную одежду.</p>
-                <p class="editable-text" data-ru="С появлением внуков, Наталии и Игоря, строгий инженер-сметчик открыла в себе новые грани нежности. Я вспоминаю, как мама, воспитывавшая меня в железной дисциплине, теперь со смехом учила хитрости воспитания детей: «Ты ремнем размахивай, делай вид, что сильно сердита - и дай детям время убежать!»." data-ua="З появою онуків, Наталії та Ігоря, суворий інженер-кошторисник відкрила нові грані ніжності. Я згадую, як мама, яка виховувала мене в залізній дисципліні, тепер зі сміхом вчила хитрощі виховання дітей: «Ти ременем розмахуй, роби вигляд, що дуже сердитий – і дай дітям час втекти!»." contenteditable="false">С появлением внуков, Наталии и Игоря, строгий инженер-сметчик открыла в себе новые грани нежности. Я вспоминаю, как мама, воспитывавшая меня в железной дисциплине, теперь со смехом учила хитрости воспитания детей: «Ты ремнем размахивай, делай вид, что сильно сердита - и дай детям время убежать!».</p>
-                <p class="editable-text" data-ru="Ее забота о внуках всегда была практичной. Для внучки Наташеньки она приобрела красивейший набор посуды, для обоих купила драгоценные украшения. Для внука Игоря бабушка Света навсегда останется воплощением домашнего уюта: это ее вкусный куриный супчик с лапшой, домашние котлетки и заветные шоколадные «Киндеры»." data-ua="Її турбота про онуків завжди була практичною. Для онуки Наташеньки вона придбала гарний набір посуду, для обох купила дорогоцінні прикраси. Для онука Ігоря бабуся Світлана назавжди залишиться втіленням домашнього затишку: це її смачний курячий супчик з локшиною, домашні котлетки та заповітні шоколадні Кіндери." contenteditable="false">Ее забота о внуках всегда была практичной. Для внучки Наташеньки она приобрела красивейший набор посуды, для обоих купила драгоценные украшения. Для внука Игоря бабушка Света навсегда останется воплощением домашнего уюта: это ее вкусный куриный супчик с лапшой, домашние котлетки и заветные шоколадные «Киндеры».</p>
-                <p class="editable-text" data-ru="Но самым пророческим подарком стал мощный ноутбук. Купив его для своих сметных программ, она, оценив потенциал техники, без колебаний подарила его внуку. На этом компьютере Игореша начал изучать онлайн программирование в Minecraft, и именно этот бабушкин подарок стал решающим при переводе его на онлайн-образование, когда мир накрыла пандемия ковида, а затем в Украину пришла война." data-ua="Але найпророчішим подарунком став потужний ноутбук. Купивши його для своїх кошторисних програм, вона, оцінивши потенціал техніки, без вагань подарувала його онуку. На цьому комп'ютері Ігореша почав вивчати онлайн програмування у Minecraft, і саме цей бабусин подарунок став вирішальним під час переведення його на онлайн-освіту, коли світ накрила пандемію ковіда, а згодом в Україну прийшла війна." contenteditable="false">Но самым пророческим подарком стал мощный ноутбук. Купив его для своих сметных программ, она, оценив потенциал техники, без колебаний подарила его внуку. На этом компьютере Игореша начал изучать онлайн программирование в Minecraft, и именно этот бабушкин подарок стал решающим при переводе его на онлайн-образование, когда мир накрыла пандемия ковида, а затем в Украину пришла война.</p>
+                <p class="editable-text" data-ru="Светлана Владимировна обладала безупречным стилем: носила изящные часы, шикарные меховые шапки и элегантную одежду." data-ua="Світлана Володимирівна мала бездоганний стиль: носила витончені годинники, шикарні хутряні шапки та елегантний одяг.">Светлана Владимировна обладала безупречным стилем: носила изящные часы, шикарные меховые шапки и элегантную одежду.</p>
+                <p class="editable-text" data-ru="С появлением внуков, Наталии и Игоря, строгий инженер-сметчик открыла в себе новые грани нежности. Я вспоминаю, как мама, воспитывавшая меня в железной дисциплине, теперь со смехом учила хитрости воспитания детей: «Ты ремнем размахивай, делай вид, что сильно сердита - и дай детям время убежать!»." data-ua="З появою онуків, Наталії та Ігоря, суворий інженер-кошторисник відкрила нові грані ніжності. Я згадую, як мама, яка виховувала мене в залізній дисципліні, тепер зі сміхом вчила хитрощі виховання дітей: «Ти ременем розмахуй, роби вигляд, що дуже сердитий – і дай дітям час втекти!».">С появлением внуков, Наталии и Игоря, строгий инженер-сметчик открыла в себе новые грани нежности. Я вспоминаю, как мама, воспитывавшая меня в железной дисциплине, теперь со смехом учила хитрости воспитания детей: «Ты ремнем размахивай, делай вид, что сильно сердита - и дай детям время убежать!».</p>
+                <p class="editable-text" data-ru="Ее забота о внуках всегда была практичной. Для внучки Наташеньки она приобрела красивейший набор посуды, для обоих купила драгоценные украшения. Для внука Игоря бабушка Света навсегда останется воплощением домашнего уюта: это ее вкусный куриный супчик с лапшой, домашние котлетки и заветные шоколадные «Киндеры»." data-ua="Її турбота про онуків завжди була практичною. Для онуки Наташеньки вона придбала гарний набір посуду, для обох купила дорогоцінні прикраси. Для онука Ігоря бабуся Світлана назавжди залишиться втіленням домашнього затишку: це її смачний курячий супчик з локшиною, домашні котлетки та заповітні шоколадні Кіндери.">Ее забота о внуках всегда была практичной. Для внучки Наташеньки она приобрела красивейший набор посуды, для обоих купила драгоценные украшения. Для внука Игоря бабушка Света навсегда останется воплощением домашнего уюта: это ее вкусный куриный супчик с лапшой, домашние котлетки и заветные шоколадные «Киндеры».</p>
+                <p class="editable-text" data-ru="Но самым пророческим подарком стал мощный ноутбук. Купив его для своих сметных программ, она, оценив потенциал техники, без колебаний подарила его внуку. На этом компьютере Игореша начал изучать онлайн программирование в Minecraft, и именно этот бабушкин подарок стал решающим при переводе его на онлайн-образование, когда мир накрыла пандемия ковида, а затем в Украину пришла война." data-ua="Але найпророчішим подарунком став потужний ноутбук. Купивши його для своїх кошторисних програм, вона, оцінивши потенціал техніки, без вагань подарувала його онуку. На цьому комп'ютері Ігореша почав вивчати онлайн програмування у Minecraft, і саме цей бабусин подарунок став вирішальним під час переведення його на онлайн-освіту, коли світ накрила пандемію ковіда, а згодом в Україну прийшла війна.">Но самым пророческим подарком стал мощный ноутбук. Купив его для своих сметных программ, она, оценив потенциал техники, без колебаний подарила его внуку. На этом компьютере Игореша начал изучать онлайн программирование в Minecraft, и именно этот бабушкин подарок стал решающим при переводе его на онлайн-образование, когда мир накрыла пандемия ковида, а затем в Украину пришла война.</p>
             </div></div>
           </div>
           <div class="accordion-item">
-            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Вместе навсегда" data-ua="Разом назавжди" contenteditable="false">Вместе навсегда</span><span class="accordion-icon">+</span></button>
+            <button class="accordion-header" onclick="toggleAccordion(this)"><span class="editable-text" data-ru="Вместе навсегда" data-ua="Разом назавжди">Вместе навсегда</span><span class="accordion-icon">+</span></button>
             <div class="accordion-content"><div class="accordion-inner">
-                <p class="editable-text" data-ru="Когда я создала свою семью, Светлана Владимировна и Михаил Григорьевич словно заново открыли друг друга. Их жизнь наполнилась тихой близостью и взаимным пониманием. Они постоянно посещали концерты в филармонии. Строгая жена стала тем человеком, который понимал мужа без слов и берег его слабенькое, как оказалось после одного из медицинских обследований, сердце." data-ua="Коли я створила свою сім'ю, Світлана Володимирівна і Михайло Григорович немов заново відкрили одне одного. Їхнє життя наповнилося тихою близькістю і взаємним розумінням. Вони постійно відвідували концерти у філармонії. Сувора дружина стала тією людиною, яка розуміла чоловіка без слів і берегла його слабеньке, как виявилося після одного з медичних обстежень, серце." contenteditable="false">Когда я создала свою семью, Светлана Владимировна и Михаил Григорьевич словно заново открыли друг друга. Их жизнь наполнилась тихой близостью и взаимным пониманием. Они постоянно посещали концерты в филармонии. Строгая жена стала тем человеком, который понимал мужа без слов и берег его слабенькое, как оказалось после одного из медицинских обследований, сердце.</p>
-                <p class="editable-text" data-ru="Осенью 2021 года их земной путь завершился. Covid-19 забрал их. Светлана Владимировна - женщина, умевшая выдерживать любые жизненные кризисы, - ушла вслед за мужем ровно через три дня." data-ua="Восени 2021 року їхній земний шлях завершився. Covid-19 забрав їх. Світлана Володимирівна - жінка, яка вміла витримувати будь-які життєві кризи, - пішла за чоловіком рівно через три дні." contenteditable="false">Осенью 2021 года их земной путь завершился. Covid-19 забрал их. Светлана Владимировна - женщина, умевшая выдерживать любые жизненные кризисы, - ушла вслед за мужем ровно через три дня.</p>
-                <p class="editable-text" data-ru="В этом уходе как будто ощущается высший замысел. Словно папа, шагнувший в вечность первым, как бы позвал за собой свою Светочку, чтобы они были вместе - теперь уже за пределами земной жизни." data-ua="У цьому відході ніби відчувається вищий задум. Немов тато, який зробив крок у вічність першим, ніби покликав за собою свою Свєточку, щоб вони були разом - тепер уже за межами земного життя." contenteditable="false">В этом уходе как будто ощущается высший замысел. Словно папа, шагнувший в вечность первым, как бы позвал за собой свою Светочку, чтобы они были вместе - теперь уже за пределами земной жизни.</p>
-                <p class="editable-text" data-ru="Они ушли, чтобы стать невидимыми хранителями для своей семьи, оберегая своих детей и внуков от любых бурь. Их история осталась в семье как пример любви, ответственности и достойно прожитой жизни." data-ua="Вони пішли, щоб стати невидимими хранителями для своєї сім'ї, оберігаючи своїх дітей та онуків від будь-яких бур. Їхня історія залишилася в сім'ї як приклад любові, відповідальності та гідно прожитого життя." contenteditable="false">Они ушли, чтобы стать невидимыми хранителями для своей семьи, оберегая своих детей и внуков от любых бурь. Их история осталась в семье как пример любви, ответственности и достойно прожитой жизни.</p>
-                <p class="editable-text" data-ru="Мамина фраза - короткая, но невероятно сильная - до сих пор служит напутствием мне, её дочери: «Так надо»…" data-ua="Мамина фраза - коротка, але неймовірно сильна - і досі слугує напуттям мені, її доньці: «Так треба»…" contenteditable="false">Мамина фраза - короткая, но невероятно сильная - до сих пор служит напутствием мне, её дочери: «Так надо»…</p>
+                <p class="editable-text" data-ru="Когда я создала свою семью, Светлана Владимировна и Михаил Григорьевич словно заново открыли друг друга. Их жизнь наполнилась тихой близостью и взаимным пониманием. Они постоянно посещали концерты в филармонии. Строгая жена стала тем человеком, который понимал мужа без слов и берег его слабенькое, как оказалось после одного из медицинских обследований, сердце." data-ua="Коли я створила свою сім'ю, Світлана Володимирівна і Михайло Григорович немов заново відкрили одне одного. Їхнє життя наповнилося тихою близькістю і взаємним розумінням. Вони постійно відвідували концерти у філармонії. Сувора дружина стала тією людиною, яка розуміла чоловіка без слів і берегла його слабеньке, как виявилося після одного з медичних обстежень, серце.">Когда я создала свою семью, Светлана Владимировна и Михаил Григорьевич словно заново открыли друг друга. Их жизнь наполнилась тихой близостью и взаимным пониманием. Они постоянно посещали концерты в филармонии. Строгая жена стала тем человеком, который понимал мужа без слов и берег его слабенькое, как оказалось после одного из медицинских обследований, сердце.</p>
+                <p class="editable-text" data-ru="Осенью 2021 года их земной путь завершился. Covid-19 забрал их. Светлана Владимировна - женщина, умевшая выдерживать любые жизненные кризисы, - ушла вслед за мужем ровно через три дня." data-ua="Восени 2021 року їхній земний шлях завершився. Covid-19 забрав їх. Світлана Володимирівна - жінка, яка вміла витримувати будь-які життєві кризи, - пішла за чоловіком рівно через три дні.">Осенью 2021 года их земной путь завершился. Covid-19 забрал их. Светлана Владимировна - женщина, умевшая выдерживать любые жизненные кризисы, - ушла вслед за мужем ровно через три дня.</p>
+                <p class="editable-text" data-ru="В этом уходе как будто ощущается высший замысел. Словно папа, шагнувший в вечность первым, как бы позвал за собой свою Светочку, чтобы они были вместе - теперь уже за пределами земной жизни." data-ua="У цьому відході ніби відчувається вищий задум. Немов тато, який зробив крок у вічність першим, ніби покликав за собою свою Свєточку, щоб вони були разом - тепер уже за межами земного життя.">В этом уходе как будто ощущается высший замысел. Словно папа, шагнувший в вечность первым, как бы позвал за собой свою Светочку, чтобы они были вместе - теперь уже за пределами земной жизни.</p>
+                <p class="editable-text" data-ru="Они ушли, чтобы стать невидимыми хранителями для своей семьи, оберегая своих детей и внуков от любых бурь. Их история осталась в семье как пример любви, ответственности и достойно прожитой жизни." data-ua="Вони пішли, щоб стати невидимими хранителями для своєї сім'ї, оберігаючи своїх дітей та онуків від будь-яких бур. Їхня історія залишилася в сім'ї як приклад любові, відповідальності та гідно прожитого життя.">Они ушли, чтобы стать невидимыми хранителями для своей семьи, оберегая своих детей и внуков от любых бурь. Их история осталась в семье как пример любви, ответственности и достойно прожитой жизни.</p>
+                <p class="editable-text" data-ru="Мамина фраза - короткая, но невероятно сильная - до сих пор служит напутствием мне, её дочери: «Так надо»…" data-ua="Мамина фраза - коротка, але неймовірно сильна - і досі слугує напуттям мені, її доньці: «Так треба»…">Мамина фраза - короткая, но невероятно сильная - до сих пор служит напутствием мне, её дочери: «Так надо»…</p>
             </div></div>
           </div>
         </div>
@@ -452,22 +451,22 @@
         <div class="quotes-section">
           <div class="quote-card fade-up">
             <span class="quote-icon">“</span>
-            <p class="quote-text editable-text" data-ru="Я своё дело чётко знаю." data-ua="Я свою справу чітко знаю." contenteditable="false">Я своё дело чётко знаю.</p>
-            <p class="quote-author editable-text" data-ru="ЖИЗНЕННЫЙ ПРИНЦИП" data-ua="ЖИТТЄВИЙ ПРИНЦИП" contenteditable="false">ЖИЗНЕННЫЙ ПРИНЦИП</p>
+            <p class="quote-text editable-text" data-ru="Я своё дело чётко знаю." data-ua="Я свою справу чітко знаю.">Я своё дело чётко знаю.</p>
+            <p class="quote-author editable-text" data-ru="ЖИЗНЕННЫЙ ПРИНЦИП" data-ua="ЖИТТЄВИЙ ПРИНЦИП">ЖИЗНЕННЫЙ ПРИНЦИП</p>
           </div>
           <div class="quote-card fade-up">
             <span class="quote-icon">“</span>
-            <p class="quote-text editable-text" data-ru="Ищи глазами меня и смотри только на меня, когда выступаешь." data-ua="Шукай очима мене і дивися тільки на мене, коли виступаєш." contenteditable="false">Ищи глазами меня и смотри только на меня, когда выступаешь.</p>
-            <p class="quote-author editable-text" data-ru="СОВЕТ УСПЕХА ДОЧЕРИ В ДЕТСКОМ САДИКЕ" data-ua="ПОРАДА УСПІХУ ДОЧКИ У ДИТЯЧОМУ САДУ" contenteditable="false">СОВЕТ УСПЕХА ДОЧЕРИ В ДЕТСКОМ САДИКЕ</p>
+            <p class="quote-text editable-text" data-ru="Ищи глазами меня и смотри только на меня, когда выступаешь." data-ua="Шукай очима мене і дивися тільки на мене, коли виступаєш.">Ищи глазами меня и смотри только на меня, когда выступаешь.</p>
+            <p class="quote-author editable-text" data-ru="СОВЕТ УСПЕХА ДОЧЕРИ В ДЕТСКОМ САДИКЕ" data-ua="ПОРАДА УСПІХУ ДОЧКИ У ДИТЯЧОМУ САДУ">СОВЕТ УСПЕХА ДОЧЕРИ В ДЕТСКОМ САДИКЕ</p>
           </div>
           <div class="quote-card fade-up">
             <span class="quote-icon">“</span>
-            <p class="quote-text editable-text" data-ru="Делай вид, что ты очень строгая и грозная, но всегда давай детям время со смехом убежать!" data-ua="Роби вигляд, що ти дуже сувора і грізна, але завжди давай дітям час зі сміхом втекти!" contenteditable="false">Делай вид, что ты очень строгая и грозная, но всегда давай детям время со смехом убежать!</p>
-            <p class="quote-author editable-text" data-ru="МУДРОСТЬ ВОСПИТАНИЯ БАБУШКИ" data-ua="МУДРІСТЬ ВИХОВАННЯ БАБУСІ" contenteditable="false">МУДРОСТЬ ВОСПИТАНИЯ БАБУШКИ</p>
+            <p class="quote-text editable-text" data-ru="Делай вид, что ты очень строгая и грозная, но всегда давай детям время со смехом убежать!" data-ua="Роби вигляд, що ти дуже сувора і грізна, але завжди давай дітям час зі сміхом втекти!">Делай вид, что ты очень строгая и грозная, но всегда давай детям время со смехом убежать!</p>
+            <p class="quote-author editable-text" data-ru="МУДРОСТЬ ВОСПИТАНИЯ БАБУШКИ" data-ua="МУДРІСТЬ ВИХОВАННЯ БАБУСІ">МУДРОСТЬ ВОСПИТАНИЯ БАБУШКИ</p>
           </div>
         </div>
 
-        <h3 class="gallery-title editable-text" data-ru="Воспоминания" data-ua="Спогади" contenteditable="false">Воспоминания</h3>
+        <h3 class="gallery-title editable-text" data-ru="Воспоминания" data-ua="Спогади">Воспоминания</h3>
         
         <div style="position: relative; padding: 20px 0; margin-top: 10px;">
           <div class="c-sparks-wrap" style="border-radius: 16px; opacity: 1; z-index: 0; pointer-events: none;"></div>
@@ -476,7 +475,7 @@
         </div>
         
         <div style="text-align: center; display: block;" id="showMoreGalleryWrapper">
-          <button class="read-more-btn" style="margin-top: 0; margin-bottom: 30px;" onclick="toggleGalleryExpand('motherGallery')" id="showMoreGalleryBtn"><span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показать еще (18)</span></button>
+          <button class="read-more-btn" style="margin-top: 0; margin-bottom: 30px;" onclick="toggleGalleryExpand('motherGallery')" id="showMoreGalleryBtn"><span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показать еще</span></button>
         </div>
         
         <div class="admin-only-flex">
@@ -499,18 +498,18 @@
     <div class="c-sparks-wrap" style="border-radius: 0; opacity: 0.8; z-index: 0;"></div>
     <div class="footer-content">
       <p class="footer-quote editable-text" data-ru="Бесконечно благодарю. Бесконечно люблю. Бесконечно прошу прощения. Ваша Таня (Tanya-Tango)." data-ua="Безмежно дякую. Безмежно люблю. Безмежно прошу вибачення. 
-Ваша Таня (Tanya-Tango)." contenteditable="false">Бесконечно благодарю. Бесконечно люблю. Бесконечно прошу прощения. Ваша Таня (Tanya-Tango).</p>
+Ваша Таня (Tanya-Tango).">Бесконечно благодарю. Бесконечно люблю. Бесконечно прошу прощения. Ваша Таня (Tanya-Tango).</p>
       <div class="footer-separator"></div>
       <div class="footer-bottom">
-        <span><span class="secret-trigger" onclick="promptAdmin()" style="cursor: pointer; user-select: none;" title="">©</span> <span class="editable-text" data-ru="2026 Цифровой мемориал памяти семьи Голотриных" data-ua="2026 Цифровий меморіал пам'яті родини Голотріних" contenteditable="false">2026 Цифровой мемориал памяти семьи Голотриных</span></span>
-        <span class="editable-text" data-ru="Вечная память светлым людям" data-ua="Світла пам'ять світлим людям" contenteditable="false">Вечная память светлым людям</span>
+        <span><span class="secret-trigger" onclick="promptAdmin()" style="cursor: pointer; user-select: none;" title="">©</span> <span class="editable-text" data-ru="2026 Цифровой мемориал памяти семьи Голотриных" data-ua="2026 Цифровий меморіал пам'яті родини Голотріних">2026 Цифровой мемориал памяти семьи Голотриных</span></span>
+        <span class="editable-text" data-ru="Вечная память светлым людям" data-ua="Світла пам'ять світлим людям">Вечная память светлым людям</span>
       </div>
       
       <div class="footer-creator">
         <a href="#" onclick="copyEmailToClipboard(atob('Z29sb3RyaW5hQGdtYWlsLmNvbQ==')); return false;" class="creator-link" title="Скопировать Email создателя">
-          <span class="editable-text" data-ru="Создатель цифрового наследия" data-ua="Творець цифрового спадку" contenteditable="false">Создатель цифрового наследия</span>
+          <span class="editable-text" data-ru="Создатель цифрового наследия" data-ua="Творець цифрового спадку">Создатель цифрового наследия</span>
           <span class="creator-brand">(Digital Legacy Creator)</span>
-          <span class="editable-text" data-ru="Татьяна Голотрина" data-ua="Тетяна Голотріна" contenteditable="false">Татьяна Голотрина</span>
+          <span class="editable-text" data-ru="Татьяна Голотрина" data-ua="Тетяна Голотріна">Татьяна Голотрина</span>
         </a>
       </div>
     </div>
@@ -527,10 +526,10 @@
   <div class="qr-modal" id="adminAuthModal">
     <div class="qr-container" style="max-width: 350px; padding: 30px;">
       <span class="qr-close" onclick="document.getElementById('adminAuthModal').classList.remove('active')">×</span>
-      <h3 class="editable-text" style="color: var(--gold); margin-bottom: 20px; font-size: 1.5rem;" data-ru="Доступ редактора" data-ua="Доступ редактора" contenteditable="false">Доступ редактора</h3>
+      <h3 class="editable-text" style="color: var(--gold); margin-bottom: 20px; font-size: 1.5rem;" data-ru="Доступ редактора" data-ua="Доступ редактора">Доступ редактора</h3>
       <input type="password" id="adminPwdInput" class="qr-input" style="text-align: center; font-size: 1.2rem; letter-spacing: 5px; margin-bottom: 15px;" placeholder="****">
-      <button class="submit-btn" style="width: 100%; padding: 12px;" onclick="checkAdminPassword()"><span class="editable-text" data-ru="Войти" data-ua="Увійти" contenteditable="false">Войти</span></button>
-      <p id="adminPwdError" class="editable-text" style="color: rgb(220, 53, 69); display: none; margin-top: 15px; font-size: 0.85rem; font-weight: 500;" data-ru="Неверный пароль!" data-ua="Невірний пароль!" contenteditable="false">Неверный пароль!</p>
+      <button class="submit-btn" style="width: 100%; padding: 12px;" onclick="checkAdminPassword()"><span class="editable-text" data-ru="Войти" data-ua="Увійти">Войти</span></button>
+      <p id="adminPwdError" class="editable-text" style="color: rgb(220, 53, 69); display: none; margin-top: 15px; font-size: 0.85rem; font-weight: 500;" data-ru="Неверный пароль!" data-ua="Невірний пароль!">Неверный пароль!</p>
     </div>
   </div>
 
@@ -538,35 +537,35 @@
     <div class="qr-container" style="max-width: 500px; padding: 40px; text-align: left;">
       <span class="qr-close" onclick="closeQrModal()">×</span>
       
-      <h2 class="qr-title editable-text" style="margin-bottom: 10px; color: var(--gold-dark);" data-ru="Табличка с QR-кодом" data-ua="Табличка з QR-кодом" contenteditable="false">Табличка с QR-кодом</h2>
-      <p class="qr-title editable-text" style="font-size: 0.95rem; color: rgb(119, 119, 119); margin-bottom: 25px; line-height: 1.5;" data-ru="Введите финальную ссылку на ваш сайт, чтобы создать код для памятника." data-ua="Введіть фінальне посилання на ваш сайт, щоб створити код для пам'ятника." contenteditable="false">Введите финальную ссылку на ваш сайт, чтобы создать код для памятника.</p>
+      <h2 class="qr-title editable-text" style="margin-bottom: 10px; color: var(--gold-dark);" data-ru="Табличка с QR-кодом" data-ua="Табличка з QR-кодом">Табличка с QR-кодом</h2>
+      <p class="qr-title editable-text" style="font-size: 0.95rem; color: rgb(119, 119, 119); margin-bottom: 25px; line-height: 1.5;" data-ru="Введите финальную ссылку на ваш сайт, чтобы создать код для памятника." data-ua="Введіть фінальне посилання на ваш сайт, щоб створити код для пам'ятника.">Введите финальную ссылку на ваш сайт, чтобы создать код для памятника.</p>
 
       <div class="qr-input-group" style="display: flex; gap: 15px; margin-bottom: 30px;">
         <input type="text" id="qrUrlInput" class="qr-input" style="flex-grow: 1; padding: 12px 15px; border: 1px solid rgb(235, 229, 217); border-radius: 12px;" placeholder="тест">
-        <button class="qr-btn" style="background: var(--gold-gradient); color: rgb(50, 33, 8); border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 600; box-shadow: rgba(194, 155, 73, 0.3) 0px 4px 10px;" onclick="generateQr()"><span class="editable-text" data-ru="Создать" data-ua="Створити" contenteditable="false">Создать</span></button>
+        <button class="qr-btn" style="background: var(--gold-gradient); color: rgb(50, 33, 8); border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 600; box-shadow: rgba(194, 155, 73, 0.3) 0px 4px 10px;" onclick="generateQr()"><span class="editable-text" data-ru="Создать" data-ua="Створити">Создать</span></button>
       </div>
 
       <div class="qr-print-area" id="qrPrintArea" style="border: 2px dashed var(--gold); border-radius: 16px; padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; background: rgb(255, 255, 255);">
-        <h1 class="editable-text" style="color: var(--gold-dark); font-size: 2.2rem; margin-bottom: 5px; line-height: 1;" data-ru="Цифровой Мемориал" data-ua="Цифровий Меморіал" contenteditable="false">Цифровой Мемориал</h1>
-        <p class="editable-text" style="font-size: 0.8rem; font-weight: 700; color: rgb(136, 136, 136); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px;" data-ru="СЕМЬИ ГОЛОТРИНЫХ" data-ua="РОДИНИ ГОЛОТРІНИХ" contenteditable="false">СЕМЬИ ГОЛОТРИНЫХ</p>
+        <h1 class="editable-text" style="color: var(--gold-dark); font-size: 2.2rem; margin-bottom: 5px; line-height: 1;" data-ru="Цифровой Мемориал" data-ua="Цифровий Меморіал">Цифровой Мемориал</h1>
+        <p class="editable-text" style="font-size: 0.8rem; font-weight: 700; color: rgb(136, 136, 136); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px;" data-ru="СЕМЬИ ГОЛОТРИНЫХ" data-ua="РОДИНИ ГОЛОТРІНИХ">СЕМЬИ ГОЛОТРИНЫХ</p>
         
-        <p class="editable-text" style="font-size: 0.9rem; color: rgb(102, 102, 102); max-width: 250px; margin: 0px auto 20px; line-height: 1.4;" data-ru="Наведите камеру смартфона на код, чтобы открыть страницу памяти" data-ua="Наведіть камеру смартфона на код, щоб відкрити сторінку пам'яті" contenteditable="false">Наведите камеру смартфона на код, чтобы открыть страницу памяти</p>
+        <p class="editable-text" style="font-size: 0.9rem; color: rgb(102, 102, 102); max-width: 250px; margin: 0px auto 20px; line-height: 1.4;" data-ru="Наведите камеру смартфона на код, чтобы открыть страницу памяти" data-ua="Наведіть камеру смартфона на код, щоб відкрити сторінку пам'яті">Наведите камеру смартфона на код, чтобы открыть страницу памяти</p>
         
-        <img id="qrCodeImg" crossorigin="anonymous" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&amp;data=https%3A%2F%2Fgolotrin-memorial.netlify.app%2F&amp;color=322108&amp;bgcolor=ffffff" alt="QR Code" style="width: 200px; height: 200px; margin-bottom: 20px; border-radius: 12px;">
+        <div id="qrCodeImg" style="width: 200px; height: 200px; margin: 0 auto 20px; padding: 10px; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center;"></div>
         
         <p id="qrUrlDisplay" style="font-size: 0.85rem; font-weight: 600; color: rgb(50, 33, 8); margin-bottom: 15px; letter-spacing: 0.5px;"></p>
 
-        <p class="editable-text" style="font-size: 0.85rem; font-weight: 600; color: rgb(153, 153, 153);" data-ru="Здесь бережно сохранена история нашей семьи" data-ua="Тут дбайливо збережена історія нашої родини" contenteditable="false">Здесь бережно сохранена история нашей семьи</p>
+        <p class="editable-text" style="font-size: 0.85rem; font-weight: 600; color: rgb(153, 153, 153);" data-ru="Здесь бережно сохранена история нашей семьи" data-ua="Тут дбайливо збережена історія нашої родини">Здесь бережно сохранена история нашей семьи</p>
       </div>
 
       <div class="print-btn-wrap" id="printBtnWrap" style="display: flex; justify-content: space-between; gap: 15px; margin-top: 25px;">
         <button style="flex: 1 1 0%; padding: 14px; border-radius: 12px; background: rgb(200, 169, 98); color: rgb(50, 33, 8); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="window.print()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-          <span class="editable-text" data-ru="Распечатать" data-ua="Роздрукувати" contenteditable="false">Распечатать</span>
+          <span class="editable-text" data-ru="Распечатать" data-ua="Роздрукувати">Распечатать</span>
         </button>
         <button style="flex: 1 1 0%; padding: 14px; border-radius: 12px; background: rgb(17, 17, 17); color: rgb(255, 255, 255); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="downloadQr()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          <span class="editable-text" data-ru="Скачать код" data-ua="Завантажити" contenteditable="false">Скачать код</span>
+          <span class="editable-text" data-ru="Скачать код" data-ua="Завантажити">Скачать код</span>
         </button>
       </div>
     </div>
@@ -576,8 +575,8 @@
     <div class="qr-container" style="max-width: 400px; padding: 30px;">
       <h3 style="color: var(--text-color); margin-bottom: 25px; font-size: 1.2rem;" id="confirmModalText">Обновить перевод другой версии автоматически? (Отмените, чтобы сохранить ручные правки)</h3>
       <div style="display: flex; gap: 15px; justify-content: center;">
-        <button class="cancel-btn" onclick="document.getElementById('confirmModal').classList.remove('active')"><span class="editable-text" data-ru="Отмена" data-ua="Скасувати" contenteditable="false">Отмена</span></button>
-        <button class="submit-btn" style="padding: 10px 25px;" onclick="if(window.currentConfirmCallback) window.currentConfirmCallback();"><span class="editable-text" data-ru="Да" data-ua="Так" contenteditable="false">Да</span></button>
+        <button class="cancel-btn" onclick="document.getElementById('confirmModal').classList.remove('active')"><span class="editable-text" data-ru="Отмена" data-ua="Скасувати">Отмена</span></button>
+        <button class="submit-btn" style="padding: 10px 25px;" onclick="if(window.currentConfirmCallback) window.currentConfirmCallback();"><span class="editable-text" data-ru="Да" data-ua="Так">Да</span></button>
       </div>
     </div>
   </div>
@@ -585,15 +584,16 @@
   <div class="mobile-menu" id="mobileMenu">
     <span class="close-mobile-menu" onclick="toggleMobileMenu()">×</span>
     <div class="mobile-menu-content">
-      <a href="javascript:void(0)" class="editable-text" onclick="openBio('father-bio'); toggleMobileMenu()" data-ru="ПРО МИХАИЛА" data-ua="ПРО МИХАЙЛА" contenteditable="false">ПРО МИХАИЛА</a>
-      <a href="javascript:void(0)" class="editable-text" onclick="openBio('mother-bio'); toggleMobileMenu()" data-ru="ПРО СВЕТЛАНУ" data-ua="ПРО СВІТЛАНУ" contenteditable="false">ПРО СВЕТЛАНУ</a>
-      <a href="#timeline" class="editable-text" onclick="toggleMobileMenu()" data-ru="ЛИНИЯ ЖИЗНИ" data-ua="ЛІНІЯ ЖИТТЯ" contenteditable="false">ЛИНИЯ ЖИЗНИ</a>
-      <a href="#ritual" class="editable-text" onclick="toggleMobileMenu()" data-ru="СВЕЧА ПАМЯТИ" data-ua="СВІЧКА СПОГАДІВ" contenteditable="false">СВЕЧА ПАМЯТИ</a>
-      <button class="submit-btn" style="margin-top: 20px; font-size: 1rem; padding: 10px 25px;" onclick="shareSite(); toggleMobileMenu()"><span class="editable-text" data-ru="Поделиться ссылкой" data-ua="Поділитися посиланням" contenteditable="false">Поделиться ссылкой</span></button>
+      <a href="javascript:void(0)" class="editable-text" onclick="openBio('father-bio'); toggleMobileMenu()" data-ru="ПРО МИХАИЛА" data-ua="ПРО МИХАЙЛА">ПРО МИХАИЛА</a>
+      <a href="javascript:void(0)" class="editable-text" onclick="openBio('mother-bio'); toggleMobileMenu()" data-ru="ПРО СВЕТЛАНУ" data-ua="ПРО СВІТЛАНУ">ПРО СВЕТЛАНУ</a>
+      <a href="#timeline" class="editable-text" onclick="toggleMobileMenu()" data-ru="ЛИНИЯ ЖИЗНИ" data-ua="ЛІНІЯ ЖИТТЯ">ЛИНИЯ ЖИЗНИ</a>
+      <a href="#ritual" class="editable-text" onclick="toggleMobileMenu()" data-ru="СВЕЧА ПАМЯТИ" data-ua="СВІЧКА СПОГАДІВ">СВЕЧА ПАМЯТИ</a>
+      <button class="submit-btn" style="margin-top: 20px; font-size: 1rem; padding: 10px 25px;" onclick="shareSite(); toggleMobileMenu()"><span class="editable-text" data-ru="Поделиться ссылкой" data-ua="Поділитися посиланням">Поделиться ссылкой</span></button>
     </div>
   </div>
 
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
 
-</body></html>
+</body>
+</html>

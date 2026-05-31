@@ -213,9 +213,9 @@ function toggleAdmin() {
 }
 
 
-function downloadSiteData() {
-  hasUnsavedChanges = false; // Снимаем замок при сохранении
 
+async function downloadSiteData() {
+  // 1. СБОР АКТУАЛЬНЫХ ДАННЫХ ИЗ ИНТЕРФЕЙСА
   document.querySelectorAll('.editable-text[contenteditable="true"]').forEach(el => {
     if (el.hasAttribute('data-ru') && el.hasAttribute('data-ua')) {
       el.setAttribute(`data-${currentLang}`, el.innerText.trim());
@@ -227,45 +227,95 @@ function downloadSiteData() {
     document.querySelectorAll(`#${galId} .gallery-item-wrap`).forEach(wrap => {
       const img = wrap.querySelector('img[id]');
       const cap = wrap.querySelector('.gallery-caption');
-      if (img) updatedGalleries[galId].push({ id: img.id, ru: cap.getAttribute('data-ru') || '', ua: cap.getAttribute('data-ua') || '' });
+      if (img) updatedGalleries[galId].push({ 
+        id: img.id, 
+        ru: cap.getAttribute('data-ru') || '', 
+        ua: cap.getAttribute('data-ua') || '' 
+      });
     });
   });
 
   const dataJsContent = `// === БАЗА ДАННЫХ СВЕЧЕЙ ===\nwindow.DB_CANDLES = ${JSON.stringify(window.DB_CANDLES, null, 2)};\n\n// === БАЗА ДАННЫХ ФОТОГАЛЕРЕЙ И ПОДПИСЕЙ ===\nwindow.DB_GALLERIES = ${JSON.stringify(updatedGalleries, null, 2)};`;
 
-  const clonedDoc = document.documentElement.cloneNode(true);
-  const clonedBody = clonedDoc.querySelector('body');
-  
-  clonedBody.classList.remove('admin-mode');
-  clonedBody.style.overflow = 'auto'; 
+  // 2. АВТОРИЗАЦИЯ GITHUB API (Извлекаем из памяти устройства)
+  let ghOwner = localStorage.getItem('gh_owner');
+  let ghRepo = localStorage.getItem('gh_repo');
+  let ghToken = localStorage.getItem('gh_token');
 
-  const clonedAdminPanel = clonedDoc.querySelector('#adminPanel');
-  if (clonedAdminPanel) clonedAdminPanel.style.display = 'none'; 
+  // Если данных нет, запрашиваем их у администратора (один раз)
+  if (!ghOwner || !ghRepo || !ghToken) {
+    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub (например, Golotrina):", ghOwner || "");
+    if (!ghOwner) return;
+    
+    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория (например, memorial):", ghRepo || "");
+    if (!ghRepo) return;
+    
+    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token (начинается с ghp_...):", ghToken || "");
+    if (!ghToken) return;
 
-  clonedDoc.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
-  clonedDoc.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'false'));
-  
-  const candlesGrid = clonedDoc.querySelector('#candlesGrid');
-  if (candlesGrid) candlesGrid.innerHTML = '';
-  
-  clonedDoc.querySelectorAll('.c-sparks-wrap').forEach(wrap => wrap.innerHTML = '');
+    localStorage.setItem('gh_owner', ghOwner.trim());
+    localStorage.setItem('gh_repo', ghRepo.trim());
+    localStorage.setItem('gh_token', ghToken.trim());
+  }
 
-  ['fatherGallery', 'motherGallery'].forEach(galId => {
-    const gal = clonedDoc.querySelector(`#${galId}`);
-    if (gal) gal.innerHTML = '';
-  });
+  showToast(currentLang === 'ua' ? 'Відправка на GitHub...' : 'Отправка на GitHub...');
 
-  clonedDoc.querySelectorAll('img[id]').forEach(img => {
-    const srcAttr = img.getAttribute('src');
-    if (srcAttr && srcAttr.startsWith('blob:')) {
-      img.setAttribute('src', img.id + '.webp'); 
+  // 3. ОТПРАВКА ДАННЫХ ЧЕРЕЗ GITHUB REST API
+  try {
+    const filePath = 'js/data.js';
+    const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filePath}`;
+
+    // Сначала получаем SHA (уникальный хеш) текущего файла (это требование GitHub для перезаписи)
+    const getRes = await fetch(url, {
+      headers: { 
+        'Authorization': `token ${ghToken}`, 
+        'Accept': 'application/vnd.github.v3+json' 
+      }
+    });
+
+    if (!getRes.ok) {
+      if (getRes.status === 401 || getRes.status === 404) {
+        throw new Error('Ошибка доступа! Неверный логин, репозиторий или Токен устарел.');
+      }
+      throw new Error('Не удалось связаться с репозиторием GitHub.');
     }
-  });
+    
+    const fileData = await getRes.json();
+    const sha = fileData.sha;
 
-  triggerFileDownload("data.js", dataJsContent, "application/javascript");
-  setTimeout(() => triggerFileDownload("index.html", "<!DOCTYPE html>\n" + clonedDoc.outerHTML, "text/html"), 500);
-  showToast(currentLang === 'ua' ? 'Файли збережено! Завантажте їх на Netlify.' : 'Файлы сохранены! Загрузите их на Netlify.');
+    // Кодируем текст в Base64 с поддержкой кириллицы (UTF-8)
+    const encodedContent = btoa(unescape(encodeURIComponent(dataJsContent)));
+
+    // Отправляем обновленный файл
+    const putRes = await fetch(url, {
+      method: 'PUT',
+      headers: { 
+        'Authorization': `token ${ghToken}`, 
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: 'Обновление Мемориала: новые свечи/фото/текст (Авто-коммит)',
+        content: encodedContent,
+        sha: sha
+      })
+    });
+
+    if (!putRes.ok) throw new Error('Ошибка при записи файла в репозиторий.');
+
+    hasUnsavedChanges = false;
+    showToast(currentLang === 'ua' ? '✅ Збережено! Сайт оновиться через хвилину.' : '✅ Сохранено! Сайт обновится через минуту.');
+
+  } catch (error) {
+    console.error(error);
+    alert(`Ошибка: ${error.message}\n\nВозможно, вы ввели неверные данные. Настройки GitHub будут сброшены для повторного ввода.`);
+    // Сброс кэша при ошибке авторизации
+    localStorage.removeItem('gh_token');
+    localStorage.removeItem('gh_owner');
+    localStorage.removeItem('gh_repo');
+  }
 }
+
 
 function triggerFileDownload(filename, content, mimeType) {
   const link = document.createElement("a");
@@ -647,7 +697,8 @@ function generateQr() {
   const url = document.getElementById('qrUrlInput').value.trim();
   if (!url) { showToast(currentLang === 'ua' ? 'Введіть посилання!' : 'Введите ссылку!'); return; }
   
-  const qrImg = document.getElementById('qrCodeImg');
+  const qrContainer = document.getElementById('qrCodeImg');
+  qrContainer.innerHTML = ''; // Очищаем старый QR-код
   
   // Добавляем текст ссылки под QR-код
   const urlDisplay = document.getElementById('qrUrlDisplay');
@@ -655,12 +706,20 @@ function generateQr() {
     urlDisplay.innerText = url;
   }
   
-  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}&color=322108&bgcolor=ffffff&t=${Date.now()}`;
-  qrImg.onload = () => { 
-    document.getElementById('qrPrintArea').style.display = 'flex'; 
-    document.getElementById('printBtnWrap').style.display = 'flex'; 
-  };
+  // Генерируем полностью автономный QR-код в браузере!
+  new QRCode(qrContainer, {
+    text: url,
+    width: 180,
+    height: 180,
+    colorDark : "#322108",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+  });
+
+  document.getElementById('qrPrintArea').style.display = 'flex'; 
+  document.getElementById('printBtnWrap').style.display = 'flex'; 
 }
+
 
 function downloadQr() {
   const printArea = document.getElementById('qrPrintArea');
@@ -682,6 +741,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('memorial_theme');
   if (savedTheme === 'dark') toggleTheme(); 
   setLang('ua');
+
+// ЗАЩИТА ОТ ГЕНЕРАЦИИ <div> ПРИ НАЖАТИИ ENTER В РЕЖИМЕ РЕДАКТИРОВАНИЯ
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
+      e.preventDefault(); // Отменяем стандартное поведение браузера
+      document.execCommand('insertText', false, '\n'); // Вставляем чистый перенос строки
+      hasUnsavedChanges = true; // Отмечаем, что были изменения
+    }
+  });
 
   // Вход в админку по секретной ссылке (например, site.com/?admin=pwd)
   const urlParams = new URLSearchParams(window.location.search);
@@ -765,7 +833,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.getElementById('file-uploader').addEventListener('change', function(e) {
+  
+document.getElementById('file-uploader').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file && currentUploadId) {
       const reader = new FileReader();
@@ -786,13 +855,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             hasUnsavedChanges = true;
 
-            customConfirm(currentLang === 'ua' ? 'Фото оптимізовано! Завантажити .webp файл?' : 'Фото оптимизировано! Скачать .webp файл?', () => {
-              const link = document.createElement("a");
-              link.href = blobUrl;
-              link.download = currentUploadId + ".webp";
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
+            // Спрашиваем, загрузить ли картинку сразу в репозиторий
+            customConfirm(currentLang === 'ua' ? 'Фото оптимізовано! Завантажити його одразу на GitHub?' : 'Фото оптимизировано! Загрузить его сразу на GitHub?', () => {
+              uploadImageToGitHub(blob, currentUploadId + '.webp');
             });
           }, 'image/webp', 0.85);
         };
@@ -805,3 +870,74 @@ document.addEventListener('DOMContentLoaded', () => {
   const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 });
+
+// ==========================================
+// 10. ЗАГРУЗКА ИЗОБРАЖЕНИЙ НА GITHUB API
+// ==========================================
+async function uploadImageToGitHub(blob, filename) {
+  let ghOwner = localStorage.getItem('gh_owner');
+  let ghRepo = localStorage.getItem('gh_repo');
+  let ghToken = localStorage.getItem('gh_token');
+
+  if (!ghOwner || !ghRepo || !ghToken) {
+    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub:", ghOwner || "");
+    if (!ghOwner) return;
+    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория:", ghRepo || "");
+    if (!ghRepo) return;
+    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token:", ghToken || "");
+    if (!ghToken) return;
+    
+    localStorage.setItem('gh_owner', ghOwner.trim());
+    localStorage.setItem('gh_repo', ghRepo.trim());
+    localStorage.setItem('gh_token', ghToken.trim());
+  }
+
+  showToast(currentLang === 'ua' ? 'Відправка фото на GitHub...' : 'Отправка фото на GitHub...');
+
+  const reader = new FileReader();
+  reader.readAsDataURL(blob);
+  reader.onloadend = async function() {
+    // Вырезаем чистый Base64 код картинки
+    const base64data = reader.result.split(',')[1]; 
+    
+    try {
+      const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filename}`;
+      
+      // Проверяем, существует ли уже такая картинка, чтобы получить ее SHA для перезаписи
+      let sha = null;
+      try {
+        const getRes = await fetch(url, {
+          headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (getRes.ok) {
+          const fileData = await getRes.json();
+          sha = fileData.sha;
+        }
+      } catch(e) {} // Если картинки еще нет — это нормально
+
+      const bodyData = {
+        message: `Обновление фото: ${filename}`,
+        content: base64data
+      };
+      if (sha) bodyData.sha = sha;
+
+      const putRes = await fetch(url, {
+        method: 'PUT',
+        headers: { 
+          'Authorization': `token ${ghToken}`, 
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bodyData)
+      });
+
+      if (!putRes.ok) throw new Error('Ошибка записи в репозиторий');
+      
+      hasUnsavedChanges = false;
+      showToast(currentLang === 'ua' ? '✅ Фото успішно завантажено!' : '✅ Фото успешно загружено!');
+    } catch (error) {
+      console.error(error);
+      alert('Ошибка загрузки фото: ' + error.message);
+    }
+  };
+}

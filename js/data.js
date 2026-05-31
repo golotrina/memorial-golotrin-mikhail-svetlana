@@ -156,11 +156,6 @@ window.DB_GALLERIES = {
       "id": "gallery-f-1780045555012",
       "ru": "",
       "ua": ""
-    },
-    {
-      "id": "gallery-f-1780256774499",
-      "ru": "",
-      "ua": ""
     }
   ],
   "motherGallery": [

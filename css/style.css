@@ -1,4 +1,25 @@
 /* === ДИЗАЙН-СИСТЕМА === */
+
+/* === ЛОКАЛЬНЫЕ ШРИФТЫ === */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/montserrat.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('../fonts/playfair.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('../fonts/playfair-italic.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+}
+
 :root {
   --bg-color: #FAFAFA;
   --text-color: #2C2A29;
