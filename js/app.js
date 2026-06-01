@@ -10,7 +10,7 @@ const MAX_VISIBLE_GALLERY = 6;
 let currentGalleryImages = [];
 let currentGalleryIndex = 0;
 let currentUploadId = null;
-let hasUnsavedChanges = false; // Тот самый "замок" от случайного закрытия
+let hasUnsavedChanges = false;
 
 const candleData = {
   classic: { glow: 'rgba(255, 180, 0, 0.4)', flame: 'linear-gradient(to bottom, #FFF, #FFB400)', nameRu: 'Свеча памяти', nameUa: "Свічка пам'яті" },
@@ -25,22 +25,21 @@ const candleData = {
 function showToast(text) {
   const toast = document.createElement('div');
   toast.className = 'toast-notification';
-  toast.innerHTML = text; // Изменено для поддержки HTML-тегов в уведомлениях
+  toast.innerHTML = text;
   document.body.appendChild(toast);
   setTimeout(() => toast.classList.add('show'), 10);
   setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
 }
 
-// ДОБАВЛЕНО: Усиленное уведомление для защиты от раннего обновления страницы
 function showLongWarningToast(text) {
   const toast = document.createElement('div');
   toast.className = 'toast-notification';
   toast.innerHTML = text; 
-  toast.style.backgroundColor = 'rgba(180, 30, 30, 0.95)'; // Красный оттенок для привлечения внимания
+  toast.style.backgroundColor = 'rgba(180, 30, 30, 0.95)';
   toast.style.border = '1px solid #ff6b6b';
   document.body.appendChild(toast);
   setTimeout(() => toast.classList.add('show'), 10);
-  setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 10000); // Висит 10 секунд
+  setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 10000);
 }
 
 function customConfirm(text, onConfirm) {
@@ -91,7 +90,7 @@ function scrollToTop() {
 }
 
 // ==========================================
-// 3. УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ И МОБИЛЬНОЕ МЕНЮ
+// 3. УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ И РЕНДЕРИНГ
 // ==========================================
 function toggleTheme() {
   document.body.classList.toggle('dark-theme');
@@ -113,23 +112,22 @@ function renderStaticContent() {
   const content = window.SITE_CONTENT;
   const isUa = currentLang === 'ua';
 
-  // Главный экран (Hero)
   document.getElementById('hero-title').innerText = isUa ? content.hero.titleUa : content.hero.titleRu;
   document.getElementById('hero-subtitle').innerText = isUa ? content.hero.subtitleUa : content.hero.subtitleRu;
   document.getElementById('hero-quote').innerText = isUa ? content.hero.quoteUa : content.hero.quoteRu;
 
-  // Карточка Папы
   document.getElementById('father-name').innerText = isUa ? content.parents.father.nameUa : content.parents.father.nameRu;
   document.getElementById('father-dates').innerText = isUa ? content.parents.father.datesUa : content.parents.father.datesRu;
   document.getElementById('father-bio-preview').innerText = isUa ? content.parents.father.bioUa : content.parents.father.bioRu;
 
-  // Карточка Мамы
   document.getElementById('mother-name').innerText = isUa ? content.parents.mother.nameUa : content.parents.mother.nameRu;
   document.getElementById('mother-dates').innerText = isUa ? content.parents.mother.datesUa : content.parents.mother.datesRu;
   document.getElementById('mother-bio-preview').innerText = isUa ? content.parents.mother.bioUa : content.parents.mother.bioRu;
 
   renderTimeline();
-
+  renderBioModal('father', 'fbio', content.fatherBio);
+  renderBioModal('mother', 'mbio', content.motherBio);
+  renderEpochModal(content.epochData);
 }
 
 function renderTimeline() {
@@ -137,27 +135,21 @@ function renderTimeline() {
   const tData = window.SITE_CONTENT.timeline;
   const isUa = currentLang === 'ua';
 
-  // 1. Заполняем заголовки
   document.getElementById('timeline-main-title').innerText = isUa ? tData.header.titleUa : tData.header.titleRu;
   document.getElementById('timeline-subtitle').innerText = isUa ? tData.header.subtitleUa : tData.header.subtitleRu;
   document.getElementById('timeline-epoch-btn').innerText = isUa ? tData.header.btnUa : tData.header.btnRu;
 
-  // 2. Собираем события
   const container = document.getElementById('timeline-container');
-  container.innerHTML = ''; // Очищаем контейнер перед сборкой
+  container.innerHTML = '';
 
   tData.events.forEach(item => {
     const yearText = isUa ? item.yearUa : item.yearRu;
     const titleText = isUa ? item.titleUa : item.titleRu;
     const descText = isUa ? item.textUa : item.textRu;
     
-    // Формируем блок текста (с учетом стихов)
-    let textHTML = '';
-    if (item.isEpitaph) {
-      textHTML = `<div class="timeline-epitaph" style="white-space: pre-wrap;">${descText}</div>`;
-    } else {
-      textHTML = `<p style="white-space: pre-wrap;">${descText}</p>`;
-    }
+    let textHTML = item.isEpitaph 
+      ? `<div class="timeline-epitaph" style="white-space: pre-wrap;">${descText}</div>`
+      : `<p style="white-space: pre-wrap;">${descText}</p>`;
 
     const eventEl = document.createElement('div');
     eventEl.className = 'timeline-item fade-up visible';
@@ -172,6 +164,72 @@ function renderTimeline() {
   });
 }
 
+function renderBioModal(type, prefix, data) {
+  if (!data) return;
+  const isUa = currentLang === 'ua';
+
+  document.getElementById(`${prefix}-name`).innerText = isUa ? data.nameUa : data.nameRu;
+  document.getElementById(`${prefix}-dates`).innerText = isUa ? data.datesUa : data.datesRu;
+  document.getElementById(`${prefix}-personal-quote`).innerText = isUa ? data.personalQuoteUa : data.personalQuoteRu;
+  document.getElementById(`${prefix}-intro`).innerText = isUa ? data.introUa : data.introRu;
+
+  const accContainer = document.getElementById(`${prefix}-accordion`);
+  accContainer.innerHTML = '';
+  data.accordion.forEach(item => {
+    const title = isUa ? item.titleUa : item.titleRu;
+    const paragraphs = isUa ? item.paragraphsUa : item.paragraphsRu;
+    const itemEl = document.createElement('div');
+    itemEl.className = 'accordion-item';
+    let pHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+    itemEl.innerHTML = `
+      <button class="accordion-header" onclick="toggleAccordion(this)">
+        <span>${title}</span><span class="accordion-icon">+</span>
+      </button>
+      <div class="accordion-content"><div class="accordion-inner">${pHTML}</div></div>
+    `;
+    accContainer.appendChild(itemEl);
+  });
+
+  const qContainer = document.getElementById(`${prefix}-quotes`);
+  qContainer.innerHTML = '';
+  data.quotes.forEach(q => {
+    const text = isUa ? q.textUa : q.textRu;
+    const author = isUa ? q.authorUa : q.authorRu;
+    const qEl = document.createElement('div');
+    qEl.className = 'quote-card fade-up visible';
+    qEl.innerHTML = `<span class="quote-icon">“</span><p class="quote-text">${text}</p><p class="quote-author">${author}</p>`;
+    qContainer.appendChild(qEl);
+  });
+}
+
+function renderEpochModal(data) {
+  if (!data) return;
+  const isUa = currentLang === 'ua';
+
+  document.getElementById('epoch-main-title').innerText = isUa ? data.header.titleUa : data.header.titleRu;
+  document.getElementById('epoch-subtitle').innerText = isUa ? data.header.subtitleUa : data.header.subtitleRu;
+
+  const container = document.getElementById('epoch-timeline-container');
+  container.innerHTML = '';
+  data.events.forEach(ev => {
+    const dateText = isUa ? ev.dateUa : ev.dateRu;
+    const titleText = isUa ? ev.titleUa : ev.titleRu;
+    const paragraphs = isUa ? ev.paragraphsUa : ev.paragraphsRu;
+    
+    const evEl = document.createElement('div');
+    evEl.className = 'timeline-item fade-up visible';
+    let pHTML = paragraphs.map(p => `<p style="white-space: pre-wrap;">${p}</p>`).join('');
+    
+    evEl.innerHTML = `
+      <span class="timeline-date">${dateText}</span>
+      <div class="timeline-content">
+        <h4>${titleText}</h4>
+        ${pHTML}
+      </div>
+    `;
+    container.appendChild(evEl);
+  });
+}
 
 function changeZoom(step) {
   if (step === 0) baseFontSize = 16; else baseFontSize += step; 
@@ -182,13 +240,8 @@ function changeZoom(step) {
 
 function setLang(lang) {
   currentLang = lang;
+  renderStaticContent(); 
 
-renderStaticContent(); 
-
-  renderCandles(); 
-  updateGalleryVisibility('motherGallery'); 
-  updateGalleryVisibility('fatherGallery');
-  
   document.getElementById('btn-lang-ua')?.classList.toggle('active', lang === 'ua');
   document.getElementById('btn-lang-ru')?.classList.toggle('active', lang === 'ru');
   
@@ -204,7 +257,7 @@ renderStaticContent();
     creatorLink.title = currentLang === 'ua' ? 'Скопіювати Email творця' : 'Скопировать Email создателя';
   }
 
- document.querySelectorAll('.gallery-caption').forEach(el => {
+  document.querySelectorAll('.gallery-caption').forEach(el => {
     el.setAttribute('data-placeholder', el.getAttribute(`data-placeholder-${currentLang}`));
     const text = el.getAttribute(`data-${currentLang}`);
     if (text !== null) el.innerText = text; 
@@ -222,7 +275,6 @@ function toggleMobileMenu() {
   if (menu) menu.classList.toggle('active');
 }
 
-// === ГЕНЕРАТОР РОССЫПИ ИСКР ===
 function createSparks() {
   document.querySelectorAll('.c-sparks-wrap').forEach(wrap => {
     if (wrap.children.length > 0) return; 
@@ -245,7 +297,7 @@ function createSparks() {
 }
 
 // ==========================================
-// 4. АДМИН-ПАНЕЛЬ И СКАЧИВАНИЕ
+// 4. АДМИН-ПАНЕЛЬ И НАСТРОЙКИ
 // ==========================================
 function promptAdmin() {
   document.getElementById('adminAuthModal').classList.add('active');
@@ -271,137 +323,15 @@ function toggleAdmin() {
   const isAdm = document.body.classList.contains('admin-mode');
 
   document.querySelectorAll('.editable-text').forEach(el => {
-    // Выносим проверки для читаемости
     const isButton = el.closest('button') && !el.closest('.accordion-header');
     const isLink = el.closest('a');
 
     if (isButton || isLink) {
       el.setAttribute('contenteditable', 'false');
     } else {
-      // ИСПОЛЬЗУЕМ setAttribute вместо изменения свойства
       el.setAttribute('contenteditable', isAdm ? 'true' : 'false');
     }
   });
-}
-
-async function downloadSiteData() {
-  // 1. СБОР АКТУАЛЬНЫХ ДАННЫХ ИЗ ИНТЕРФЕЙСА
-    document.querySelectorAll('.editable-text[contenteditable="true"]').forEach(el => {
-    if (el.hasAttribute('data-ru') && el.hasAttribute('data-ua')) {
-      el.setAttribute(`data-${currentLang}`, el.innerText.trim()); 
-    }
-  });
-
-  const updatedGalleries = { fatherGallery: [], motherGallery: [] };
-  ['fatherGallery', 'motherGallery'].forEach(galId => {
-    document.querySelectorAll(`#${galId} .gallery-item-wrap`).forEach(wrap => {
-      const img = wrap.querySelector('img[id]');
-      const cap = wrap.querySelector('.gallery-caption');
-      if (img) updatedGalleries[galId].push({ 
-        id: img.id, 
-        ru: cap.getAttribute('data-ru') || '', 
-        ua: cap.getAttribute('data-ua') || '' 
-      });
-    });
-  });
-
-  const dataJsContent = `// === БАЗА ДАННЫХ СВЕЧЕЙ ===\nwindow.DB_CANDLES = ${JSON.stringify(window.DB_CANDLES, null, 2)};\n\n// === БАЗА ДАННЫХ ФОТОГАЛЕРЕЙ И ПОДПИСЕЙ ===\nwindow.DB_GALLERIES = ${JSON.stringify(updatedGalleries, null, 2)};`;
-
-  // --- ПОДГОТОВКА И ОЧИСТКА HTML ---
-  const clonedDoc = document.documentElement.cloneNode(true);
-  const clonedBody = clonedDoc.querySelector('body');
-  clonedBody.classList.remove('admin-mode');
-  clonedBody.style.overflow = 'auto'; 
-
-  const clonedAdminPanel = clonedDoc.querySelector('#adminPanel');
-  if (clonedAdminPanel) clonedAdminPanel.style.display = 'none'; 
-
-  clonedDoc.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
-  clonedDoc.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable', 'false'));
-  
-  const candlesGrid = clonedDoc.querySelector('#candlesGrid');
-  if (candlesGrid) candlesGrid.innerHTML = '';
-  clonedDoc.querySelectorAll('.c-sparks-wrap').forEach(wrap => wrap.innerHTML = '');
-  ['fatherGallery', 'motherGallery'].forEach(galId => {
-    const gal = clonedDoc.querySelector(`#${galId}`);
-    if (gal) gal.innerHTML = '';
-  });
-  clonedDoc.querySelectorAll('img[id]').forEach(img => {
-    const srcAttr = img.getAttribute('src');
-    if (srcAttr && srcAttr.startsWith('blob:')) {
-      img.setAttribute('src', img.id + '.webp'); 
-    }
-  });
-
-  const htmlContent = "<!DOCTYPE html>\n" + clonedDoc.outerHTML;
-
-  // 2. АВТОРИЗАЦИЯ GITHUB API
-  let ghOwner = localStorage.getItem('gh_owner');
-  let ghRepo = localStorage.getItem('gh_repo');
-  let ghToken = localStorage.getItem('gh_token');
-
-  if (!ghOwner || !ghRepo || !ghToken) {
-    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub:", ghOwner || "");
-    if (!ghOwner) return;
-    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория:", ghRepo || "");
-    if (!ghRepo) return;
-    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token:", ghToken || "");
-    if (!ghToken) return;
-
-    localStorage.setItem('gh_owner', ghOwner.trim());
-    localStorage.setItem('gh_repo', ghRepo.trim());
-    localStorage.setItem('gh_token', ghToken.trim());
-  }
-
-  showToast(currentLang === 'ua' ? 'Відправка файлів на GitHub...' : 'Отправка файлов на GitHub...');
-
-  // 3. ОТПРАВКА ДВУХ ФАЙЛОВ ЧЕРЕЗ GITHUB REST API
-  try {
-    const uploadFile = async (filePath, content, commitMessage) => {
-      const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filePath}`;
-      
-      const getRes = await fetch(url, { headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' } });
-      if (!getRes.ok && getRes.status !== 404) throw new Error(`Ошибка доступа к ${filePath}`);
-      
-      let sha = null;
-      if (getRes.ok) {
-        const fileData = await getRes.json();
-        sha = fileData.sha;
-      }
-
-      const encodedContent = btoa(unescape(encodeURIComponent(content)));
-      
-      const putRes = await fetch(url, {
-        method: 'PUT',
-        headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: commitMessage, content: encodedContent, sha: sha })
-      });
-
-      if (!putRes.ok) throw new Error(`Ошибка при записи ${filePath}`);
-    };
-
-    await uploadFile('js/data.js', dataJsContent, 'Обновление Мемориала: база данных (Авто-коммит)');
-    await uploadFile('index.html', htmlContent, 'Обновление Мемориала: тексты и верстка (Авто-коммит)');
-
-    hasUnsavedChanges = false;
-    
-    // ИСПРАВЛЕНИЕ 2: Жесткое предупреждение о задержке GitHub Pages
-    showLongWarningToast(currentLang === 'ua' 
-      ? '✅ УСПІХ! Файли на GitHub.<br><br><b>УВАГА: Не оновлюйте сторінку найближчі 2-3 хвилини!</b><br>GitHub Pages потрібен час на збірку сайту.' 
-      : '✅ УСПЕХ! Файлы на GitHub.<br><br><b>ВНИМАНИЕ: Не обновляйте страницу ближайшие 2-3 минуты!</b><br>GitHub Pages нужно время на сборку сайта.');
-
-  } catch (error) {
-    console.error(error);
-    alert(`Ошибка: ${error.message}\n\nНастройки GitHub будут сброшены для повторного ввода.`);
-    localStorage.removeItem('gh_token');
-  }
-}
-
-function triggerFileDownload(filename, content, mimeType) {
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(new Blob([content], { type: mimeType }));
-  link.download = filename;
-  document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
 
 // ==========================================
@@ -509,494 +439,3 @@ function openLightbox(wrapper) {
 function nextImage(e) { if(e) e.stopPropagation(); if(currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
 function prevImage(e) { if(e) e.stopPropagation(); if(currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
 function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); if (!document.querySelector('.bio-modal.active')) document.body.style.overflow = 'auto'; }
-
-// ==========================================
-// 6. СВЕЧИ И РИТУАЛ (Начало)
-// ==========================================
-function renderCandles() {
-  const grid = document.getElementById('candlesGrid'); 
-  if (!grid) return;
-  grid.innerHTML = '';
-  
-  const MAX_VISIBLE = 4; 
-  window.DB_CANDLES.forEach((c, index) => {
-    if (!isCandlesExpanded && index >= MAX_VISIBLE) return;
-    const typeInfo = candleData[c.type] || candleData['classic']; 
-    const typeName = currentLang === 'ru' ? typeInfo.nameRu : typeInfo.nameUa;
-    const dateObj = new Date(c.timestamp); 
-    const dateStr = dateObj.toLocaleDateString('ru-RU') + ', ' + dateObj.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
-    
-    const cName = currentLang === 'ua' ? (c.name_ua || c.name_ru || c.name) : (c.name_ru || c.name_ua || c.name);
-    const cMessage = currentLang === 'ua' ? (c.message_ua || c.message_ru || c.message) : (c.message_ru || c.message_ua || c.message);
-
-    let isLongMsg = cMessage && (cMessage.length > 150 || (cMessage.match(/\n/g) || []).length >= 3);
-    let msgHtml = '';
-    if (cMessage) {
-      msgHtml = `<div class="candle-msg-text ${isLongMsg ? 'collapsible' : ''}">« ${cMessage} »</div>`;
-      if (isLongMsg) {
-        msgHtml += `<button class="candle-expand-btn" onclick="this.previousElementSibling.classList.toggle('expanded'); this.innerText = this.previousElementSibling.classList.contains('expanded') ? (currentLang === 'ua' ? 'Сховати' : 'Скрыть') : (currentLang === 'ua' ? 'Читати далі...' : 'Читать далее...')">${currentLang === 'ua' ? 'Читати далі...' : 'Читать далее...'}</button>`;
-      }
-    }
-
-    const card = document.createElement('div'); 
-    card.className = 'candle-card fade-up visible';
-    
-    card.innerHTML = `
-      <div class="candle-admin-actions">
-        <button onclick="editCandle(${index})" data-title-ru="Редактировать" data-title-ua="Редагувати" title="${currentLang === 'ua' ? 'Редагувати' : 'Редактировать'}">✏️</button>
-        <button onclick="deleteCandle(${index})" data-title-ru="Удалить" data-title-ua="Видалити" title="${currentLang === 'ua' ? 'Видалити' : 'Удалить'}">🗑️</button>
-      </div>
-      <div class="c-sparks-wrap"></div>
-      <div style="display: flex; gap: 20px; flex-grow: 1; margin-bottom: 25px; z-index: 1; position: relative;">
-        <div class="css-candle"><div class="c-glow" style="background: radial-gradient(circle, ${typeInfo.glow} 0%, transparent 60%);"></div><div class="c-flame" style="background: ${typeInfo.flame};"></div><div class="c-body"></div><div class="c-base"></div></div>
-        <div style="flex-grow: 1;">
-          <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; color: #FFF; margin-bottom: 15px;">🕯️ <span>${cName}</span></div>
-          ${msgHtml}
-        </div>
-      </div>
-      <div class="c-card-footer"><span class="c-card-type">${typeName}</span><span>${dateStr}</span></div>
-    `;
-    grid.appendChild(card);
-  });
-  
-  const showMoreWrapper = document.getElementById('showMoreCandlesWrapper');
-  const showMoreBtn = document.getElementById('showMoreCandlesBtn');
-  
-  if (window.DB_CANDLES.length > MAX_VISIBLE) {
-    showMoreWrapper.style.display = 'block';
-    showMoreBtn.innerText = isCandlesExpanded ? (currentLang === 'ua' ? 'Сховати' : 'Скрыть') : (currentLang === 'ua' ? `Показати ще (${window.DB_CANDLES.length - MAX_VISIBLE})` : `Показать еще (${window.DB_CANDLES.length - MAX_VISIBLE})`);
-  } else if (showMoreWrapper) showMoreWrapper.style.display = 'none';
-
-  createSparks();
-}
-
-function toggleCandleForm() {
-  const wrapper = document.getElementById('candleFormWrapper'); 
-  const btnWrapper = document.getElementById('openFormBtnWrapper');
-  wrapper.classList.toggle('active');
-  if (wrapper.classList.contains('active')) {
-    btnWrapper.style.display = 'none'; 
-    setTimeout(() => wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
-  } else {
-    btnWrapper.style.display = 'block'; 
-    editCandleIndex = null;
-    document.getElementById('candleForm').reset();
-  }
-}
-
-async function handleCandleSubmit(e) {
-  e.preventDefault();
-  const form = e.target;
-  
-  let nameInp = document.getElementById('cName').value.trim();
-  let msgInp = document.getElementById('cMessage').value.trim();
-  
-  const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
-  nameInp = nameInp.replace(urlRegex, '').replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
-  msgInp = msgInp.replace(urlRegex, '').replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
-
-  const typeRad = document.querySelector('input[name="cType"]:checked').value;  
-  const sourceLang = currentLang === 'ua' ? 'uk' : 'ru';
-  const targetLang = currentLang === 'ua' ? 'ru' : 'uk';
-  const isAdmin = document.body.classList.contains('admin-mode');
-
-  let isEditing = editCandleIndex !== null;
-  let c = isEditing ? window.DB_CANDLES[editCandleIndex] : null;
-
-  let nameChanged = true;
-  let msgChanged = true;
-
-  if (isEditing) {
-    let oldNameCur = currentLang === 'ua' ? (c.name_ua || c.name_ru || c.name) : (c.name_ru || c.name_ua || c.name);
-    let oldMsgCur = currentLang === 'ua' ? (c.message_ua || c.message_ru || c.message || '') : (c.message_ru || c.message_ua || c.message || '');
-    nameChanged = nameInp !== oldNameCur;
-    msgChanged = msgInp !== oldMsgCur;
-  }
-
-  let doAutoTranslate = true;
-
-  if (isEditing && isAdmin && (nameChanged || msgChanged)) {
-     let targetHasText = currentLang === 'ua' ? (c.name_ru || c.message_ru) : (c.name_ua || c.message_ua);
-     if (targetHasText) {
-         let msg = currentLang === 'ua'
-             ? 'Оновити переклад іншої версії автоматично?\n(ОК - перекласти заново, Скасувати - зберегти ваші минулі ручні правки)'
-             : 'Обновить перевод другой версии автоматически?\n(ОК - перевести заново, Отмена - сохранить ваши прошлые ручные правки)';
-         doAutoTranslate = confirm(msg);
-     }
-  }
-
-  let final_name_ru = nameInp;
-  let final_name_ua = nameInp;
-  let final_msg_ru = msgInp;
-  let final_msg_ua = msgInp;
-
-  if (isEditing) {
-      final_name_ru = c.name_ru || nameInp;
-      final_name_ua = c.name_ua || nameInp;
-      final_msg_ru = c.message_ru || msgInp;
-      final_msg_ua = c.message_ua || msgInp;
-
-      if (currentLang === 'ua') { final_name_ua = nameInp; final_msg_ua = msgInp; }
-      else { final_name_ru = nameInp; final_msg_ru = msgInp; }
-  }
-
-  if (doAutoTranslate && (nameChanged || msgChanged)) {
-      try {
-          if (nameInp && nameChanged) {
-              const resName = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(nameInp)}`);
-              const dataName = await resName.json();
-              if (dataName && dataName[0]) {
-                  let translatedName = dataName[0].map(item => item[0]).join('');
-                  if (currentLang === 'ua') final_name_ru = translatedName; else final_name_ua = translatedName;
-              }
-          }
-          if (msgInp && msgChanged) {
-              const resMsg = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(msgInp)}`);
-              const dataMsg = await resMsg.json();
-              if (dataMsg && dataMsg[0]) {
-                  let translatedMsg = dataMsg[0].map(item => item[0]).join('');
-                  if (currentLang === 'ua') final_msg_ru = translatedMsg; else final_msg_ua = translatedMsg;
-              }
-          }
-      } catch (err) { console.error("Ошибка перевода свечи:", err); }
-  }
-
-  if (isEditing) {
-    window.DB_CANDLES[editCandleIndex].name_ru = final_name_ru;
-    window.DB_CANDLES[editCandleIndex].name_ua = final_name_ua;
-    window.DB_CANDLES[editCandleIndex].message_ru = final_msg_ru;
-    window.DB_CANDLES[editCandleIndex].message_ua = final_msg_ua;
-    window.DB_CANDLES[editCandleIndex].type = typeRad;
-    renderCandles(); toggleCandleForm();
-
-    if (isAdmin) {
-        hasUnsavedChanges = true; 
-        showToast(currentLang === 'ua' ? 'Зміни збережено. Не забудьте "Зберегти зміни" в адмінці!' : 'Изменения сохранены. Нажмите "Сохранить изменения" в админке!');
-    } else {
-        showToast(currentLang === 'ua' ? 'Зміни збережено!' : 'Изменения сохранены!');
-    }
-    return;
-  }
-
-  const newCandle = {
-    id: 'c_' + Date.now(),
-    name_ru: final_name_ru,
-    name_ua: final_name_ua,
-    message_ru: final_msg_ru,
-    message_ua: final_msg_ua,
-    type: typeRad,
-    timestamp: Date.now()
-  };
-
-  const successAction = () => {
-    window.DB_CANDLES.unshift(newCandle);
-    renderCandles();
-    toggleCandleForm();
-
-    if (isAdmin) {
-        hasUnsavedChanges = true;
-        showToast(currentLang === 'ua' ? 'Свічку додано! Збережіть зміни в адмінці.' : 'Свеча добавлена! Сохраните изменения в админке.');
-    } else {
-        showToast(currentLang === 'ua' ? 'Свічку запалено! Дякуємо за світлу пам\'ять.' : 'Свеча зажжена! Спасибо за светлую память.');
-    }
-  };
-
-  const formData = new FormData(form);
-  fetch('https://formspree.io/f/xpqnezyg', {
-    method: 'POST',
-    body: formData,
-    headers: { 'Accept': 'application/json' }
-  }).then(successAction).catch(err => {
-    console.warn("Ошибка Formspree, но свеча отрисована локально:", err);
-    successAction();
-  });
-}
-
-function deleteCandle(index) { 
-  customConfirm(currentLang === 'ua' ? 'Видалити цю свічку?' : 'Удалить эту свечу?', () => { 
-    window.DB_CANDLES.splice(index, 1); 
-    renderCandles(); 
-    if (document.body.classList.contains('admin-mode')) hasUnsavedChanges = true;
-  }); 
-}
-
-function editCandle(index) { 
-  let c = window.DB_CANDLES[index]; 
-  document.getElementById('cName').value = currentLang === 'ua' ? (c.name_ua || c.name_ru || c.name) : (c.name_ru || c.name_ua || c.name); 
-  document.getElementById('cMessage').value = currentLang === 'ua' ? (c.message_ua || c.message_ru || c.message || '') : (c.message_ru || c.message_ua || c.message || ''); 
-  document.querySelector(`input[name="cType"][value="${c.type}"]`).checked = true; 
-  editCandleIndex = index; 
-  const wrapper = document.getElementById('candleFormWrapper'); 
-  if (!wrapper.classList.contains('active')) toggleCandleForm(); 
-  wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-}
-
-function toggleCandlesExpand() { isCandlesExpanded = !isCandlesExpanded; renderCandles(); }
-
-// ==========================================
-// 7. МОДАЛКИ (БИОГРАФИЯ И АККОРДЕОН)
-// ==========================================
-function openBio(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
-function closeBio(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = 'auto'; }
-function toggleAccordion(button) {
-  const item = button.parentElement;
-  if (!item.classList.contains('active')) {
-    item.parentElement.querySelectorAll('.accordion-item').forEach(el => el.classList.remove('active'));
-    item.classList.add('active');
-    setTimeout(() => button.scrollIntoView({ behavior: 'smooth', block: 'center' }), 350);
-  }
-}
-
-// ==========================================
-// 8. QR-КОД 
-// ==========================================
-function openQrModal() { 
-  const currentUrl = window.location.href.split('#')[0];
-  document.getElementById('qrUrlInput').value = currentUrl;
-  document.getElementById('qrPrintArea').style.display = 'none';
-  document.getElementById('printBtnWrap').style.display = 'none';
-  document.getElementById('qrModal').classList.add('active'); 
-}
-
-function closeQrModal() { document.getElementById('qrModal').classList.remove('active'); }
-
-function generateQr() {
-  const url = document.getElementById('qrUrlInput').value.trim();
-  if (!url) { showToast(currentLang === 'ua' ? 'Введіть посилання!' : 'Введите ссылку!'); return; }
-  
-  const qrContainer = document.getElementById('qrCodeImg');
-  qrContainer.innerHTML = ''; 
-  
-  const urlDisplay = document.getElementById('qrUrlDisplay');
-  if (urlDisplay) urlDisplay.innerText = url;
-  
-  new QRCode(qrContainer, {
-    text: url, width: 180, height: 180,
-    colorDark : "#322108", colorLight : "#ffffff",
-    correctLevel : QRCode.CorrectLevel.H
-  });
-
-  document.getElementById('qrPrintArea').style.display = 'flex'; 
-  document.getElementById('printBtnWrap').style.display = 'flex'; 
-}
-
-function downloadQr() {
-  const printArea = document.getElementById('qrPrintArea');
-  html2canvas(printArea, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
-    const link = document.createElement('a');
-    link.href = canvas.toDataURL("image/png");
-    link.download = 'Memorial_Table_QR.png';
-    link.click();
-  });
-}
-
-// ==========================================
-// 9. ИНИЦИАЛИЗАЦИЯ И ЗАЩИТА ОКНА
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-  initGalleries(); renderCandles();
-  createSparks(); 
-  
-  const savedTheme = localStorage.getItem('memorial_theme');
-  if (savedTheme === 'dark') toggleTheme(); 
-  setLang('ua');
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
-      e.preventDefault(); 
-      document.execCommand('insertText', false, '\n'); 
-      hasUnsavedChanges = true; 
-    }
-  });
-
-// ЗАЩИТА ОТ ВСТАВКИ ЧУЖИХ СТИЛЕЙ ПРИ КОПИПАСТЕ (Оставляем только чистый текст)
-  document.addEventListener('paste', function(e) {
-    if (e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
-      e.preventDefault(); // Блокируем стандартную вставку с чужими цветами
-      const text = (e.originalEvent || e).clipboardData.getData('text/plain'); // Достаем голый, чистый текст
-      document.execCommand('insertText', false, text); // Вставляем его
-      hasUnsavedChanges = true;
-    }
-  });
-
-  
-  const urlParams = new URLSearchParams(window.location.search);
-  const adminParam = urlParams.get('admin');
-  if (adminParam && btoa(adminParam) === 'MTk3OA==') {
-    document.getElementById('adminPanel').style.display = 'flex';
-    if (!document.body.classList.contains('admin-mode')) toggleAdmin();
-    showToast(currentLang === 'ua' ? 'Режим редактора увімкнено через посилання!' : 'Режим редактора включен по ссылке!');
-  }
-
-  const pwdInput = document.getElementById('adminPwdInput');
-  if (pwdInput) {
-    pwdInput.addEventListener('keypress', function (e) {
-      if (e.key === 'Enter') checkAdminPassword();
-    });
-  }
-
-  window.addEventListener('beforeunload', function (e) {
-    if (hasUnsavedChanges) {
-      const confirmationMessage = 'У вас есть несохраненные изменения. Точно хотите выйти?';
-      e.returnValue = confirmationMessage;
-      return confirmationMessage;
-    }
-  });
-
-  // ОБРАБОТЧИК УМНОГО АВТОПЕРЕВОДА ПРИ РЕДАКТИРОВАНИИ
-  document.addEventListener('focusout', function(e) {
-    if (e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true' && document.body.classList.contains('admin-mode')) {
-      const el = e.target;
-      const text = el.innerText.trim();
-      
-      if (el.hasAttribute('data-ru') && el.hasAttribute('data-ua')) {
-        const oldText = el.getAttribute(`data-${currentLang}`);
-        
-        if (text === oldText) return; 
-        
-        hasUnsavedChanges = true;
-        el.setAttribute(`data-${currentLang}`, text); 
-
-        if (!text) { 
-          el.setAttribute(currentLang === 'ua' ? 'data-ru' : 'data-ua', ''); 
-          return; 
-        }
-
-        if (el.classList.contains('no-auto-translate')) return;
-
-        const targetAttr = currentLang === 'ua' ? 'data-ru' : 'data-ua';
-        const existingTargetText = el.getAttribute(targetAttr);
-
-        const doTranslation = async () => {
-          try {
-            const sourceLang = currentLang === 'ua' ? 'uk' : 'ru';
-            const targetLang = currentLang === 'ua' ? 'ru' : 'uk';
-            
-            const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
-            const data = await res.json();
-            if (data && data[0]) { 
-              const translatedText = data[0].map(item => item[0]).join('');
-              el.setAttribute(targetAttr, translatedText); 
-              showToast(currentLang === 'ua' ? '✨ Перекладено автоматично!' : '✨ Переведено автоматически!'); 
-            }
-          } catch (err) { console.error(err); }
-        };
-
-        if (existingTargetText && existingTargetText.trim() !== '') {
-           customConfirm(
-             currentLang === 'ua' 
-               ? 'Оновити переклад іншої версії автоматично? (Скасуйте, щоб зберегти ручні правки)' 
-               : 'Обновить перевод другой версии автоматически? (Отмените, чтобы сохранить ручные правки)',
-             doTranslation
-           );
-        } else {
-           doTranslation();
-        }
-      }
-    }
-  });
-
-  document.getElementById('file-uploader').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file && currentUploadId) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas'); 
-          const ctx = canvas.getContext('2d');
-          let width = img.width, height = img.height; const maxWidth = 1600;
-          if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
-          canvas.width = width; canvas.height = height;
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          canvas.toBlob((blob) => {
-            if (!blob) return;
-            const blobUrl = URL.createObjectURL(blob);
-            document.getElementById(currentUploadId).src = blobUrl;
-            
-            hasUnsavedChanges = true;
-
-            customConfirm(currentLang === 'ua' ? 'Фото оптимізовано! Завантажити його одразу на GitHub?' : 'Фото оптимизировано! Загрузить его сразу на GitHub?', () => {
-              uploadImageToGitHub(blob, currentUploadId + '.webp');
-            });
-          }, 'image/webp', 0.85);
-        };
-        img.src = event.target.result;
-      }; 
-      reader.readAsDataURL(file);
-    }
-  });
-
-  const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1 });
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-});
-
-// ==========================================
-// 10. ЗАГРУЗКА ИЗОБРАЖЕНИЙ НА GITHUB API
-// ==========================================
-async function uploadImageToGitHub(blob, filename) {
-  let ghOwner = localStorage.getItem('gh_owner');
-  let ghRepo = localStorage.getItem('gh_repo');
-  let ghToken = localStorage.getItem('gh_token');
-
-  if (!ghOwner || !ghRepo || !ghToken) {
-    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub:", ghOwner || "");
-    if (!ghOwner) return;
-    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория:", ghRepo || "");
-    if (!ghRepo) return;
-    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token:", ghToken || "");
-    if (!ghToken) return;
-    
-    localStorage.setItem('gh_owner', ghOwner.trim());
-    localStorage.setItem('gh_repo', ghRepo.trim());
-    localStorage.setItem('gh_token', ghToken.trim());
-  }
-
-  showToast(currentLang === 'ua' ? 'Відправка фото на GitHub...' : 'Отправка фото на GitHub...');
-
-  const reader = new FileReader();
-  reader.readAsDataURL(blob);
-  reader.onloadend = async function() {
-    const base64data = reader.result.split(',')[1]; 
-    
-    try {
-      const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filename}`;
-      
-      let sha = null;
-      try {
-        const getRes = await fetch(url, {
-          headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' }
-        });
-        if (getRes.ok) {
-          const fileData = await getRes.json();
-          sha = fileData.sha;
-        }
-      } catch(e) {}
-
-      const bodyData = {
-        message: `Обновление фото: ${filename}`,
-        content: base64data
-      };
-      if (sha) bodyData.sha = sha;
-
-      const putRes = await fetch(url, {
-        method: 'PUT',
-        headers: { 
-          'Authorization': `token ${ghToken}`, 
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(bodyData)
-      });
-
-      if (!putRes.ok) throw new Error('Ошибка записи в репозиторий');
-      
-      hasUnsavedChanges = false;
-      showToast(currentLang === 'ua' ? '✅ Фото успішно завантажено!' : '✅ Фото успешно загружено!');
-    } catch (error) {
-      console.error(error);
-      alert('Ошибка загрузки фото: ' + error.message);
-    }
-  };
-}
