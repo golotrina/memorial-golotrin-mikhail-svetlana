@@ -198,12 +198,17 @@ function checkAdminPassword() {
 function toggleAdmin() {
   document.body.classList.toggle('admin-mode');
   const isAdm = document.body.classList.contains('admin-mode');
-  
+
   document.querySelectorAll('.editable-text').forEach(el => {
-    if ((el.closest('button') && !el.closest('.accordion-header')) || el.closest('a')) {
-      el.contentEditable = "false";
+    // Выносим проверки для читаемости
+    const isButton = el.closest('button') && !el.closest('.accordion-header');
+    const isLink = el.closest('a');
+
+    if (isButton || isLink) {
+      el.setAttribute('contenteditable', 'false');
     } else {
-      el.contentEditable = isAdm ? "true" : "false";
+      // ИСПОЛЬЗУЕМ setAttribute вместо изменения свойства
+      el.setAttribute('contenteditable', isAdm ? 'true' : 'false');
     }
   });
 }
