@@ -31,6 +31,21 @@ function showToast(text) {
   setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
 }
 
+// Вспомогательная функция для фонового перевода длинных текстов через Google API
+async function apiTranslateText(text, from, to) {
+  if (!text) return '';
+  try {
+    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`);
+    const data = await res.json();
+    if (data && data[0]) {
+      return data[0].map(item => item[0]).join('');
+    }
+  } catch (e) {
+    console.error("Ошибка перевода текста через API:", e);
+  }
+  return text;
+}
+
 function showLongWarningToast(text) {
   const toast = document.createElement('div');
   toast.className = 'toast-notification';
@@ -194,6 +209,7 @@ function renderBioModal(prefix, data) {
     }
   }
 }
+
 function renderEpochModal(data) {
   if (!data) return;
   const isUa = currentLang === 'ua';
@@ -379,7 +395,7 @@ function updateGalleryVisibility(galleryId) {
 
   if (items.length > MAX_VISIBLE_GALLERY) {
     if (showMoreWrapper) showMoreWrapper.style.display = 'block';
-    if (showMoreBtn) showMoreBtn.innerHTML = isGalleryExpanded[galleryId] ? (currentLang === 'ua' ? '<span class="editable-text" data-ru="Сховати photo" data-ua="Сховати фото">Сховати фото</span>' : '<span class="editable-text" data-ru="Скрыть фото" data-ua="Сховати фото">Скрыть фото</span>') : (currentLang === 'ua' ? `<span class="editable-text" data-ru="Показати ще" data-ua="Показати ще">Показати ще (${items.length - MAX_VISIBLE_GALLERY})</span>` : `<span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показать еще (${items.length - MAX_VISIBLE_GALLERY})</span>`);
+    if (showMoreBtn) showMoreBtn.innerHTML = isGalleryExpanded[galleryId] ? (currentLang === 'ua' ? '<span class="editable-text" data-ru="Сховати фото" data-ua="Сховати фото">Сховати фото</span>' : '<span class="editable-text" data-ru="Скрыть фото" data-ua="Сховати фото">Скрыть фото</span>') : (currentLang === 'ua' ? `<span class="editable-text" data-ru="Показати ще" data-ua="Показати ще">Показати ще (${items.length - MAX_VISIBLE_GALLERY})</span>` : `<span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показать еще (${items.length - MAX_VISIBLE_GALLERY})</span>`);
   } else if (showMoreWrapper) showMoreWrapper.style.display = 'none';
 }
 
@@ -445,6 +461,26 @@ function openLightbox(wrapper) {
 function nextImage(e) { if(e) e.stopPropagation(); if(currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
 function prevImage(e) { if(e) e.stopPropagation(); if(currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
 function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); if (!document.querySelector('.bio-modal.active')) document.body.style.overflow = 'auto'; }
+
+// ==========================================
+// 5.1 ТЕМА ОФОРМЛЕНИЯ (ИСПРАВЛЕННАЯ ЛОГИКА)
+// ==========================================
+function toggleTheme() {
+  document.body.classList.toggle('dark-theme');
+  const isDark = document.body.classList.contains('dark-theme');
+  localStorage.setItem('memorial_theme', isDark ? 'dark' : 'light');
+  
+  const themeIcon = document.getElementById('theme-icon');
+  if (themeIcon) {
+    themeIcon.innerText = isDark ? '☀️' : '🌙';
+    const btn = themeIcon.parentElement;
+    if (btn) {
+      btn.setAttribute('data-title-ru', isDark ? 'Светлая тема' : 'Ночная тема');
+      btn.setAttribute('data-title-ua', isDark ? 'Світла тема' : 'Нічна тема');
+      btn.title = btn.getAttribute(`data-title-${currentLang}`) || '';
+    }
+  }
+}
 
 // ==========================================
 // 6. СВЕЧИ И РИТУАЛ ПАМЯТИ
@@ -576,24 +612,8 @@ async function handleCandleSubmit(e) {
   }
 
   if (doAutoTranslate && (nameChanged || msgChanged)) {
-      try {
-          if (nameInp && nameChanged) {
-              const resName = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(nameInp)}`);
-              const dataName = await resName.json();
-              if (dataName && dataName[0]) {
-                  let translatedName = dataName[0].map(item => item[0]).join('');
-                  if (currentLang === 'ua') final_name_ru = translatedName; else final_name_ua = translatedName;
-              }
-          }
-          if (msgInp && msgChanged) {
-              const resMsg = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(msgInp)}`);
-              const dataMsg = await resMsg.json();
-              if (dataMsg && dataMsg[0]) {
-                  let translatedMsg = dataMsg[0].map(item => item[0]).join('');
-                  if (currentLang === 'ua') final_msg_ru = translatedMsg; else final_msg_ua = translatedMsg;
-              }
-          }
-      } catch (err) { console.error("Ошибка перевода свечи:", err); }
+    if (nameInp && nameChanged) final_name_ua = await apiTranslateText(nameInp, sourceLang, targetLang);
+    if (msgInp && msgChanged) final_msg_ua = await apiTranslateText(msgInp, sourceLang, targetLang);
   }
 
   if (isEditing) {
@@ -793,6 +813,47 @@ async function downloadSiteData() {
         epData.events[idx]['paragraphs' + langSuffix] = Array.from(pEls).map(p => p.innerText.trim());
       });
     }
+
+    // Интерактивный запрос на запуск фонового нейросетевого автоперевода измененных зон
+    const msgTranslate = isUa
+      ? 'Бажаєте автоматично перекласти оновлені тексти на іншу мовну версію?\n(ОК — перекласти, Скасувати — зберегти поточні ручні правки окремо для кожної мови)'
+      : 'Хотите автоматически перевести обновленные тексты на другую языковую версию?\n(ОК — перевести, Отмена — сохранить текущие ручные правки отдельно для каждого языка)';
+    
+    if (confirm(msgTranslate)) {
+      const fromL = isUa ? 'uk' : 'ru';
+      const toL = isUa ? 'ru' : 'uk';
+      const oppSuffix = isUa ? 'Ru' : 'Ua';
+
+      window.SITE_CONTENT.hero['title' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['title' + langSuffix], fromL, toL);
+      window.SITE_CONTENT.hero['subtitle' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['subtitle' + langSuffix], fromL, toL);
+      window.SITE_CONTENT.hero['quote' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['quote' + langSuffix], fromL, toL);
+
+      window.SITE_CONTENT.parents.father['name' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['name' + langSuffix], fromL, toL);
+      window.SITE_CONTENT.parents.father['dates' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['dates' + langSuffix], fromL, toL);
+      window.SITE_CONTENT.parents.father['bio' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['bio' + langSuffix], fromL, toL);
+
+      window.SITE_CONTENT.parents.mother['name' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['name' + langSuffix], fromL, toL);
+      window.SITE_CONTENT.parents.mother['dates' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['dates' + langSuffix], fromL, toL);
+      window.SITE_CONTENT.parents.mother['bio' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['bio' + langSuffix], fromL, toL);
+
+      ['fbio', 'mbio'].forEach(async (prefix) => {
+        const key = prefix === 'fbio' ? 'fatherBio' : 'motherBio';
+        const dataObj = window.SITE_CONTENT[key];
+        dataObj['personalQuote' + oppSuffix] = await apiTranslateText(dataObj['personalQuote' + langSuffix], fromL, toL);
+        dataObj['intro' + oppSuffix] = await apiTranslateText(dataObj['intro' + langSuffix], fromL, toL);
+
+        if (dataObj.accordion) {
+          for (let idx = 0; idx < dataObj.accordion.length; idx++) {
+            dataObj.accordion[idx]['title' + oppSuffix] = await apiTranslateText(dataObj.accordion[idx]['title' + langSuffix], fromL, toL);
+            if (dataObj.accordion[idx]['paragraphs' + langSuffix]) {
+              dataObj.accordion[idx]['paragraphs' + oppSuffix] = await Promise.all(
+                dataObj.accordion[idx]['paragraphs' + langSuffix].map(p => apiTranslateText(p, fromL, toL))
+              );
+            }
+          }
+        }
+      });
+    }
   }
 
   const updatedGalleries = { fatherGallery: [], motherGallery: [] };
@@ -863,11 +924,19 @@ function initializeMemorialApp() {
   renderCandles();
   createSparks(); 
   
+  // Корректная и безопасная синхронизация сохраненной темы
   const savedTheme = localStorage.getItem('memorial_theme');
-  if (savedTheme === 'dark') toggleTheme(); 
+  if (savedTheme === 'light' && document.body.classList.contains('dark-theme')) {
+    toggleTheme();
+  } else if (savedTheme === 'dark' && !document.body.classList.contains('dark-theme')) {
+    toggleTheme();
+  }
+  const themeIcon = document.getElementById('theme-icon');
+  if (themeIcon) themeIcon.innerText = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
+
   setLang('ua');
 
-  // Перехват любых изменений текста для блокировки закрытия страницы
+  // Фиксация ввода любых букв для защиты вкладки от закрытия
   document.addEventListener('input', function(e) {
     if (e.target.classList.contains('editable-text')) {
       hasUnsavedChanges = true;
@@ -949,7 +1018,7 @@ function initializeMemorialApp() {
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 }
 
-// Поллинг-контроль: запуск только при полном развертывании базы данных в памяти
+// Контролируемый цикл опроса памяти (развертывание объектов базы данных)
 function checkAndStartApp() {
   if (window.SITE_CONTENT && window.DB_CANDLES && window.DB_GALLERIES) {
     initializeMemorialApp();
