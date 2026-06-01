@@ -1,5 +1,5 @@
 // ==========================================
-// 1. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И НАСТРОЙКИ
+// 1. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
 // ==========================================
 let currentLang = 'ua';
 let baseFontSize = 16;
@@ -15,7 +15,7 @@ let hasUnsavedChanges = false;
 const candleData = {
   classic: { glow: 'rgba(255, 180, 0, 0.4)', flame: 'linear-gradient(to bottom, #FFF, #FFB400)', nameRu: 'Свеча памяти', nameUa: "Свічка пам'яті" },
   amber: { glow: 'rgba(255, 100, 0, 0.4)', flame: 'linear-gradient(to bottom, #FFD700, #FF6400)', nameRu: 'Янтарный свет', nameUa: 'Бурштинове світло' },
-  heavenly: { glow: 'rgba(200, 230, 255, 0.4)', flame: 'linear-gradient(to bottom, #FFF, #87CEEB)', nameRu: 'Небесное siяние', nameUa: 'Небесне сяйво' },
+  heavenly: { glow: 'rgba(200, 230, 255, 0.4)', flame: 'linear-gradient(to bottom, #FFF, #87CEEB)', nameRu: 'Небесное сияние', nameUa: 'Небесне сяйво' },
   unquenchable: { glow: 'rgba(255, 0, 50, 0.5)', flame: 'linear-gradient(to bottom, #FFB6C1, #E60026)', nameRu: 'Неугасаемое пламя', nameUa: "Незгасне полум'я" }
 };
 
@@ -48,142 +48,82 @@ function customConfirm(text, onConfirm) {
   window.currentConfirmCallback = () => { document.getElementById('confirmModal').classList.remove('active'); onConfirm(); };
 }
 
-function copyEmailToClipboard(email) {
-  navigator.clipboard.writeText(email).then(() => showToast(currentLang === 'ua' ? 'Email скопійовано!' : 'Email скопирован!'));
-}
-
 function shareSite() {
   const shareTitle = currentLang === 'ua' ? "Цифровий Меморіал родини Голотріних" : "Цифровой Мемориал семьи Голотриных";
-  const shareText = currentLang === 'ua' ? "Світла пам'ять та історія родини Голотріних, дбайливо збережена для майбутніх поколінь." : "Светлая память и история семьи Голотриных, бережно сохранена для будущих поколений.";
   if (navigator.share) {
-    navigator.share({ title: shareTitle, text: shareText, url: window.location.href });
+    navigator.share({ title: shareTitle, url: window.location.href });
   } else {
-    showToast(currentLang === 'ua' ? "Скопіюйте посилання з браузера." : "Скопируйте ссылку из браузера."); 
+    navigator.clipboard.writeText(window.location.href);
+    showToast(currentLang === 'ua' ? 'Посилання скопійовано!' : 'Ссылка скопирована!');
   }
 }
-
-window.addEventListener('scroll', function() {
-  const btn = document.getElementById('scrollTopBtn');
-  if (!document.querySelector('.bio-modal.active') && btn) {
-    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) btn.classList.add('visible'); 
-    else btn.classList.remove('visible');
-  }
-});
-
-document.querySelectorAll('.bio-modal').forEach(modal => {
-  modal.addEventListener('scroll', function() {
-    const btn = document.getElementById('scrollTopBtn');
-    if (btn) {
-      if (this.scrollTop > 300) btn.classList.add('visible'); 
-      else btn.classList.remove('visible');
-    }
-  });
-});
 
 function scrollToTop() { 
-  const activeModal = document.querySelector('.bio-modal.active') || document.getElementById('epochModal');
-  if (activeModal && (activeModal.classList.contains('active') || activeModal.style.display === 'flex')) {
-    activeModal.scrollTo({ top: 0, behavior: 'smooth' });
-  } else {
-    window.scrollTo({ top: 0, behavior: 'smooth' }); 
-  }
+  const activeModal = document.querySelector('.bio-modal.active');
+  if (activeModal) activeModal.scrollTo({ top: 0, behavior: 'smooth' });
+  else window.scrollTo({ top: 0, behavior: 'smooth' }); 
 }
 
 // ==========================================
-// 3. ДВИЖКИ ДИНАМИЧЕСКОГО РЕНДЕРИНГА
+// 3. УМНЫЙ РЕНДЕРИНГ (С ПОДДЕРЖКОЙ РЕДАКТИРОВАНИЯ)
 // ==========================================
-function toggleTheme() {
-  document.body.classList.toggle('dark-theme');
-  const isDark = document.body.classList.contains('dark-theme');
-  localStorage.setItem('memorial_theme', isDark ? 'dark' : 'light');
-  
-  const themeIcon = document.getElementById('theme-icon');
-  if(themeIcon) {
-    themeIcon.innerText = isDark ? '☀️' : '🌙';
-    const btn = themeIcon.parentElement;
-    btn.setAttribute('data-title-ru', isDark ? 'Светлая тема' : 'Ночная тема');
-    btn.setAttribute('data-title-ua', isDark ? 'Світла тема' : 'Нічна тема');
-    btn.title = btn.getAttribute(`data-title-${currentLang}`);
-  }
-}
-
 function renderStaticContent() {
   if (!window.SITE_CONTENT) return;
   const content = window.SITE_CONTENT;
   const isUa = currentLang === 'ua';
 
-  document.getElementById('hero-title').innerText = isUa ? content.hero.titleUa : content.hero.titleRu;
-  document.getElementById('hero-subtitle').innerText = isUa ? content.hero.subtitleUa : content.hero.subtitleRu;
-  document.getElementById('hero-quote').innerText = isUa ? content.hero.quoteUa : content.hero.quoteRu;
+  const setEdit = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) { el.innerText = text; el.classList.add('editable-text'); }
+  };
 
-  document.getElementById('father-name').innerText = isUa ? content.parents.father.nameUa : content.parents.father.nameRu;
-  document.getElementById('father-dates').innerText = isUa ? content.parents.father.datesUa : content.parents.father.datesRu;
-  document.getElementById('father-bio-preview').innerText = isUa ? content.parents.father.bioUa : content.parents.father.bioRu;
+  setEdit('hero-title', isUa ? content.hero.titleUa : content.hero.titleRu);
+  setEdit('hero-subtitle', isUa ? content.hero.subtitleUa : content.hero.subtitleRu);
+  setEdit('hero-quote', isUa ? content.hero.quoteUa : content.hero.quoteRu);
 
-  document.getElementById('mother-name').innerText = isUa ? content.parents.mother.nameUa : content.parents.mother.nameRu;
-  document.getElementById('mother-dates').innerText = isUa ? content.parents.mother.datesUa : content.parents.mother.datesRu;
-  document.getElementById('mother-bio-preview').innerText = isUa ? content.parents.mother.bioUa : content.parents.mother.bioRu;
+  setEdit('father-name', isUa ? content.parents.father.nameUa : content.parents.father.nameRu);
+  setEdit('father-dates', isUa ? content.parents.father.datesUa : content.parents.father.datesRu);
+  setEdit('father-bio-preview', isUa ? content.parents.father.bioUa : content.parents.father.bioRu);
+
+  setEdit('mother-name', isUa ? content.parents.mother.nameUa : content.parents.mother.nameRu);
+  setEdit('mother-dates', isUa ? content.parents.mother.datesUa : content.parents.mother.datesRu);
+  setEdit('mother-bio-preview', isUa ? content.parents.mother.bioUa : content.parents.mother.bioRu);
 
   renderTimeline();
-  renderBioModal('father', 'fbio', content.fatherBio);
-  renderBioModal('mother', 'mbio', content.motherBio);
+  renderBioModal('fbio', content.fatherBio);
+  renderBioModal('mbio', content.motherBio);
   renderEpochModal(content.epochData);
+  
+  if (document.body.classList.contains('admin-mode')) toggleAdmin(true);
 }
 
-function renderTimeline() {
-  if (!window.SITE_CONTENT || !window.SITE_CONTENT.timeline) return;
-  const tData = window.SITE_CONTENT.timeline;
-  const isUa = currentLang === 'ua';
-
-  document.getElementById('timeline-main-title').innerText = isUa ? tData.header.titleUa : tData.header.titleRu;
-  document.getElementById('timeline-subtitle').innerText = isUa ? tData.header.subtitleUa : tData.header.subtitleRu;
-  document.getElementById('timeline-epoch-btn').innerText = isUa ? tData.header.btnUa : tData.header.btnRu;
-
-  const container = document.getElementById('timeline-container');
-  container.innerHTML = '';
-
-  tData.events.forEach(item => {
-    const yearText = isUa ? item.yearUa : item.yearRu;
-    const titleText = isUa ? item.titleUa : item.titleRu;
-    const descText = isUa ? item.textUa : item.textRu;
-    
-    let textHTML = item.isEpitaph 
-      ? `<div class="timeline-epitaph" style="white-space: pre-wrap;">${descText}</div>`
-      : `<p style="white-space: pre-wrap;">${descText}</p>`;
-
-    const eventEl = document.createElement('div');
-    eventEl.className = 'timeline-item fade-up visible';
-    eventEl.innerHTML = `
-      <span class="timeline-date">${yearText}</span>
-      <div class="timeline-content">
-        <h4>${titleText}</h4>
-        ${textHTML}
-      </div>
-    `;
-    container.appendChild(eventEl);
-  });
-}
-
-function renderBioModal(type, prefix, data) {
+function renderBioModal(prefix, data) {
   if (!data) return;
   const isUa = currentLang === 'ua';
 
   document.getElementById(`${prefix}-name`).innerText = isUa ? data.nameUa : data.nameRu;
   document.getElementById(`${prefix}-dates`).innerText = isUa ? data.datesUa : data.datesRu;
-  document.getElementById(`${prefix}-personal-quote`).innerText = isUa ? data.personalQuoteUa : data.personalQuoteRu;
-  document.getElementById(`${prefix}-intro`).innerText = isUa ? data.introUa : data.introRu;
+  
+  const quoteEl = document.getElementById(`${prefix}-personal-quote`);
+  quoteEl.innerText = isUa ? data.personalQuoteUa : data.personalQuoteRu;
+  quoteEl.classList.add('editable-text');
+
+  const introEl = document.getElementById(`${prefix}-intro`);
+  introEl.innerText = isUa ? data.introUa : data.introRu;
+  introEl.classList.add('editable-text');
 
   const accContainer = document.getElementById(`${prefix}-accordion`);
   accContainer.innerHTML = '';
-  data.accordion.forEach(item => {
-    const title = isUa ? item.titleUa : item.titleRu;
-    const paragraphs = isUa ? item.paragraphsUa : item.paragraphsRu;
+  data.accordion.forEach((item, idx) => {
     const itemEl = document.createElement('div');
     itemEl.className = 'accordion-item';
-    let pHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+    const pHTML = (isUa ? item.paragraphsUa : item.paragraphsRu)
+      .map(p => `<p class="editable-text" data-index="${idx}">${p}</p>`).join('');
+    
     itemEl.innerHTML = `
       <button class="accordion-header" onclick="toggleAccordion(this)">
-        <span>${title}</span><span class="accordion-icon">+</span>
+        <span class="editable-text">${isUa ? item.titleUa : item.titleRu}</span>
+        <span class="accordion-icon">+</span>
       </button>
       <div class="accordion-content"><div class="accordion-inner">${pHTML}</div></div>
     `;
@@ -193,11 +133,13 @@ function renderBioModal(type, prefix, data) {
   const qContainer = document.getElementById(`${prefix}-quotes`);
   qContainer.innerHTML = '';
   data.quotes.forEach(q => {
-    const text = isUa ? q.textUa : q.textRu;
-    const author = isUa ? q.authorUa : q.authorRu;
     const qEl = document.createElement('div');
-    qEl.className = 'quote-card fade-up visible';
-    qEl.innerHTML = `<span class="quote-icon">“</span><p class="quote-text">${text}</p><p class="quote-author">${author}</p>`;
+    qEl.className = 'quote-card';
+    qEl.innerHTML = `
+      <span class="quote-icon">“</span>
+      <p class="quote-text editable-text">${isUa ? q.textUa : q.textRu}</p>
+      <p class="quote-author editable-text">${isUa ? q.authorUa : q.authorRu}</p>
+    `;
     qContainer.appendChild(qEl);
   });
 }
@@ -211,25 +153,27 @@ function renderEpochModal(data) {
 
   const container = document.getElementById('epoch-timeline-container');
   container.innerHTML = '';
-  data.events.forEach(ev => {
+  data.events.forEach((ev, idx) => {
     const dateText = isUa ? ev.dateUa : ev.dateRu;
     const titleText = isUa ? ev.titleUa : ev.titleRu;
     const paragraphs = isUa ? ev.paragraphsUa : ev.paragraphsRu;
     
     const evEl = document.createElement('div');
     evEl.className = 'timeline-item fade-up visible';
-    let pHTML = paragraphs.map(p => `<p style="white-space: pre-wrap;">${p}</p>`).join('');
+    
+    let pHTML = paragraphs.map((p, pIdx) => `<p class="editable-text" data-epoch-idx="${idx}" data-p-idx="${pIdx}" style="white-space: pre-wrap;">${p}</p>`).join('');
     
     evEl.innerHTML = `
-      <span class="timeline-date">${dateText}</span>
+      <span class="timeline-date editable-text" data-epoch-date-idx="${idx}">${dateText}</span>
       <div class="timeline-content">
-        <h4>${titleText}</h4>
+        <h4 class="editable-text" data-epoch-title-idx="${idx}">${titleText}</h4>
         ${pHTML}
       </div>
     `;
     container.appendChild(evEl);
   });
 }
+
 function changeZoom(step) {
   if (step === 0) baseFontSize = 16; else baseFontSize += step; 
   if (baseFontSize < 14) baseFontSize = 14; if (baseFontSize > 26) baseFontSize = 26;
@@ -317,8 +261,10 @@ function checkAdminPassword() {
   }
 }
 
-function toggleAdmin() {
-  document.body.classList.toggle('admin-mode');
+function toggleAdmin(forceState) {
+  if (forceState !== true && forceState !== false) {
+    document.body.classList.toggle('admin-mode');
+  }
   const isAdm = document.body.classList.contains('admin-mode');
 
   document.querySelectorAll('.editable-text').forEach(el => {
@@ -380,7 +326,7 @@ function toggleGalleryExpand(galleryId) { isGalleryExpanded[galleryId] = !isGall
 function triggerUpload(imgId) { currentUploadId = imgId; document.getElementById('file-uploader').click(); }
 
 function deleteGalleryPhoto(btn) { 
-  customConfirm(currentLang === 'ua' ? 'Видалити це photo?' : 'Удалить это фото?', () => { 
+  customConfirm(currentLang === 'ua' ? 'Видалити це фото?' : 'Удалить это фото?', () => { 
     const wrap = btn.closest('.gallery-item-wrap'); 
     const galleryId = wrap.closest('.modal-gallery').id; 
     if (wrap) wrap.remove(); 
@@ -440,7 +386,7 @@ function prevImage(e) { if(e) e.stopPropagation(); if(currentGalleryImages.lengt
 function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); if (!document.querySelector('.bio-modal.active')) document.body.style.overflow = 'auto'; }
 
 // ==========================================
-// 6. СВЕЧИ И РИТУАЛ
+// 6. СВЕЧИ И РИТУАЛ ПАМЯТИ
 // ==========================================
 function renderCandles() {
   const grid = document.getElementById('candlesGrid'); 
@@ -662,7 +608,7 @@ function editCandle(index) {
 function toggleCandlesExpand() { isCandlesExpanded = !isCandlesExpanded; renderCandles(); }
 
 // ==========================================
-// 7. МОДАЛКИ (БИОГРАФИЯ И АККОРДЕОН)
+// 7. МОДАЛКИ И АККОРДЕОНЫ
 // ==========================================
 function openBio(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
 function closeBio(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = 'auto'; }
@@ -676,7 +622,7 @@ function toggleAccordion(button) {
 }
 
 // ==========================================
-// 8. QR-КОД 
+// 8. УМНЫЙ QR-ГЕНЕРАТОР С МАСКОЙ ЗАЩИТЫ
 // ==========================================
 function openQrModal() { 
   const currentUrl = window.location.href.split('#')[0];
@@ -689,8 +635,21 @@ function openQrModal() {
 function closeQrModal() { document.getElementById('qrModal').classList.remove('active'); }
 
 function generateQr() {
-  const url = document.getElementById('qrUrlInput').value.trim();
+  let url = document.getElementById('qrUrlInput').value.trim();
   if (!url) { showToast(currentLang === 'ua' ? 'Введіть посилання!' : 'Введите ссылку!'); return; }
+  
+  // Авто-маска: если клиент забыл протокол, дописываем его сами
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://' + url;
+    document.getElementById('qrUrlInput').value = url;
+  }
+  
+  // Валидация ссылки регулярным выражением
+  const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+  if (!urlPattern.test(url)) {
+    showToast(currentLang === 'ua' ? '❌ Некоректний формат посилання!' : '❌ Некорректный формат ссылки!');
+    return;
+  }
   
   const qrContainer = document.getElementById('qrCodeImg');
   qrContainer.innerHTML = ''; 
@@ -719,61 +678,65 @@ function downloadQr() {
 }
 
 // ==========================================
-// 9. БЕЗОПАСНОЕ СКАЧИВАНИЕ И ИНИЦИАЛИЗАЦИЯ
+// 9. БЕЗОПАСНЫЙ СБОР ВСЕХ ДАННЫХ И ИНИЦИАЛИЗАЦИЯ
 // ==========================================
 async function downloadSiteData() {
   if (window.SITE_CONTENT) {
     const isUa = currentLang === 'ua';
+    const langSuffix = isUa ? 'Ua' : 'Ru';
     
-    const heroTitleEl = document.getElementById('hero-title');
-    const heroSubtitleEl = document.getElementById('hero-subtitle');
-    const heroQuoteEl = document.getElementById('hero-quote');
-    
-    if (heroTitleEl) {
-      if (isUa) window.SITE_CONTENT.hero.titleUa = heroTitleEl.innerText.trim();
-      else window.SITE_CONTENT.hero.titleRu = heroTitleEl.innerText.trim();
-    }
-    if (heroSubtitleEl) {
-      if (isUa) window.SITE_CONTENT.hero.subtitleUa = heroSubtitleEl.innerText.trim();
-      else window.SITE_CONTENT.hero.subtitleRu = heroSubtitleEl.innerText.trim();
-    }
-    if (heroQuoteEl) {
-      if (isUa) window.SITE_CONTENT.hero.quoteUa = heroQuoteEl.innerText.trim();
-      else window.SITE_CONTENT.hero.quoteRu = heroQuoteEl.innerText.trim();
-    }
+    // 1. Главный экран
+    window.SITE_CONTENT.hero['title' + langSuffix] = document.getElementById('hero-title').innerText.trim();
+    window.SITE_CONTENT.hero['subtitle' + langSuffix] = document.getElementById('hero-subtitle').innerText.trim();
+    window.SITE_CONTENT.hero['quote' + langSuffix] = document.getElementById('hero-quote').innerText.trim();
 
-    const fNameEl = document.getElementById('father-name');
-    const fDatesEl = document.getElementById('father-dates');
-    const fBioEl = document.getElementById('father-bio-preview');
-    
-    if (fNameEl) {
-      if (isUa) window.SITE_CONTENT.parents.father.nameUa = fNameEl.innerText.trim();
-      else window.SITE_CONTENT.parents.father.nameRu = fNameEl.innerText.trim();
-    }
-    if (fDatesEl) {
-      if (isUa) window.SITE_CONTENT.parents.father.datesUa = fDatesEl.innerText.trim();
-      else window.SITE_CONTENT.parents.father.datesRu = fDatesEl.innerText.trim();
-    }
-    if (fBioEl) {
-      if (isUa) window.SITE_CONTENT.parents.father.bioUa = fBioEl.innerText.trim();
-      else window.SITE_CONTENT.parents.father.bioRu = fBioEl.innerText.trim();
-    }
+    // 2. Карточки родителей
+    window.SITE_CONTENT.parents.father['name' + langSuffix] = document.getElementById('father-name').innerText.trim();
+    window.SITE_CONTENT.parents.father['dates' + langSuffix] = document.getElementById('father-dates').innerText.trim();
+    window.SITE_CONTENT.parents.father['bio' + langSuffix] = document.getElementById('father-bio-preview').innerText.trim();
 
-    const mNameEl = document.getElementById('mother-name');
-    const mDatesEl = document.getElementById('mother-dates');
-    const mBioEl = document.getElementById('mother-bio-preview');
-    
-    if (mNameEl) {
-      if (isUa) window.SITE_CONTENT.parents.mother.nameUa = mNameEl.innerText.trim();
-      else window.SITE_CONTENT.parents.mother.nameRu = mNameEl.innerText.trim();
-    }
-    if (mDatesEl) {
-      if (isUa) window.SITE_CONTENT.parents.mother.datesUa = mDatesEl.innerText.trim();
-      else window.SITE_CONTENT.parents.mother.datesRu = mDatesEl.innerText.trim();
-    }
-    if (mBioEl) {
-      if (isUa) window.SITE_CONTENT.parents.mother.bioUa = mBioEl.innerText.trim();
-      else window.SITE_CONTENT.parents.mother.bioRu = mBioEl.innerText.trim();
+    window.SITE_CONTENT.parents.mother['name' + langSuffix] = document.getElementById('mother-name').innerText.trim();
+    window.SITE_CONTENT.parents.mother['dates' + langSuffix] = document.getElementById('mother-dates').innerText.trim();
+    window.SITE_CONTENT.parents.mother['bio' + langSuffix] = document.getElementById('mother-bio-preview').innerText.trim();
+
+    // 3. Сбор больших историй (внутри аккордеонов)
+    ['fbio', 'mbio'].forEach(prefix => {
+      const key = prefix === 'fbio' ? 'fatherBio' : 'motherBio';
+      const dataObj = window.SITE_CONTENT[key];
+      
+      dataObj['personalQuote' + langSuffix] = document.getElementById(`${prefix}-personal-quote`).innerText.trim();
+      dataObj['intro' + langSuffix] = document.getElementById(`${prefix}-intro`).innerText.trim();
+
+      const accItems = document.querySelectorAll(`#${prefix}-accordion .accordion-item`);
+      accItems.forEach((item, idx) => {
+        if (!dataObj.accordion[idx]) return;
+        dataObj.accordion[idx]['title' + langSuffix] = item.querySelector('.accordion-header span').innerText.trim();
+        
+        const pEls = item.querySelectorAll('.accordion-inner p');
+        dataObj.accordion[idx]['paragraphs' + langSuffix] = Array.from(pEls).map(p => p.innerText.trim());
+      });
+
+      const qCards = document.querySelectorAll(`#${prefix}-quotes .quote-card`);
+      qCards.forEach((card, idx) => {
+        if (!dataObj.quotes[idx]) return;
+        dataObj.quotes[idx]['text' + langSuffix] = card.querySelector('.quote-text').innerText.trim();
+        dataObj.quotes[idx]['author' + langSuffix] = card.querySelector('.quote-author').innerText.trim();
+      });
+    });
+
+    // 4. Сбор исторического контекста эпохи
+    const epochContainer = document.getElementById('epoch-timeline-container');
+    if (epochContainer && window.SITE_CONTENT.epochData) {
+      const epData = window.SITE_CONTENT.epochData;
+      const epItems = epochContainer.querySelectorAll('.timeline-item');
+      epItems.forEach((item, idx) => {
+        if (!epData.events[idx]) return;
+        epData.events[idx]['date' + langSuffix] = item.querySelector('.timeline-date').innerText.trim();
+        epData.events[idx]['title' + langSuffix] = item.querySelector('.timeline-content h4').innerText.trim();
+        
+        const pEls = item.querySelectorAll('.timeline-content p');
+        epData.events[idx]['paragraphs' + langSuffix] = Array.from(pEls).map(p => p.innerText.trim());
+      });
     }
   }
 
