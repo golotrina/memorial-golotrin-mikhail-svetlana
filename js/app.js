@@ -133,11 +133,10 @@ function setLang(lang) {
     creatorLink.title = currentLang === 'ua' ? 'Скопіювати Email творця' : 'Скопировать Email создателя';
   }
 
-  document.querySelectorAll('.gallery-caption').forEach(el => {
+ document.querySelectorAll('.gallery-caption').forEach(el => {
     el.setAttribute('data-placeholder', el.getAttribute(`data-placeholder-${currentLang}`));
     const text = el.getAttribute(`data-${currentLang}`);
-    // ИСПРАВЛЕНИЕ: innerHTML вместо innerText для защиты целостности данных
-    if (text !== null) el.innerHTML = text; 
+    if (text !== null) el.innerText = text; 
   });
   
   document.title = currentLang === 'ua' ? "Цифровий Меморіал родини Голотріних" : "Цифровой Мемориал семьи Голотриных";
@@ -211,10 +210,10 @@ function toggleAdmin() {
 
 async function downloadSiteData() {
   // 1. СБОР АКТУАЛЬНЫХ ДАННЫХ ИЗ ИНТЕРФЕЙСА
+  // 1. СБОР АКТУАЛЬНЫХ ДАННЫХ ИЗ ИНТЕРФЕЙСА
   document.querySelectorAll('.editable-text[contenteditable="true"]').forEach(el => {
     if (el.hasAttribute('data-ru') && el.hasAttribute('data-ua')) {
-      // ИСПРАВЛЕНИЕ 1: Собираем текст через innerHTML для защиты скрытых окон
-      el.setAttribute(`data-${currentLang}`, el.innerHTML.trim()); 
+      el.setAttribute(`data-${currentLang}`, el.innerText.trim()); 
     }
   });
 
@@ -769,11 +768,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ИСПРАВЛЕНИЕ: Автоперевод и сохранение текста при потере фокуса (innerHTML вместо innerText)
+  // ОБРАБОТЧИК УМНОГО АВТОПЕРЕВОДА ПРИ РЕДАКТИРОВАНИИ
   document.addEventListener('focusout', function(e) {
     if (e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true' && document.body.classList.contains('admin-mode')) {
       const el = e.target;
-      const text = el.innerHTML.trim(); // <-- ИСПРАВЛЕНИЕ ЗДЕСЬ
+      const text = el.innerText.trim();
       
       if (el.hasAttribute('data-ru') && el.hasAttribute('data-ua')) {
         const oldText = el.getAttribute(`data-${currentLang}`);
