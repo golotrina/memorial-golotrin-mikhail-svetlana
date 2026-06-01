@@ -127,6 +127,49 @@ function renderStaticContent() {
   document.getElementById('mother-name').innerText = isUa ? content.parents.mother.nameUa : content.parents.mother.nameRu;
   document.getElementById('mother-dates').innerText = isUa ? content.parents.mother.datesUa : content.parents.mother.datesRu;
   document.getElementById('mother-bio-preview').innerText = isUa ? content.parents.mother.bioUa : content.parents.mother.bioRu;
+
+  renderTimeline();
+
+}
+
+function renderTimeline() {
+  if (!window.SITE_CONTENT || !window.SITE_CONTENT.timeline) return;
+  const tData = window.SITE_CONTENT.timeline;
+  const isUa = currentLang === 'ua';
+
+  // 1. Заполняем заголовки
+  document.getElementById('timeline-main-title').innerText = isUa ? tData.header.titleUa : tData.header.titleRu;
+  document.getElementById('timeline-subtitle').innerText = isUa ? tData.header.subtitleUa : tData.header.subtitleRu;
+  document.getElementById('timeline-epoch-btn').innerText = isUa ? tData.header.btnUa : tData.header.btnRu;
+
+  // 2. Собираем события
+  const container = document.getElementById('timeline-container');
+  container.innerHTML = ''; // Очищаем контейнер перед сборкой
+
+  tData.events.forEach(item => {
+    const yearText = isUa ? item.yearUa : item.yearRu;
+    const titleText = isUa ? item.titleUa : item.titleRu;
+    const descText = isUa ? item.textUa : item.textRu;
+    
+    // Формируем блок текста (с учетом стихов)
+    let textHTML = '';
+    if (item.isEpitaph) {
+      textHTML = `<div class="timeline-epitaph" style="white-space: pre-wrap;">${descText}</div>`;
+    } else {
+      textHTML = `<p style="white-space: pre-wrap;">${descText}</p>`;
+    }
+
+    const eventEl = document.createElement('div');
+    eventEl.className = 'timeline-item fade-up visible';
+    eventEl.innerHTML = `
+      <span class="timeline-date">${yearText}</span>
+      <div class="timeline-content">
+        <h4>${titleText}</h4>
+        ${textHTML}
+      </div>
+    `;
+    container.appendChild(eventEl);
+  });
 }
 
 
