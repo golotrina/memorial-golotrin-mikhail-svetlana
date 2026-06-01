@@ -215,8 +215,7 @@ function toggleAdmin() {
 
 async function downloadSiteData() {
   // 1. СБОР АКТУАЛЬНЫХ ДАННЫХ ИЗ ИНТЕРФЕЙСА
-  // 1. СБОР АКТУАЛЬНЫХ ДАННЫХ ИЗ ИНТЕРФЕЙСА
-  document.querySelectorAll('.editable-text[contenteditable="true"]').forEach(el => {
+    document.querySelectorAll('.editable-text[contenteditable="true"]').forEach(el => {
     if (el.hasAttribute('data-ru') && el.hasAttribute('data-ua')) {
       el.setAttribute(`data-${currentLang}`, el.innerText.trim()); 
     }
