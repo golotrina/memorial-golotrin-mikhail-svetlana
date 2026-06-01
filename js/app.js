@@ -25,10 +25,22 @@ const candleData = {
 function showToast(text) {
   const toast = document.createElement('div');
   toast.className = 'toast-notification';
-  toast.innerText = text;
+  toast.innerHTML = text; // Изменено для поддержки HTML-тегов в уведомлениях
   document.body.appendChild(toast);
   setTimeout(() => toast.classList.add('show'), 10);
   setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
+}
+
+// ДОБАВЛЕНО: Усиленное уведомление для защиты от раннего обновления страницы
+function showLongWarningToast(text) {
+  const toast = document.createElement('div');
+  toast.className = 'toast-notification';
+  toast.innerHTML = text; 
+  toast.style.backgroundColor = 'rgba(180, 30, 30, 0.95)'; // Красный оттенок для привлечения внимания
+  toast.style.border = '1px solid #ff6b6b';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add('show'), 10);
+  setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 10000); // Висит 10 секунд
 }
 
 function customConfirm(text, onConfirm) {
@@ -42,25 +54,14 @@ function copyEmailToClipboard(email) {
 }
 
 function shareSite() {
-  const shareTitle = currentLang === 'ua' 
-    ? "Цифровий Меморіал родини Голотріних" 
-    : "Цифровой Мемориал семьи Голотриных";
-    
-  const shareText = currentLang === 'ua' 
-    ? "Світла пам'ять та історія родини Голотріних, дбайливо збережена для майбутніх поколінь." 
-    : "Светлая память и история семьи Голотриных, бережно сохранена для будущих поколений.";
-    
+  const shareTitle = currentLang === 'ua' ? "Цифровий Меморіал родини Голотріних" : "Цифровой Мемориал семьи Голотриных";
+  const shareText = currentLang === 'ua' ? "Світла пам'ять та історія родини Голотріних, дбайливо збережена для майбутніх поколінь." : "Светлая память и история семьи Голотриных, бережно сохранена для будущих поколений.";
   if (navigator.share) {
-    navigator.share({ 
-      title: shareTitle, 
-      text: shareText,
-      url: window.location.href 
-    });
+    navigator.share({ title: shareTitle, text: shareText, url: window.location.href });
   } else {
     showToast(currentLang === 'ua' ? "Скопіюйте посилання з браузера." : "Скопируйте ссылку из браузера."); 
   }
 }
-
 
 window.addEventListener('scroll', function() {
   const btn = document.getElementById('scrollTopBtn');
@@ -135,7 +136,8 @@ function setLang(lang) {
   document.querySelectorAll('.gallery-caption').forEach(el => {
     el.setAttribute('data-placeholder', el.getAttribute(`data-placeholder-${currentLang}`));
     const text = el.getAttribute(`data-${currentLang}`);
-    if (text !== null) el.innerText = text;
+    // ИСПРАВЛЕНИЕ: innerHTML вместо innerText для защиты целостности данных
+    if (text !== null) el.innerHTML = text; 
   });
   
   document.title = currentLang === 'ua' ? "Цифровий Меморіал родини Голотріних" : "Цифровой Мемориал семьи Голотриных";
@@ -166,7 +168,6 @@ function createSparks() {
       spark.style.width = size + 'px';
       spark.style.height = size + 'px';
       spark.style.boxShadow = `0 0 ${size * 2}px ${size/2}px rgba(255, 215, 0, 0.5)`;
-
       spark.style.animation = `floatSpark ${12 + Math.random() * 12}s infinite ${Math.random() * 5}s linear`;
       wrap.appendChild(spark);
     }
@@ -184,7 +185,6 @@ function promptAdmin() {
 
 function checkAdminPassword() {
   const pwd = document.getElementById('adminPwdInput').value;
-  // Скрываем прямую видимость пароля
   if (btoa(pwd) === 'MTk3OA==') {
     document.getElementById('adminAuthModal').classList.remove('active');
     document.getElementById('adminPanel').style.display = 'flex';
@@ -196,14 +196,11 @@ function checkAdminPassword() {
   }
 }
 
-
 function toggleAdmin() {
   document.body.classList.toggle('admin-mode');
   const isAdm = document.body.classList.contains('admin-mode');
   
   document.querySelectorAll('.editable-text').forEach(el => {
-    // ПУНКТ 2: Убираем редактирование текста внутри кнопок и ссылок навигации.
-    // ДОБАВЛЕНО: Исключение для '.accordion-header', чтобы аккордеон можно было редактировать.
     if ((el.closest('button') && !el.closest('.accordion-header')) || el.closest('a')) {
       el.contentEditable = "false";
     } else {
@@ -216,14 +213,12 @@ async function downloadSiteData() {
   // 1. СБОР АКТУАЛЬНЫХ ДАННЫХ ИЗ ИНТЕРФЕЙСА
   document.querySelectorAll('.editable-text[contenteditable="true"]').forEach(el => {
     if (el.hasAttribute('data-ru') && el.hasAttribute('data-ua')) {
-      // ИСПОЛЬЗУЕМ innerHTML вместо innerText, чтобы скрипт видел текст 
-      // даже в закрытых модальных окнах и сохранял переносы строк
+      // ИСПРАВЛЕНИЕ 1: Собираем текст через innerHTML для защиты скрытых окон
       el.setAttribute(`data-${currentLang}`, el.innerHTML.trim()); 
     }
   });
 
   const updatedGalleries = { fatherGallery: [], motherGallery: [] };
-  
   ['fatherGallery', 'motherGallery'].forEach(galId => {
     document.querySelectorAll(`#${galId} .gallery-item-wrap`).forEach(wrap => {
       const img = wrap.querySelector('img[id]');
@@ -288,7 +283,6 @@ async function downloadSiteData() {
 
   // 3. ОТПРАВКА ДВУХ ФАЙЛОВ ЧЕРЕЗ GITHUB REST API
   try {
-    // Вспомогательная функция для загрузки файла
     const uploadFile = async (filePath, content, commitMessage) => {
       const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filePath}`;
       
@@ -312,12 +306,15 @@ async function downloadSiteData() {
       if (!putRes.ok) throw new Error(`Ошибка при записи ${filePath}`);
     };
 
-    // Загружаем по очереди оба файла!
     await uploadFile('js/data.js', dataJsContent, 'Обновление Мемориала: база данных (Авто-коммит)');
     await uploadFile('index.html', htmlContent, 'Обновление Мемориала: тексты и верстка (Авто-коммит)');
 
     hasUnsavedChanges = false;
-    showToast(currentLang === 'ua' ? '✅ Збережено! Сайт оновиться через хвилину.' : '✅ Сохранено! Сайт обновится через минуту.');
+    
+    // ИСПРАВЛЕНИЕ 2: Жесткое предупреждение о задержке GitHub Pages
+    showLongWarningToast(currentLang === 'ua' 
+      ? '✅ УСПІХ! Файли на GitHub.<br><br><b>УВАГА: Не оновлюйте сторінку найближчі 2-3 хвилини!</b><br>GitHub Pages потрібен час на збірку сайту.' 
+      : '✅ УСПЕХ! Файлы на GitHub.<br><br><b>ВНИМАНИЕ: Не обновляйте страницу ближайшие 2-3 минуты!</b><br>GitHub Pages нужно время на сборку сайта.');
 
   } catch (error) {
     console.error(error);
@@ -372,7 +369,7 @@ function updateGalleryVisibility(galleryId) {
 
   if (items.length > MAX_VISIBLE_GALLERY) {
     if (showMoreWrapper) showMoreWrapper.style.display = 'block';
-    if (showMoreBtn) showMoreBtn.innerHTML = isGalleryExpanded[galleryId] ? (currentLang === 'ua' ? '<span class="editable-text" data-ru="Скрыть фото" data-ua="Сховати фото">Сховати фото</span>' : '<span class="editable-text" data-ru="Скрыть фото" data-ua="Сховати фото">Скрыть фото</span>') : (currentLang === 'ua' ? `<span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показати ще (${items.length - MAX_VISIBLE_GALLERY})</span>` : `<span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показать еще (${items.length - MAX_VISIBLE_GALLERY})</span>`);
+    if (showMoreBtn) showMoreBtn.innerHTML = isGalleryExpanded[galleryId] ? (currentLang === 'ua' ? '<span class="editable-text" data-ru="Сховати фото" data-ua="Сховати фото">Сховати фото</span>' : '<span class="editable-text" data-ru="Скрыть фото" data-ua="Сховати фото">Скрыть фото</span>') : (currentLang === 'ua' ? `<span class="editable-text" data-ru="Показати ще" data-ua="Показати ще">Показати ще (${items.length - MAX_VISIBLE_GALLERY})</span>` : `<span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показать еще (${items.length - MAX_VISIBLE_GALLERY})</span>`);
   } else if (showMoreWrapper) showMoreWrapper.style.display = 'none';
 }
 
@@ -385,7 +382,7 @@ function deleteGalleryPhoto(btn) {
     const galleryId = wrap.closest('.modal-gallery').id; 
     if (wrap) wrap.remove(); 
     updateGalleryVisibility(galleryId); 
-    hasUnsavedChanges = true; // Включаем защиту от закрытия
+    hasUnsavedChanges = true; 
   }); 
 }
 
@@ -394,7 +391,7 @@ function moveGalleryPhoto(btn, direction) {
   const gallery = itemWrap.parentElement; 
   if (direction === -1 && itemWrap.previousElementSibling) gallery.insertBefore(itemWrap, itemWrap.previousElementSibling); 
   else if (direction === 1 && itemWrap.nextElementSibling) gallery.insertBefore(itemWrap.nextElementSibling, itemWrap); 
-  hasUnsavedChanges = true; // Включаем защиту от закрытия
+  hasUnsavedChanges = true; 
 }
 
 function addGalleryPhoto(galleryId) {
@@ -415,7 +412,7 @@ function addGalleryPhoto(galleryId) {
   `;
   gallery.appendChild(wrap);
   updateGalleryVisibility(galleryId);
-  hasUnsavedChanges = true; // Включаем защиту от закрытия
+  hasUnsavedChanges = true; 
 }
 
 function openLightbox(wrapper) {
@@ -434,6 +431,7 @@ function openLightbox(wrapper) {
   document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex];
   lb.classList.add('active'); document.body.style.overflow = 'hidden';
 }
+
 function nextImage(e) { if(e) e.stopPropagation(); if(currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
 function prevImage(e) { if(e) e.stopPropagation(); if(currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
 function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); if (!document.querySelector('.bio-modal.active')) document.body.style.overflow = 'auto'; }
@@ -454,11 +452,9 @@ function renderCandles() {
     const dateObj = new Date(c.timestamp); 
     const dateStr = dateObj.toLocaleDateString('ru-RU') + ', ' + dateObj.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
     
-    // Определяем текст в зависимости от языка
     const cName = currentLang === 'ua' ? (c.name_ua || c.name_ru || c.name) : (c.name_ru || c.name_ua || c.name);
     const cMessage = currentLang === 'ua' ? (c.message_ua || c.message_ru || c.message) : (c.message_ru || c.message_ua || c.message);
 
-    // ПУНКТ 3: Логика отображения кнопки "Читать далее..."
     let isLongMsg = cMessage && (cMessage.length > 150 || (cMessage.match(/\n/g) || []).length >= 3);
     let msgHtml = '';
     if (cMessage) {
@@ -500,7 +496,6 @@ function renderCandles() {
   createSparks();
 }
 
-
 function toggleCandleForm() {
   const wrapper = document.getElementById('candleFormWrapper'); 
   const btnWrapper = document.getElementById('openFormBtnWrapper');
@@ -522,7 +517,6 @@ async function handleCandleSubmit(e) {
   let nameInp = document.getElementById('cName').value.trim();
   let msgInp = document.getElementById('cMessage').value.trim();
   
-  // ПУНКТ 2: Защита от спама (удаляем ссылки и теги)
   const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
   nameInp = nameInp.replace(urlRegex, '').replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
   msgInp = msgInp.replace(urlRegex, '').replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
@@ -535,7 +529,6 @@ async function handleCandleSubmit(e) {
   let isEditing = editCandleIndex !== null;
   let c = isEditing ? window.DB_CANDLES[editCandleIndex] : null;
 
-  // Проверяем, изменился ли текст при редактировании
   let nameChanged = true;
   let msgChanged = true;
 
@@ -548,37 +541,31 @@ async function handleCandleSubmit(e) {
 
   let doAutoTranslate = true;
 
-  // Если мы редактируем, текст изменился, и в другой версии уже есть свой перевод
   if (isEditing && isAdmin && (nameChanged || msgChanged)) {
      let targetHasText = currentLang === 'ua' ? (c.name_ru || c.message_ru) : (c.name_ua || c.message_ua);
      if (targetHasText) {
          let msg = currentLang === 'ua'
              ? 'Оновити переклад іншої версії автоматично?\n(ОК - перекласти заново, Скасувати - зберегти ваші минулі ручні правки)'
              : 'Обновить перевод другой версии автоматически?\n(ОК - перевести заново, Отмена - сохранить ваши прошлые ручные правки)';
-         // Используем системное окно подтверждения, чтобы остановить процесс и спросить
          doAutoTranslate = confirm(msg);
      }
   }
 
-  // Базовые значения для сохранения
   let final_name_ru = nameInp;
   let final_name_ua = nameInp;
   let final_msg_ru = msgInp;
   let final_msg_ua = msgInp;
 
   if (isEditing) {
-      // Берем старые значения как базу
       final_name_ru = c.name_ru || nameInp;
       final_name_ua = c.name_ua || nameInp;
       final_msg_ru = c.message_ru || msgInp;
       final_msg_ua = c.message_ua || msgInp;
 
-      // Обновляем только текущий активный язык
       if (currentLang === 'ua') { final_name_ua = nameInp; final_msg_ua = msgInp; }
       else { final_name_ru = nameInp; final_msg_ru = msgInp; }
   }
 
-  // Запускаем автоперевод только если пользователь разрешил (или это новая свеча)
   if (doAutoTranslate && (nameChanged || msgChanged)) {
       try {
           if (nameInp && nameChanged) {
@@ -609,7 +596,7 @@ async function handleCandleSubmit(e) {
     renderCandles(); toggleCandleForm();
 
     if (isAdmin) {
-        hasUnsavedChanges = true; // Защита от закрытия вкладки
+        hasUnsavedChanges = true; 
         showToast(currentLang === 'ua' ? 'Зміни збережено. Не забудьте "Зберегти зміни" в адмінці!' : 'Изменения сохранены. Нажмите "Сохранить изменения" в админке!');
     } else {
         showToast(currentLang === 'ua' ? 'Зміни збережено!' : 'Изменения сохранены!');
@@ -644,14 +631,11 @@ async function handleCandleSubmit(e) {
   fetch('https://formspree.io/f/xpqnezyg', {
     method: 'POST',
     body: formData,
-    headers: {
-        'Accept': 'application/json'
-    }
+    headers: { 'Accept': 'application/json' }
   }).then(successAction).catch(err => {
     console.warn("Ошибка Formspree, но свеча отрисована локально:", err);
     successAction();
   });
-
 }
 
 function deleteCandle(index) { 
@@ -689,7 +673,6 @@ function toggleAccordion(button) {
   }
 }
 
-
 // ==========================================
 // 8. QR-КОД 
 // ==========================================
@@ -708,28 +691,20 @@ function generateQr() {
   if (!url) { showToast(currentLang === 'ua' ? 'Введіть посилання!' : 'Введите ссылку!'); return; }
   
   const qrContainer = document.getElementById('qrCodeImg');
-  qrContainer.innerHTML = ''; // Очищаем старый QR-код
+  qrContainer.innerHTML = ''; 
   
-  // Добавляем текст ссылки под QR-код
   const urlDisplay = document.getElementById('qrUrlDisplay');
-  if (urlDisplay) {
-    urlDisplay.innerText = url;
-  }
+  if (urlDisplay) urlDisplay.innerText = url;
   
-  // Генерируем полностью автономный QR-код в браузере!
   new QRCode(qrContainer, {
-    text: url,
-    width: 180,
-    height: 180,
-    colorDark : "#322108",
-    colorLight : "#ffffff",
+    text: url, width: 180, height: 180,
+    colorDark : "#322108", colorLight : "#ffffff",
     correctLevel : QRCode.CorrectLevel.H
   });
 
   document.getElementById('qrPrintArea').style.display = 'flex'; 
   document.getElementById('printBtnWrap').style.display = 'flex'; 
 }
-
 
 function downloadQr() {
   const printArea = document.getElementById('qrPrintArea');
@@ -752,27 +727,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (savedTheme === 'dark') toggleTheme(); 
   setLang('ua');
 
-// ЗАЩИТА ОТ ГЕНЕРАЦИИ <div> ПРИ НАЖАТИИ ENTER В РЕЖИМЕ РЕДАКТИРОВАНИЯ
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
-      e.preventDefault(); // Отменяем стандартное поведение браузера
-      document.execCommand('insertText', false, '\n'); // Вставляем чистый перенос строки
-      hasUnsavedChanges = true; // Отмечаем, что были изменения
+      e.preventDefault(); 
+      document.execCommand('insertText', false, '\n'); 
+      hasUnsavedChanges = true; 
     }
   });
 
-  // Вход в админку по секретной ссылке (например, site.com/?admin=pwd)
   const urlParams = new URLSearchParams(window.location.search);
   const adminParam = urlParams.get('admin');
-  // Хешируем полученный из ссылки параметр перед сравнением
   if (adminParam && btoa(adminParam) === 'MTk3OA==') {
     document.getElementById('adminPanel').style.display = 'flex';
-    if (!document.body.classList.contains('admin-mode')) {
-      toggleAdmin();
-    }
+    if (!document.body.classList.contains('admin-mode')) toggleAdmin();
     showToast(currentLang === 'ua' ? 'Режим редактора увімкнено через посилання!' : 'Режим редактора включен по ссылке!');
   }
-
 
   const pwdInput = document.getElementById('adminPwdInput');
   if (pwdInput) {
@@ -781,7 +750,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ЗАЩИТА ОТ СЛУЧАЙНОГО ЗАКРЫТИЯ ОКНА
   window.addEventListener('beforeunload', function (e) {
     if (hasUnsavedChanges) {
       const confirmationMessage = 'У вас есть несохраненные изменения. Точно хотите выйти?';
@@ -790,11 +758,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ОБРАБОТЧИК УМНОГО АВТОПЕРЕВОДА ПРИ РЕДАКТИРОВАНИИ
+  // ИСПРАВЛЕНИЕ: Автоперевод и сохранение текста при потере фокуса (innerHTML вместо innerText)
   document.addEventListener('focusout', function(e) {
     if (e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true' && document.body.classList.contains('admin-mode')) {
       const el = e.target;
-      const text = el.innerText.trim();
+      const text = el.innerHTML.trim(); // <-- ИСПРАВЛЕНИЕ ЗДЕСЬ
       
       if (el.hasAttribute('data-ru') && el.hasAttribute('data-ua')) {
         const oldText = el.getAttribute(`data-${currentLang}`);
@@ -843,8 +811,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  
-document.getElementById('file-uploader').addEventListener('change', function(e) {
+  document.getElementById('file-uploader').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file && currentUploadId) {
       const reader = new FileReader();
@@ -865,7 +832,6 @@ document.getElementById('file-uploader').addEventListener('change', function(e) 
             
             hasUnsavedChanges = true;
 
-            // Спрашиваем, загрузить ли картинку сразу в репозиторий
             customConfirm(currentLang === 'ua' ? 'Фото оптимізовано! Завантажити його одразу на GitHub?' : 'Фото оптимизировано! Загрузить его сразу на GitHub?', () => {
               uploadImageToGitHub(blob, currentUploadId + '.webp');
             });
@@ -907,13 +873,11 @@ async function uploadImageToGitHub(blob, filename) {
   const reader = new FileReader();
   reader.readAsDataURL(blob);
   reader.onloadend = async function() {
-    // Вырезаем чистый Base64 код картинки
     const base64data = reader.result.split(',')[1]; 
     
     try {
       const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filename}`;
       
-      // Проверяем, существует ли уже такая картинка, чтобы получить ее SHA для перезаписи
       let sha = null;
       try {
         const getRes = await fetch(url, {
@@ -923,7 +887,7 @@ async function uploadImageToGitHub(blob, filename) {
           const fileData = await getRes.json();
           sha = fileData.sha;
         }
-      } catch(e) {} // Если картинки еще нет — это нормально
+      } catch(e) {}
 
       const bodyData = {
         message: `Обновление фото: ${filename}`,
