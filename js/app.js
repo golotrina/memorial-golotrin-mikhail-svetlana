@@ -74,7 +74,7 @@ function renderStaticContent() {
 
   const setEdit = (id, text) => {
     const el = document.getElementById(id);
-    if (el) { el.innerText = text; el.classList.add('editable-text'); }
+    if (el && text) { el.innerText = text; el.classList.add('editable-text'); }
   };
 
   setEdit('hero-title', isUa ? content.hero.titleUa : content.hero.titleRu);
@@ -89,89 +89,148 @@ function renderStaticContent() {
   setEdit('mother-dates', isUa ? content.parents.mother.datesUa : content.parents.mother.datesRu);
   setEdit('mother-bio-preview', isUa ? content.parents.mother.bioUa : content.parents.mother.bioRu);
 
-  renderTimeline();
-  renderBioModal('fbio', content.fatherBio);
-  renderBioModal('mbio', content.motherBio);
-  renderEpochModal(content.epochData);
+  // Защищенный вызов отрисовки
+  if (typeof renderTimeline === 'function') renderTimeline();
+  if (typeof renderBioModal === 'function') {
+    renderBioModal('fbio', content.fatherBio);
+    renderBioModal('mbio', content.motherBio);
+  }
+  if (typeof renderEpochModal === 'function') renderEpochModal(content.epochData);
   
-  if (document.body.classList.contains('admin-mode')) toggleAdmin(true);
+  if (document.body.classList.contains('admin-mode') && typeof toggleAdmin === 'function') toggleAdmin(true);
+}
+
+function renderTimeline() {
+  if (!window.SITE_CONTENT || !window.SITE_CONTENT.timeline) return;
+  const tData = window.SITE_CONTENT.timeline;
+  const isUa = currentLang === 'ua';
+
+  const mTitle = document.getElementById('timeline-main-title');
+  if (mTitle) { mTitle.innerText = isUa ? tData.header.titleUa : tData.header.titleRu; mTitle.classList.add('editable-text'); }
+  
+  const mSub = document.getElementById('timeline-subtitle');
+  if (mSub) { mSub.innerText = isUa ? tData.header.subtitleUa : tData.header.subtitleRu; mSub.classList.add('editable-text'); }
+  
+  const epBtn = document.getElementById('timeline-epoch-btn');
+  if (epBtn) epBtn.innerText = isUa ? tData.header.btnUa : tData.header.btnRu;
+
+  const container = document.getElementById('timeline-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  tData.events.forEach((item, idx) => {
+    const yearText = isUa ? item.yearUa : item.yearRu;
+    const titleText = isUa ? item.titleUa : item.titleRu;
+    const descText = isUa ? item.textUa : item.textRu;
+    
+    let textHTML = item.isEpitaph 
+      ? `<div class="timeline-epitaph editable-text" style="white-space: pre-wrap;">${descText}</div>`
+      : `<p class="editable-text" style="white-space: pre-wrap;">${descText}</p>`;
+
+    const eventEl = document.createElement('div');
+    eventEl.className = 'timeline-item fade-up visible';
+    eventEl.innerHTML = `
+      <span class="timeline-date editable-text">${yearText}</span>
+      <div class="timeline-content">
+        <h4 class="editable-text">${titleText}</h4>
+        ${textHTML}
+      </div>
+    `;
+    container.appendChild(eventEl);
+  });
 }
 
 function renderBioModal(prefix, data) {
   if (!data) return;
   const isUa = currentLang === 'ua';
 
-  document.getElementById(`${prefix}-name`).innerText = isUa ? data.nameUa : data.nameRu;
-  document.getElementById(`${prefix}-dates`).innerText = isUa ? data.datesUa : data.datesRu;
+  const nameEl = document.getElementById(`${prefix}-name`);
+  if (nameEl) nameEl.innerText = isUa ? data.nameUa : data.nameRu;
+  
+  const datesEl = document.getElementById(`${prefix}-dates`);
+  if (datesEl) datesEl.innerText = isUa ? data.datesUa : data.datesRu;
   
   const quoteEl = document.getElementById(`${prefix}-personal-quote`);
-  quoteEl.innerText = isUa ? data.personalQuoteUa : data.personalQuoteRu;
-  quoteEl.classList.add('editable-text');
+  if (quoteEl) { quoteEl.innerText = isUa ? data.personalQuoteUa : data.personalQuoteRu; quoteEl.classList.add('editable-text'); }
 
   const introEl = document.getElementById(`${prefix}-intro`);
-  introEl.innerText = isUa ? data.introUa : data.introRu;
-  introEl.classList.add('editable-text');
+  if (introEl) { introEl.innerText = isUa ? data.introUa : data.introRu; introEl.classList.add('editable-text'); }
 
   const accContainer = document.getElementById(`${prefix}-accordion`);
-  accContainer.innerHTML = '';
-  data.accordion.forEach((item, idx) => {
-    const itemEl = document.createElement('div');
-    itemEl.className = 'accordion-item';
-    const pHTML = (isUa ? item.paragraphsUa : item.paragraphsRu)
-      .map(p => `<p class="editable-text" data-index="${idx}">${p}</p>`).join('');
-    
-    itemEl.innerHTML = `
-      <button class="accordion-header" onclick="toggleAccordion(this)">
-        <span class="editable-text">${isUa ? item.titleUa : item.titleRu}</span>
-        <span class="accordion-icon">+</span>
-      </button>
-      <div class="accordion-content"><div class="accordion-inner">${pHTML}</div></div>
-    `;
-    accContainer.appendChild(itemEl);
-  });
+  if (accContainer) {
+    accContainer.innerHTML = '';
+    if (data.accordion) {
+      data.accordion.forEach((item, idx) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'accordion-item';
+        const paragraphs = isUa ? item.paragraphsUa : item.paragraphsRu;
+        const pHTML = paragraphs ? paragraphs.map(p => `<p class="editable-text" data-index="${idx}">${p}</p>`).join('') : '';
+        
+        itemEl.innerHTML = `
+          <button class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="editable-text">${isUa ? item.titleUa : item.titleRu}</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-content"><div class="accordion-inner">${pHTML}</div></div>
+        `;
+        accContainer.appendChild(itemEl);
+      });
+    }
+  }
 
   const qContainer = document.getElementById(`${prefix}-quotes`);
-  qContainer.innerHTML = '';
-  data.quotes.forEach(q => {
-    const qEl = document.createElement('div');
-    qEl.className = 'quote-card';
-    qEl.innerHTML = `
-      <span class="quote-icon">“</span>
-      <p class="quote-text editable-text">${isUa ? q.textUa : q.textRu}</p>
-      <p class="quote-author editable-text">${isUa ? q.authorUa : q.authorRu}</p>
-    `;
-    qContainer.appendChild(qEl);
-  });
+  if (qContainer) {
+    qContainer.innerHTML = '';
+    if (data.quotes) {
+      data.quotes.forEach(q => {
+        const qEl = document.createElement('div');
+        qEl.className = 'quote-card';
+        qEl.innerHTML = `
+          <span class="quote-icon">“</span>
+          <p class="quote-text editable-text">${isUa ? q.textUa : q.textRu}</p>
+          <p class="quote-author editable-text">${isUa ? q.authorUa : q.authorRu}</p>
+        `;
+        qContainer.appendChild(qEl);
+      });
+    }
+  }
 }
 
 function renderEpochModal(data) {
   if (!data) return;
   const isUa = currentLang === 'ua';
 
-  document.getElementById('epoch-main-title').innerText = isUa ? data.header.titleUa : data.header.titleRu;
-  document.getElementById('epoch-subtitle').innerText = isUa ? data.header.subtitleUa : data.header.subtitleRu;
+  const mTitle = document.getElementById('epoch-main-title');
+  if (mTitle) mTitle.innerText = isUa ? data.header.titleUa : data.header.titleRu;
+  
+  const mSub = document.getElementById('epoch-subtitle');
+  if (mSub) mSub.innerText = isUa ? data.header.subtitleUa : data.header.subtitleRu;
 
   const container = document.getElementById('epoch-timeline-container');
+  if (!container) return;
   container.innerHTML = '';
-  data.events.forEach((ev, idx) => {
-    const dateText = isUa ? ev.dateUa : ev.dateRu;
-    const titleText = isUa ? ev.titleUa : ev.titleRu;
-    const paragraphs = isUa ? ev.paragraphsUa : ev.paragraphsRu;
-    
-    const evEl = document.createElement('div');
-    evEl.className = 'timeline-item fade-up visible';
-    
-    let pHTML = paragraphs.map((p, pIdx) => `<p class="editable-text" data-epoch-idx="${idx}" data-p-idx="${pIdx}" style="white-space: pre-wrap;">${p}</p>`).join('');
-    
-    evEl.innerHTML = `
-      <span class="timeline-date editable-text" data-epoch-date-idx="${idx}">${dateText}</span>
-      <div class="timeline-content">
-        <h4 class="editable-text" data-epoch-title-idx="${idx}">${titleText}</h4>
-        ${pHTML}
-      </div>
-    `;
-    container.appendChild(evEl);
-  });
+  
+  if (data.events) {
+    data.events.forEach((ev, idx) => {
+      const dateText = isUa ? ev.dateUa : ev.dateRu;
+      const titleText = isUa ? ev.titleUa : ev.titleRu;
+      const paragraphs = isUa ? ev.paragraphsUa : ev.paragraphsRu;
+      
+      const evEl = document.createElement('div');
+      evEl.className = 'timeline-item fade-up visible';
+      
+      let pHTML = paragraphs ? paragraphs.map((p, pIdx) => `<p class="editable-text" data-epoch-idx="${idx}" data-p-idx="${pIdx}" style="white-space: pre-wrap;">${p}</p>`).join('') : '';
+      
+      evEl.innerHTML = `
+        <span class="timeline-date editable-text" data-epoch-date-idx="${idx}">${dateText}</span>
+        <div class="timeline-content">
+          <h4 class="editable-text" data-epoch-title-idx="${idx}">${titleText}</h4>
+          ${pHTML}
+        </div>
+      `;
+      container.appendChild(evEl);
+    });
+  }
 }
 
 function changeZoom(step) {
@@ -183,7 +242,9 @@ function changeZoom(step) {
 
 function setLang(lang) {
   currentLang = lang;
-  renderStaticContent(); 
+  
+  // Безопасный рендеринг контента из базы данных
+  if (typeof renderStaticContent === 'function') renderStaticContent(); 
 
   document.getElementById('btn-lang-ua')?.classList.toggle('active', lang === 'ua');
   document.getElementById('btn-lang-ru')?.classList.toggle('active', lang === 'ru');
@@ -208,9 +269,11 @@ function setLang(lang) {
   
   document.title = currentLang === 'ua' ? "Цифровий Меморіал родини Голотріних" : "Цифровой Мемориал семьи Голотриных";
   
-  renderCandles(); 
-  updateGalleryVisibility('motherGallery'); 
-  updateGalleryVisibility('fatherGallery');
+  if (typeof renderCandles === 'function') renderCandles(); 
+  if (typeof updateGalleryVisibility === 'function') {
+    updateGalleryVisibility('motherGallery'); 
+    updateGalleryVisibility('fatherGallery');
+  }
 }
 
 function toggleMobileMenu() {
@@ -283,6 +346,7 @@ function toggleAdmin(forceState) {
 // 5. ГАЛЕРЕЯ
 // ==========================================
 function initGalleries() {
+  if (!window.DB_GALLERIES) return;
   Object.keys(window.DB_GALLERIES).forEach(galId => {
     const container = document.getElementById(galId);
     if (!container) return;
@@ -638,13 +702,11 @@ function generateQr() {
   let url = document.getElementById('qrUrlInput').value.trim();
   if (!url) { showToast(currentLang === 'ua' ? 'Введіть посилання!' : 'Введите ссылку!'); return; }
   
-  // Авто-маска: если клиент забыл протокол, дописываем его сами
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
     url = 'https://' + url;
     document.getElementById('qrUrlInput').value = url;
   }
   
-  // Валидация ссылки регулярным выражением
   const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
   if (!urlPattern.test(url)) {
     showToast(currentLang === 'ua' ? '❌ Некоректний формат посилання!' : '❌ Некорректный формат ссылки!');
