@@ -216,11 +216,14 @@ async function downloadSiteData() {
   // 1. СБОР АКТУАЛЬНЫХ ДАННЫХ ИЗ ИНТЕРФЕЙСА
   document.querySelectorAll('.editable-text[contenteditable="true"]').forEach(el => {
     if (el.hasAttribute('data-ru') && el.hasAttribute('data-ua')) {
-      el.setAttribute(`data-${currentLang}`, el.innerText.trim());
+      // ИСПОЛЬЗУЕМ innerHTML вместо innerText, чтобы скрипт видел текст 
+      // даже в закрытых модальных окнах и сохранял переносы строк
+      el.setAttribute(`data-${currentLang}`, el.innerHTML.trim()); 
     }
   });
 
   const updatedGalleries = { fatherGallery: [], motherGallery: [] };
+  
   ['fatherGallery', 'motherGallery'].forEach(galId => {
     document.querySelectorAll(`#${galId} .gallery-item-wrap`).forEach(wrap => {
       const img = wrap.querySelector('img[id]');
