@@ -698,3 +698,19 @@ p.editable-text,
   font-size: inherit !important;
   line-height: inherit !important;
 }
+
+/* Подсветка редактируемых зон в режиме админа */
+.admin-mode .editable-text {
+    outline: 1px dashed rgba(194, 155, 73, 0.4);
+    transition: all 0.3s;
+    cursor: pointer;
+}
+.admin-mode .editable-text:hover {
+    background-color: rgba(194, 155, 73, 0.1);
+    outline: 1px solid var(--gold);
+}
+.admin-mode .editable-text:focus {
+    background-color: rgba(194, 155, 73, 0.15);
+    outline: 2px solid var(--gold);
+    box-shadow: 0 0 15px rgba(194, 155, 73, 0.3);
+}
