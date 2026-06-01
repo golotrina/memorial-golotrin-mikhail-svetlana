@@ -90,9 +90,9 @@
       <p class="editable-text" data-ru="Главные вехи истории семьи" data-ua="Головні віхи історії сім'ї" contenteditable="false">Главные вехи истории семьи</p>
 
 <div style="text-align: center; margin-top: 25px;">
-    <button onclick="openEpochModal()" class="c-btn" style="padding: 12px 24px; font-size: 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--gold); border-radius: 30px; color: var(--gold); cursor: pointer; transition: all 0.3s;">
-      <span class="editable-text" data-ru="📜 Исторический контекст эпохи" data-ua="📜 Історичний контекст епохи">📜 Исторический контекст эпохи</span>
-    </button>
+  <button class="read-more-btn" onclick="openBio('epochModal')" style="margin-top: 0;">
+    <span class="editable-text" data-ru="📜 Исторический контекст эпохи 1942-2022" data-ua="📜 Історичний контекст епохи 1942-2022" contenteditable="false">📜 Исторический контекст эпохи 1942-2022</span>
+  </button>
 </div>
       
     </div>
@@ -600,7 +600,8 @@
 
 <div id="epochModal" class="bio-modal">
   <div class="bio-modal-content" style="max-width: 800px;">
-    <span class="close-bio" onclick="closeEpochModal()">×</span>
+    <div class="c-sparks-wrap" style="border-radius: 24px; opacity: 0.8; z-index: 0;"></div>
+    <span class="bio-modal-close" onclick="closeBio('epochModal')">×</span>
     
     <div class="timeline-header" style="margin-top: 20px;">
       <h2 class="editable-text" data-ru="Эпоха" data-ua="Епоха">Эпоха</h2>
