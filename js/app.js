@@ -686,31 +686,6 @@ function toggleAccordion(button) {
   }
 }
 
-// Открытие окна Эпохи
-function openEpochModal() {
-  const modal = document.getElementById('epochModal');
-  if (modal) {
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-// Закрытие окна Эпохи
-function closeEpochModal() {
-  const modal = document.getElementById('epochModal');
-  if (modal) {
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-  }
-}
-
-// Закрытие по клику вне окна
-window.addEventListener('click', function(event) {
-  const epochModal = document.getElementById('epochModal');
-  if (event.target === epochModal) {
-    closeEpochModal();
-  }
-});
 
 // ==========================================
 // 8. QR-КОД 
