@@ -139,6 +139,12 @@ function changeZoom(step) {
 
 function setLang(lang) {
   currentLang = lang;
+
+renderStaticContent(); 
+
+  renderCandles(); 
+  updateGalleryVisibility('motherGallery'); 
+  updateGalleryVisibility('fatherGallery');
   
   document.getElementById('btn-lang-ua')?.classList.toggle('active', lang === 'ua');
   document.getElementById('btn-lang-ru')?.classList.toggle('active', lang === 'ru');
