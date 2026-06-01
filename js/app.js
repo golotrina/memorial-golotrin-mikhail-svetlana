@@ -747,12 +747,10 @@ async function downloadSiteData() {
     const isUa = currentLang === 'ua';
     const langSuffix = isUa ? 'Ua' : 'Ru';
     
-    // 1. Главный экран
     window.SITE_CONTENT.hero['title' + langSuffix] = document.getElementById('hero-title').innerText.trim();
     window.SITE_CONTENT.hero['subtitle' + langSuffix] = document.getElementById('hero-subtitle').innerText.trim();
     window.SITE_CONTENT.hero['quote' + langSuffix] = document.getElementById('hero-quote').innerText.trim();
 
-    // 2. Карточки родителей
     window.SITE_CONTENT.parents.father['name' + langSuffix] = document.getElementById('father-name').innerText.trim();
     window.SITE_CONTENT.parents.father['dates' + langSuffix] = document.getElementById('father-dates').innerText.trim();
     window.SITE_CONTENT.parents.father['bio' + langSuffix] = document.getElementById('father-bio-preview').innerText.trim();
@@ -761,7 +759,6 @@ async function downloadSiteData() {
     window.SITE_CONTENT.parents.mother['dates' + langSuffix] = document.getElementById('mother-dates').innerText.trim();
     window.SITE_CONTENT.parents.mother['bio' + langSuffix] = document.getElementById('mother-bio-preview').innerText.trim();
 
-    // 3. Сбор больших историй (внутри аккордеонов)
     ['fbio', 'mbio'].forEach(prefix => {
       const key = prefix === 'fbio' ? 'fatherBio' : 'motherBio';
       const dataObj = window.SITE_CONTENT[key];
@@ -786,7 +783,6 @@ async function downloadSiteData() {
       });
     });
 
-    // 4. Сбор исторического контекста эпохи
     const epochContainer = document.getElementById('epoch-timeline-container');
     if (epochContainer && window.SITE_CONTENT.epochData) {
       const epData = window.SITE_CONTENT.epochData;
@@ -865,14 +861,15 @@ async function downloadSiteData() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// ГЛАВНЫЙ ЗАПУСК АППЛИКАЦИИ: Полная защита от рассинхронизации событий браузера
+function initializeMemorialApp() {
   initGalleries(); 
   renderCandles();
   createSparks(); 
   
   const savedTheme = localStorage.getItem('memorial_theme');
   if (savedTheme === 'dark') toggleTheme(); 
-  setLang('ua');
+  setLang('ua'); // Принудительно разложит все тексты при старте
 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
@@ -947,7 +944,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-});
+}
+
+// Умная проверка состояния документа: если поезд ушел, прыгаем в него на ходу
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeMemorialApp);
+} else {
+  initializeMemorialApp();
+}
 
 // ==========================================
 // 10. ЗАГРУЗКА ИЗОБРАЖЕНИЙ НА GITHUB API
