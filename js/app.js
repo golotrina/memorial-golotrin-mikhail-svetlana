@@ -108,6 +108,28 @@ function toggleTheme() {
   }
 }
 
+function renderStaticContent() {
+  if (!window.SITE_CONTENT) return;
+  const content = window.SITE_CONTENT;
+  const isUa = currentLang === 'ua';
+
+  // Главный экран (Hero)
+  document.getElementById('hero-title').innerText = isUa ? content.hero.titleUa : content.hero.titleRu;
+  document.getElementById('hero-subtitle').innerText = isUa ? content.hero.subtitleUa : content.hero.subtitleRu;
+  document.getElementById('hero-quote').innerText = isUa ? content.hero.quoteUa : content.hero.quoteRu;
+
+  // Карточка Папы
+  document.getElementById('father-name').innerText = isUa ? content.parents.father.nameUa : content.parents.father.nameRu;
+  document.getElementById('father-dates').innerText = isUa ? content.parents.father.datesUa : content.parents.father.datesRu;
+  document.getElementById('father-bio-preview').innerText = isUa ? content.parents.father.bioUa : content.parents.father.bioRu;
+
+  // Карточка Мамы
+  document.getElementById('mother-name').innerText = isUa ? content.parents.mother.nameUa : content.parents.mother.nameRu;
+  document.getElementById('mother-dates').innerText = isUa ? content.parents.mother.datesUa : content.parents.mother.datesRu;
+  document.getElementById('mother-bio-preview').innerText = isUa ? content.parents.mother.bioUa : content.parents.mother.bioRu;
+}
+
+
 function changeZoom(step) {
   if (step === 0) baseFontSize = 16; else baseFontSize += step; 
   if (baseFontSize < 14) baseFontSize = 14; if (baseFontSize > 26) baseFontSize = 26;
