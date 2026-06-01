@@ -689,3 +689,12 @@ p.editable-text,
 .candle-expand-btn:hover { 
   color: var(--gold); 
 }
+
+/* === ЗАЩИТА ОТ БРАУЗЕРНОГО МУСОРА В РЕДАКТОРЕ === */
+.editable-text * {
+  color: inherit !important;
+  background-color: transparent !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
