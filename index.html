@@ -46,21 +46,15 @@
     </div>
   </header>
 
-  <section class="hero fade-up visible">
+<section class="hero fade-up visible">
     <div class="family-crest-wrapper-new" onclick="openLightbox(this)">
       <img id="photo-crest" class="family-crest" src="photo-crest.webp" alt="Герб роду">
       <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-crest'); event.stopPropagation();">📷 Загрузить герб</button>
     </div>
-    <h1 class="editable-text" data-ru="Цифровой Мемориал" data-ua="Цифровий Меморіал" contenteditable="false">Цифровий Меморіал</h1>
-    <p class="editable-text" data-ru="СЕМЬИ ГОЛОТРИНЫХ" data-ua="РОДИНИ ГОЛОТРІНИХ" style="letter-spacing: 4px; font-weight: 500;" contenteditable="false">РОДИНИ ГОЛОТРІНИХ</p>
+    <h1 id="hero-title"></h1>
+    <p id="hero-subtitle" style="letter-spacing: 4px; font-weight: 500;"></p>
     <div class="separator"></div>
-    <div class="intro-quote editable-text" data-ru="Люди живы, пока жива память о них. &lt;div&gt;Эта страница создана с любовью и благодарностью моим родителям, чтобы сохранить их историю для будущих поколений.&lt;div&gt;«Сохранение памяти рода - дело живущих». &lt;/div&gt;&lt;div&gt;- (с) Татьяна Голотрина.&lt;/div&gt;&lt;/div&gt;" data-ua="Люди живі, поки жива пам'ять про них. 
-Ця сторінка створена з любов'ю і вдячністю моїм батькам, щоб зберегти їхню історію для майбутніх поколінь. 
-«Збереження пам'яті роду – справа тих, хто живе». 
-- (с) Тетяна Голотріна." contenteditable="false">Люди живі, поки жива пам'ять про них. 
-Ця сторінка створена з любов'ю і вдячністю моїм батькам, щоб зберегти їхню історію для майбутніх поколінь. 
-«Збереження пам'яті роду – справа тих, хто живе». 
-- (с) Тетяна Голотріна.</div>
+    <div id="hero-quote" class="intro-quote" style="white-space: pre-wrap;"></div>
     <div class="family-photo fade-up visible" onclick="openLightbox(this)">
       <img id="photo-family" src="photo-family.webp" alt="Сім'я" loading="lazy">
       <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-family'); event.stopPropagation();">📷 Загрузить общее фото</button>
@@ -73,9 +67,9 @@
         <img id="photo-father" src="photo-father.webp" alt="Батько" loading="lazy">
         <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-father'); event.stopPropagation();">📷 Загрузить фото</button>
       </div>
-      <h2 class="parent-name editable-text" data-ru="Михаил Григорьевич Голотрин" data-ua="Михайло Григорович Голотрін" contenteditable="false">Михайло Григорович Голотрін</h2>
-      <div class="parent-dates editable-text" data-ru="1945 - 2021" data-ua="1945 - 2021" contenteditable="false">1945 - 2021</div>
-      <p class="parent-bio editable-text" data-ru="Заведующий постановочной частью Одесской филармонии, заслуженный деятель эстрадного искусства Украины, творческий человек и мудрый, любящий отец." data-ua="Завідувач постановочної частини Одеської філармонії, заслужений діяч естрадного мистецтва України, творча людина, мудрий та люблячий батько." contenteditable="false">Завідувач постановочної частини Одеської філармонії, заслужений діяч естрадного мистецтва України, творча людина, мудрий та люблячий батько.</p>
+      <h2 id="father-name" class="parent-name"></h2>
+      <div id="father-dates" class="parent-dates"></div>
+      <p id="father-bio-preview" class="parent-bio"></p>
       <button class="read-more-btn" onclick="openBio('father-bio')"><span class="editable-text" data-ru="История Папы" data-ua="Історія Тата" contenteditable="false">Історія Тата</span></button>
     </div>
 
@@ -84,9 +78,9 @@
         <img id="photo-mother" src="photo-mother.webp" alt="Мати" loading="lazy">
         <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-mother'); event.stopPropagation();">📷 Загрузить фото</button>
       </div>
-      <h2 class="parent-name editable-text" data-ru="Светлана Владимировна Голотрина" data-ua="Світлана Володимирівна Голотріна" contenteditable="false">Світлана Володимирівна Голотріна</h2>
-      <div class="parent-dates editable-text" data-ru="1943 - 2021" data-ua="1943 - 2021" contenteditable="false">1943 - 2021</div>
-      <p class="parent-bio editable-text" data-ru="Инженер-сметчик с непреклонным сибирским характером. Строгая, но глубоко любящая мать, посвятившая свою жизнь заботе о будущем семьи." data-ua="Інженер-кошторисник із незламним сибірським характером. Сувора, але глибоко любляча мати, яка присвятила своє життя турботі про майбутнє родини." contenteditable="false">Інженер-кошторисник із незламним сибірським характером. Сувора, але глибоко любляча мати, яка присвятила своє життя турботі про майбутнє родини.</p>
+      <h2 id="mother-name" class="parent-name"></h2>
+      <div id="mother-dates" class="parent-dates"></div>
+      <p id="mother-bio-preview" class="parent-bio"></p>
       <button class="read-more-btn" onclick="openBio('mother-bio')"><span class="editable-text" data-ru="История Мамы" data-ua="Історія Мами" contenteditable="false">Історія Мами</span></button>
     </div>
   </section>
