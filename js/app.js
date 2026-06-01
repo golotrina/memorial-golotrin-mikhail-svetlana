@@ -65,7 +65,7 @@ function scrollToTop() {
 }
 
 // ==========================================
-// 3. УМНЫЙ РЕНДЕРИНГ (С ПОДДЕРЖКОЙ РЕДАКТИРОВАНИЯ)
+// 3. УМНЫЙ РЕНДЕРИНГ ДАННЫХ
 // ==========================================
 function renderStaticContent() {
   if (!window.SITE_CONTENT) return;
@@ -89,7 +89,6 @@ function renderStaticContent() {
   setEdit('mother-dates', isUa ? content.parents.mother.datesUa : content.parents.mother.datesRu);
   setEdit('mother-bio-preview', isUa ? content.parents.mother.bioUa : content.parents.mother.bioRu);
 
-  // Защищенный вызов отрисовки
   if (typeof renderTimeline === 'function') renderTimeline();
   if (typeof renderBioModal === 'function') {
     renderBioModal('fbio', content.fatherBio);
@@ -195,7 +194,6 @@ function renderBioModal(prefix, data) {
     }
   }
 }
-
 function renderEpochModal(data) {
   if (!data) return;
   const isUa = currentLang === 'ua';
@@ -243,7 +241,6 @@ function changeZoom(step) {
 function setLang(lang) {
   currentLang = lang;
   
-  // Безопасный рендеринг контента из базы данных
   if (typeof renderStaticContent === 'function') renderStaticContent(); 
 
   document.getElementById('btn-lang-ua')?.classList.toggle('active', lang === 'ua');
@@ -382,7 +379,7 @@ function updateGalleryVisibility(galleryId) {
 
   if (items.length > MAX_VISIBLE_GALLERY) {
     if (showMoreWrapper) showMoreWrapper.style.display = 'block';
-    if (showMoreBtn) showMoreBtn.innerHTML = isGalleryExpanded[galleryId] ? (currentLang === 'ua' ? '<span class="editable-text" data-ru="Сховати фото" data-ua="Сховати фото">Сховати фото</span>' : '<span class="editable-text" data-ru="Скрыть фото" data-ua="Сховати фото">Скрыть фото</span>') : (currentLang === 'ua' ? `<span class="editable-text" data-ru="Показати ще" data-ua="Показати ще">Показати ще (${items.length - MAX_VISIBLE_GALLERY})</span>` : `<span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показать еще (${items.length - MAX_VISIBLE_GALLERY})</span>`);
+    if (showMoreBtn) showMoreBtn.innerHTML = isGalleryExpanded[galleryId] ? (currentLang === 'ua' ? '<span class="editable-text" data-ru="Сховати photo" data-ua="Сховати фото">Сховати фото</span>' : '<span class="editable-text" data-ru="Скрыть фото" data-ua="Сховати фото">Скрыть фото</span>') : (currentLang === 'ua' ? `<span class="editable-text" data-ru="Показати ще" data-ua="Показати ще">Показати ще (${items.length - MAX_VISIBLE_GALLERY})</span>` : `<span class="editable-text" data-ru="Показать еще" data-ua="Показати ще">Показать еще (${items.length - MAX_VISIBLE_GALLERY})</span>`);
   } else if (showMoreWrapper) showMoreWrapper.style.display = 'none';
 }
 
@@ -740,7 +737,7 @@ function downloadQr() {
 }
 
 // ==========================================
-// 9. БЕЗОПАСНЫЙ СБОР ВСЕХ ДАННЫХ И ИНИЦИАЛИЗАЦИЯ
+// 9. СБОР ДАННЫХ И ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
 // ==========================================
 async function downloadSiteData() {
   if (window.SITE_CONTENT) {
@@ -861,7 +858,6 @@ async function downloadSiteData() {
   }
 }
 
-// ГЛАВНЫЙ ЗАПУСК АППЛИКАЦИИ: Полная защита от рассинхронизации событий браузера
 function initializeMemorialApp() {
   initGalleries(); 
   renderCandles();
@@ -869,7 +865,14 @@ function initializeMemorialApp() {
   
   const savedTheme = localStorage.getItem('memorial_theme');
   if (savedTheme === 'dark') toggleTheme(); 
-  setLang('ua'); // Принудительно разложит все тексты при старте
+  setLang('ua');
+
+  // Перехват любых изменений текста для блокировки закрытия страницы
+  document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('editable-text')) {
+      hasUnsavedChanges = true;
+    }
+  });
 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
@@ -946,12 +949,16 @@ function initializeMemorialApp() {
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 }
 
-// Умная проверка состояния документа: если поезд ушел, прыгаем в него на ходу
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeMemorialApp);
-} else {
-  initializeMemorialApp();
+// Поллинг-контроль: запуск только при полном развертывании базы данных в памяти
+function checkAndStartApp() {
+  if (window.SITE_CONTENT && window.DB_CANDLES && window.DB_GALLERIES) {
+    initializeMemorialApp();
+  } else {
+    setTimeout(checkAndStartApp, 50);
+  }
 }
+
+checkAndStartApp();
 
 // ==========================================
 // 10. ЗАГРУЗКА ИЗОБРАЖЕНИЙ НА GITHUB API
