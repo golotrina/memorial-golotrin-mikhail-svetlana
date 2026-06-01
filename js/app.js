@@ -735,6 +735,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+// ЗАЩИТА ОТ ВСТАВКИ ЧУЖИХ СТИЛЕЙ ПРИ КОПИПАСТЕ (Оставляем только чистый текст)
+  document.addEventListener('paste', function(e) {
+    if (e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
+      e.preventDefault(); // Блокируем стандартную вставку с чужими цветами
+      const text = (e.originalEvent || e).clipboardData.getData('text/plain'); // Достаем голый, чистый текст
+      document.execCommand('insertText', false, text); // Вставляем его
+      hasUnsavedChanges = true;
+    }
+  });
+
+  
   const urlParams = new URLSearchParams(window.location.search);
   const adminParam = urlParams.get('admin');
   if (adminParam && btoa(adminParam) === 'MTk3OA==') {
