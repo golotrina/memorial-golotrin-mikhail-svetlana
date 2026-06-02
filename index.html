@@ -22,7 +22,11 @@
 
   <header>
     <div class="header-controls">
-      <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Открыть мобильное меню">☰</button>
+      <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Открыть мобильное меню">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
       
       <nav class="control-pill desktop-nav nav-padding">
         <a href="#parents" class="nav-link editable-text" data-ru="Родители" data-ua="Батьки" contenteditable="false">Батьки</a>
@@ -324,7 +328,7 @@
   </div>
   
   <div class="mobile-menu" id="mobileMenu">
-    <span class="close-mobile-menu" onclick="toggleMobileMenu()">×</span>
+    <span class="close-mobile-menu" onclick="toggleMobileMenu()"></span>
     <div class="mobile-menu-content">
       <a href="javascript:void(0)" class="editable-text" onclick="openBio('father-bio'); toggleMobileMenu()" data-ru="ПРО МИХАИЛА" data-ua="ПРО МИХАЙЛА" contenteditable="false">ПРО МИХАЙЛА</a>
       <a href="javascript:void(0)" class="editable-text" onclick="openBio('mother-bio'); toggleMobileMenu()" data-ru="ПРО СВЕТЛАНУ" data-ua="ПРО СВІТЛАНУ" contenteditable="false">ПРО СВІТЛАНУ</a>
