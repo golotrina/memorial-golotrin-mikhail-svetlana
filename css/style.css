@@ -12,9 +12,16 @@
 @keyframes btnPulse { 0% { box-shadow: var(--btn-shadow), 0 0 0 0 rgba(194, 155, 73, 0.5); } 70% { box-shadow: var(--btn-shadow), 0 0 0 15px rgba(194, 155, 73, 0); } 100% { box-shadow: var(--btn-shadow), 0 0 0 0 rgba(194, 155, 73, 0); } }
 @keyframes titleCandlePulse { 0% { filter: drop-shadow(0 0 2px rgba(255, 180, 0, 0.3)); transform: scale(1) rotate(-1deg); } 100% { filter: drop-shadow(0 0 12px rgba(255, 150, 0, 0.8)) drop-shadow(0 0 20px rgba(194, 155, 73, 0.6)); transform: scale(1.15) rotate(2deg); } }
 @keyframes cardBreathingGlow { 0% { box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 0 5px rgba(194, 155, 73, 0.05); border-color: rgba(223, 192, 132, 0.08); } 100% { box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 0 20px rgba(194, 155, 73, 0.3); border-color: rgba(223, 192, 132, 0.3); } }
-@keyframes floatSpark { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 1; transform: translateY(-20vh) scale(1); } 80% { opacity: 0.8; transform: translateY(-80vh) scale(1.2); } 100% { transform: translateY(-100vh) scale(0.5); opacity: 0; } }
 @keyframes pulseGlow { 0% { transform: scale(0.9); opacity: 0.5; } 100% { transform: scale(1.1); opacity: 0.8; } }
 @keyframes flickerFlame { 0% { transform: scale(1) skewX(-1deg); opacity: 0.9; } 100% { transform: scale(1.02) skewX(1deg); opacity: 1; } }
+
+/* Медленные искры через весь экран */
+@keyframes floatSpark { 
+  0% { transform: translateY(100vh) scale(0.5); opacity: 0; } 
+  20% { opacity: 0.8; transform: translateY(50vh) scale(1.5); } 
+  80% { opacity: 0.5; transform: translateY(-50vh) scale(1); } 
+  100% { transform: translateY(-120vh) scale(0.5); opacity: 0; } 
+}
 
 /* === ПЕРЕМЕННЫЕ И СТИЛИ ТЕМ ОФОРМЛЕНИЯ === */
 :root {
@@ -114,7 +121,12 @@ body.dark-theme .hero h1 { background: linear-gradient(to right, var(--gold) 20%
 .timeline-item:hover::before, .timeline-item.active::before { background: var(--bg-color); border-color: var(--gold); transform: scale(1.2); box-shadow: 0 0 15px rgba(194, 155, 73, 0.8); }
 .timeline-date { font-family: 'Playfair Display', serif; font-weight: 600; color: var(--gold-dark); font-size: 1.3rem; margin-bottom: 5px; display: inline-block; background: var(--card-bg); padding: 4px 15px; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: var(--inner-shadow); }
 body.dark-theme .timeline-date { color: var(--gold-light); }
+
+/* Подсветка блока текста в Линии Жизни при наведении */
 .timeline-content { background: var(--card-bg); padding: 25px; border-radius: 16px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); margin-top: 15px; transition: all 0.4s ease; }
+.timeline-item:hover .timeline-content { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 0 20px rgba(194,155,73,0.3); border-color: var(--gold); }
+body.dark-theme .timeline-item:hover .timeline-content { box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 25px rgba(194,155,73,0.3); }
+
 .timeline-content h4 { color: var(--text-color); margin-bottom: 10px; font-size: 1.2rem; }
 .timeline-content p { color: var(--text-light); font-size: 1.05rem; line-height: 1.7; white-space: pre-wrap; }
 .timeline-epitaph { font-style: italic; line-height: 1.8; color: var(--gold-dark); text-align: center; margin-top: 15px; font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 500; white-space: pre-wrap !important; }
@@ -134,6 +146,11 @@ body.dark-theme .quote-author { color: var(--gold-light); }
 .ritual-header h2 { font-size: 2.5rem; color: var(--text-color); display: flex; align-items: center; justify-content: center; gap: 15px; }
 .title-candle-glow { animation: titleCandlePulse 2.5s infinite alternate ease-in-out; display: inline-block; }
 
+/* ВОССТАНОВЛЕНО: Сворачивание и разворачивание формы свечей */
+.candle-form-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.5s ease; }
+.candle-form-wrapper.active { grid-template-rows: 1fr; }
+.candle-form-inner { overflow: hidden; }
+
 .candle-form-container { background: var(--card-bg); border-radius: 20px; padding: 40px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); margin-bottom: 20px; margin-top: 20px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
 .input-group { display: flex; flex-direction: column; gap: 8px; }
@@ -141,7 +158,6 @@ body.dark-theme .quote-author { color: var(--gold-light); }
 body.dark-theme .input-group label { color: var(--gold-light); }
 .input-group input, .input-group textarea { padding: 15px 20px; border: 1px solid var(--border-color); border-radius: 12px; font-family: 'Montserrat', sans-serif; font-size: 1rem; background: var(--bg-color); color: var(--text-color); box-shadow: var(--inner-shadow); }
 
-/* Восстановленные стили радио-кнопок свечей */
 .candle-types { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 40px; }
 .type-label { cursor: pointer; }
 .type-label input { display: none; }
@@ -188,7 +204,6 @@ body.dark-theme .modal-name-title { color: var(--gold-light) !important; text-sh
 .modal-personal-quote { text-align: center; font-style: italic; margin-bottom: 30px; color: var(--gold-dark); font-size: 1.35rem; font-weight: 500; font-family: 'Playfair Display', serif; }
 body.dark-theme .modal-personal-quote { color: var(--gold-light); }
 
-/* Восстановленный Аккордеон */
 .accordion { margin-top: 40px; display: flex; flex-direction: column; gap: 15px; position: relative; z-index: 1;}
 .accordion-item { border: none; margin-bottom: 15px; }
 .accordion-header { width: 100%; text-align: left; background: var(--accordion-bg); border: 1px solid var(--border-color); padding: 20px 25px; font-size: 1.3rem; color: var(--text-light); border-radius: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: 'Playfair Display', serif; transition: all 0.4s ease; }
@@ -216,9 +231,13 @@ body.dark-theme .accordion-item.active .accordion-header { color: var(--btn-text
 .lightbox-prev { left: 20px; } .lightbox-next { right: 20px; }
 
 /* === КНОПКА "НАВЕРХ" === */
-.scroll-top-btn { position: fixed !important; bottom: 30px !important; right: 30px !important; left: auto !important; width: 65px !important; height: 65px !important; border-radius: 50% !important; z-index: 999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; background: var(--btn-volumetric-bg) !important; border: 1px solid var(--btn-border) !important; box-shadow: var(--btn-shadow) !important; color: var(--btn-text-dark) !important; opacity: 0 !important; pointer-events: none !important; transition: opacity 0.3s ease, transform 0.3s ease !important; }
+.scroll-top-btn { position: fixed !important; bottom: 30px !important; right: 30px !important; left: auto !important; width: 65px !important; height: 65px !important; border-radius: 50% !important; z-index: 999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; background: var(--btn-volumetric-bg) !important; border: 1px solid var(--btn-border) !important; box-shadow: var(--btn-shadow) !important; color: var(--btn-text-dark) !important; opacity: 0 !important; pointer-events: none !important; transition: all 0.4s ease !important; }
 .scroll-top-btn.visible { opacity: 1 !important; pointer-events: all !important; }
-.scroll-top-btn svg { width: 30px !important; height: 30px !important; stroke: var(--btn-text-dark) !important; }
+.scroll-top-btn svg { width: 30px !important; height: 30px !important; stroke: var(--btn-text-dark) !important; transition: stroke 0.4s ease; }
+/* Золотое свечение при наведении */
+.scroll-top-btn:hover { background: var(--gold-gradient) !important; transform: translateY(-5px) scale(1.05) !important; box-shadow: 0 10px 25px rgba(194, 155, 73, 0.5) !important; }
+.scroll-top-btn:hover svg { stroke: #fff !important; }
+
 body.dark-theme .scroll-top-btn { background: linear-gradient(145deg, #1C1510 0%, #120E0A 100%) !important; border: 1px solid var(--gold) !important; color: var(--gold-light) !important; }
 body.dark-theme .scroll-top-btn svg { stroke: var(--gold-light) !important; }
 
@@ -248,19 +267,21 @@ body.dark-theme .scroll-top-btn svg { stroke: var(--gold-light) !important; }
 .confirm-actions { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
 
 #adminPanel { position: fixed; bottom: 20px; left: 20px; display: none; gap: 15px; z-index: 4000; background: rgba(10, 8, 6, 0.85); padding: 15px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(194, 155, 73, 0.5); flex-wrap: wrap; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-#adminPanel ..parent-nameadmin-btn { min-width: auto !important; padding: 10px 20px !important; font-size: 0.95rem !important; margin: 0 !important; }
+#adminPanel .admin-btn { min-width: auto !important; padding: 10px 20px !important; font-size: 0.95rem !important; margin: 0 !important; }
 
-/* === ВОССТАНОВЛЕННЫЕ ИСКРЫ === */
-.c-sparks-wrap { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 0; border-radius: 16px; }
+/* === ВОССТАНОВЛЕННЫЕ ИСКРЫ (ГЛОБАЛЬНЫЙ ПОЛЕТ) === */
+.c-sparks-wrap { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; overflow: hidden; }
 .c-spark { position: absolute; width: 4px; height: 4px; background: #FFD700; border-radius: 50%; box-shadow: 0 0 8px 3px rgba(255, 215, 0, 0.8); opacity: 0; pointer-events: none; }
 
-/* === МОБИЛЬНОЕ МЕНЮ (СТРОГО ОГРАНИЧЕННЫЙ СЛОЙ) === */
+/* === МОБИЛЬНОЕ МЕНЮ === */
 .mobile-menu { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100vh !important; background: rgba(26, 25, 24, 0.98) !important; z-index: 99999 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; opacity: 0 !important; pointer-events: none !important; transition: opacity 0.4s ease !important; backdrop-filter: blur(10px) !important; }
 .mobile-menu.active { opacity: 1 !important; pointer-events: auto !important; }
 .mobile-menu-content { display: flex; flex-direction: column; align-items: center; gap: 35px; }
 .mobile-menu-content a { color: #fff; font-size: 1.5rem; text-decoration: none; font-family: 'Playfair Display', serif; text-transform: uppercase; }
 
-/* === СИСТЕМА УПРАВЛЕНИЯ QR-ТАБЛИЧКОЙ === */
+/* ВОССТАНОВЛЕНО: СИСТЕМА УПРАВЛЕНИЯ QR-ТАБЛИЧКОЙ (Скрыто до активации) */
+.qr-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 8, 6, 0.95); z-index: 4000; display: none; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; }
+.qr-modal.active { display: flex; }
 .qr-container { background: #fff; border-radius: 24px; width: 100%; box-sizing: border-box; text-align: center; position: relative; margin: auto; margin-top: 5vh; margin-bottom: 5vh; }
 .qr-print-area { margin-top: 20px; padding: 40px 30px; border: 2px dashed var(--gold); border-radius: 16px; background: #fafafa; display: none; flex-direction: column; align-items: center; }
 .qr-print-area.active { display: flex; }
