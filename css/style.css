@@ -201,7 +201,7 @@ body.dark-theme .hero h1 { background: linear-gradient(to right, var(--gold) 20%
 .parent-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-8px); }
 .parent-name { font-size: 2.2rem; margin-bottom: 5px; color: var(--text-color); transition: color 0.4s ease; }
 .parent-card:hover .parent-name { color: var(--gold); }
-.parent-dates { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 500; letter-spacing: 1px; color: var(--gold); margin-bottom: 20px; font-size: 1.15rem; }
+.parent-dates { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 500; letter-spacing: 1px; color: var(--gold); margin-bottom: 20px; font-size: 1.4rem; }
 .parent-bio { color: var(--text-light); font-size: 1.05rem; text-align: center; line-height: 1.8; margin-bottom: 20px; white-space: pre-wrap; flex-grow: 1; }
 
 /* === ЛИНИЯ ЖИЗНИ (ТАЙМЛАЙН) === */
@@ -282,11 +282,11 @@ body.dark-theme .timeline-epitaph { color: var(--gold-light); }
 /* ИСПРАВЛЕНО: Адаптивный цвет кавычек, исключающий слияние с фоном */
 .quote-icon { position: absolute; top: -10px; left: 15px; font-size: 4rem; color: var(--quote-icon-color); font-family: 'Playfair Display', serif; line-height: 1; pointer-events: none; }
 
-/* ИСПРАВЛЕНО: Высокая премиальная контрастность декоративных кавычек в модальных окнах родителей на темном фоне */
+/* ЦИТАТЫ: Центрирование выглядит лучше для коротких изречений */
 .bio-modal .quote-icon { color: rgba(230, 194, 122, 0.45) !important; filter: drop-shadow(0 2px 8px rgba(194, 155, 73, 0.3)); }
 body:not(.dark-theme) .bio-modal .quote-icon { color: rgba(156, 114, 16, 0.35) !important; filter: none; }
 
-.quote-text { font-style: italic; font-size: 1.1rem; color: var(--text-color); margin-bottom: 12px; position: relative; z-index: 1; line-height: 1.75; text-align: justify; white-space: pre-wrap; padding-top: 15px; }
+.quote-text { font-style: italic; font-size: 1.1rem; color: var(--text-color); margin-bottom: 12px; position: relative; z-index: 1; line-height: 1.75; text-align: center; white-space: pre-wrap; padding-top: 15px; }
 .quote-author { font-weight: 600; color: var(--gold-dark); font-size: 0.85rem; text-align: right; text-transform: uppercase; letter-spacing: 1px; }
 body.dark-theme .quote-author { color: var(--gold-light); }
 
@@ -323,6 +323,12 @@ body.dark-theme .type-label input:checked + .type-card { background: rgba(194, 1
 
 .lit-candles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
 .candle-card { background: linear-gradient(160deg, #1A1108 0%, #0A0704 100%); border-radius: 16px; padding: 25px 30px; color: #FFF; position: relative; display: flex; flex-direction: column; border: 1px solid rgba(223, 192, 132, 0.08); animation: cardBreathingGlow 4s infinite alternate ease-in-out; overflow: hidden; }
+
+/* Стиль для свечей, ожидающих модерации */
+.admin-mode .pending-moderation {
+  border: 1px dashed var(--gold);
+  background: linear-gradient(160deg, #251a10 0%, #0A0704 100%);
+}
 
 .css-candle { position: relative; width: 34px; height: 70px; margin-right: 15px; flex-shrink: 0; margin-top: 5px; }
 .c-glow { position: absolute; top: -25px; left: -25px; width: 80px; height: 80px; border-radius: 50%; filter: blur(15px); opacity: 0.65; animation: pulseGlow 3s infinite alternate ease-in-out; }
@@ -362,11 +368,11 @@ body.dark-theme .type-label input:checked + .type-card { background: rgba(194, 1
 .bio-modal-close:hover { transform: scale(1.1); color: var(--gold-dark); }
 
 .bio-text h3 { color: var(--gold); margin-top: 40px; margin-bottom: 15px; font-size: 1.6rem; }
-.bio-text p { margin-bottom: 25px; color: var(--text-color); text-align: justify; font-size: 1.2rem; line-height: 1.9; position: relative; z-index: 2; }
+.bio-text p { margin-bottom: 25px; color: var(--text-color); text-align: left; font-size: 1.2rem; line-height: 1.9; position: relative; z-index: 2; }
 
 .modal-name-title { text-align: center; display: block; width: 100%; margin: 0 auto 15px; color: var(--gold); font-size: 2.5rem; font-family: 'Playfair Display', serif; }
 body.dark-theme .modal-name-title { color: var(--gold-light); filter: drop-shadow(0 4px 15px rgba(194, 155, 73, 0.2)); }
-.modal-dates { text-align: center; font-style: italic; margin-bottom: 35px; font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text-light); font-weight: 500; letter-spacing: 1px; display: block; width: 100%; }
+.modal-dates { text-align: center; font-style: italic; margin-bottom: 35px; font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--text-light); font-weight: 500; letter-spacing: 1px; display: block; width: 100%; }
 .modal-personal-quote { text-align: center; font-style: italic; margin-bottom: 30px; color: var(--gold-dark); font-size: 1.35rem; font-weight: 500; font-family: 'Playfair Display', serif; }
 body.dark-theme .modal-personal-quote { color: var(--gold-light); }
 
@@ -378,11 +384,11 @@ body.dark-theme .modal-personal-quote { color: var(--gold-light); }
 .accordion-item.active .accordion-header { background: var(--btn-volumetric-bg); color: var(--btn-text-dark); border-color: var(--btn-border); box-shadow: var(--btn-shadow); }
 .accordion-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s ease; }
 .accordion-inner { overflow: hidden; padding: 0 10px; }
-.accordion-inner p { margin-bottom: 25px; color: var(--text-color); text-align: justify; font-size: 1.2rem; line-height: 1.9; padding-top: 15px; }
+.accordion-inner p { margin-bottom: 25px; color: var(--text-color); text-align: left; font-size: 1.2rem; line-height: 1.9; padding-top: 15px; }
 .accordion-item.active .accordion-content { grid-template-rows: 1fr; }
 
 /* ИСПРАВЛЕНО: Премиальное центрирование кнопок "Показать еще" и внутренних блоков */
-.btn-center-margin, #showMoreCandlesWrapper { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; margin: 35px auto !important; padding: 0 !important; clear: both !important; float: none !important; }
+.btn-center-margin, .btn-center-margin-large, #showMoreCandlesWrapper { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; margin: 35px auto !important; padding: 0 !important; clear: both !important; float: none !important; }
 
 /* === ПРОФЕССИОНАЛЬНЫЙ ЛАЙТБОКС === */
 .lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 8, 6, 0.96); backdrop-filter: blur(15px); display: flex; align-items: center; justify-content: center; z-index: 99999; opacity: 0; pointer-events: none; transition: all 0.4s ease; }
@@ -527,7 +533,7 @@ body:has(.bio-modal.active) { overflow: hidden !important; }
   .bio-modal { padding: 40px 10px; }
   .bio-modal-content { padding: 40px 20px; border-radius: 16px; }
   .modal-name-title { font-size: 1.8rem; }
-  .modal-dates { font-size: 1.2rem; }
+  .modal-dates { font-size: 1.4rem; }
   .bio-text h3 { font-size: 1.3rem; }
   .accordion-header { padding: 15px; font-size: 1.3rem; }
   

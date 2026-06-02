@@ -112,6 +112,14 @@ function renderStaticContent() {
   if (!window.SITE_CONTENT) return;
   const content = window.SITE_CONTENT;
   const isUa = currentLang === 'ua';
+  const grid = document.getElementById('parents');
+  const modalsContainer = document.getElementById('dynamic-modals-container');
+  
+  // Применяем настройки из конфига (Бизнес-настройка)
+  if (content.config) {
+    document.documentElement.style.setProperty('--gold', content.config.primaryColor);
+    document.body.style.fontFamily = content.config.fontFamily;
+  }
 
   const setEdit = (id, text) => {
     const el = document.getElementById(id);
@@ -122,19 +130,38 @@ function renderStaticContent() {
   setEdit('hero-subtitle', isUa ? content.hero.subtitleUa : content.hero.subtitleRu);
   setEdit('hero-quote', isUa ? content.hero.quoteUa : content.hero.quoteRu);
 
-  setEdit('father-name', isUa ? content.parents.father.nameUa : content.parents.father.nameRu);
-  setEdit('father-dates', isUa ? content.parents.father.datesUa : content.parents.father.datesRu);
-  setEdit('father-bio-preview', isUa ? content.parents.father.bioUa : content.parents.father.bioRu);
+  if (grid && content.people) {
+    grid.innerHTML = ''; // Очищаем перед рендером
+    if (modalsContainer) modalsContainer.innerHTML = '';
 
-  setEdit('mother-name', isUa ? content.parents.mother.nameUa : content.parents.mother.nameRu);
-  setEdit('mother-dates', isUa ? content.parents.mother.datesUa : content.parents.mother.datesRu);
-  setEdit('mother-bio-preview', isUa ? content.parents.mother.bioUa : content.parents.mother.bioRu);
+    content.people.forEach(person => {
+      // Рендерим карточку в сетке
+      const card = document.createElement('div');
+      card.className = 'parent-card fade-up visible';
+      card.innerHTML = `
+        <div class="photo-wrapper" onclick="openLightbox(this)">
+          <img id="photo-${person.id}" src="img/${person.photo}" alt="Фото" loading="lazy">
+          <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-${person.id}'); event.stopPropagation();">📷 Загрузить фото</button>
+        </div>
+        <h2 id="${person.id}-name" class="parent-name editable-text">${isUa ? person.nameUa : person.nameRu}</h2>
+        <div id="${person.id}-dates" class="parent-dates editable-text">${isUa ? person.datesUa : person.datesRu}</div>
+        <p id="${person.id}-bio-preview" class="parent-bio editable-text">${isUa ? person.bioUa : person.bioRu}</p>
+        <button class="read-more-btn" onclick="openBio('${person.id}-bio')">
+          <span class="editable-text" data-ru="История" data-ua="Історія">${isUa ? 'Історія' : 'История'}</span>
+        </button>
+      `;
+      grid.appendChild(card);
+
+      // Генерируем структуру модального окна для этого человека
+      if (modalsContainer) {
+        const modalHtml = createBioModalHtml(person.id, person.galleryKey);
+        modalsContainer.insertAdjacentHTML('beforeend', modalHtml);
+        renderBioModalData(person.id, content[person.bioKey]); // Заполняем данными
+      }
+    });
+  }
 
   if (typeof renderTimeline === 'function') renderTimeline();
-  if (typeof renderBioModal === 'function') {
-    renderBioModal('fbio', content.fatherBio);
-    renderBioModal('mbio', content.motherBio);
-  }
   if (typeof renderEpochModal === 'function') renderEpochModal(content.epochData);
   
   if (document.body.classList.contains('admin-mode') && typeof toggleAdmin === 'function') toggleAdmin(true);
@@ -180,23 +207,61 @@ function renderTimeline() {
   });
 }
 
-function renderBioModal(prefix, data) {
+// Вспомогательная функция для генерации HTML каркаса модалки
+function createBioModalHtml(personId, galleryKey) {
+  return `
+  <div class="bio-modal" id="${personId}-bio">
+    <div class="bio-modal-content">
+      <div class="c-sparks-wrap sparks-modal"></div>
+      <span class="bio-modal-close" onclick="closeBio('${personId}-bio')">×</span>
+      <h2 id="${personId}-modal-name" class="modal-name-title"></h2>
+      <div id="${personId}-modal-dates" class="modal-dates modal-relative-z"></div>
+      
+      <div class="bio-text">
+        <p id="${personId}-modal-personal-quote" class="modal-personal-quote"></p>
+        <p id="${personId}-modal-intro" class="modal-intro-text"></p>
+        
+        <div id="${personId}-modal-accordion" class="accordion modal-relative-z"></div>
+        <div id="${personId}-modal-quotes" class="quotes-section"></div>
+
+        <h3 class="gallery-title editable-text" data-ru="Воспоминания" data-ua="Спогади">${currentLang === 'ua' ? 'Спогади' : 'Воспоминания'}</h3>
+        
+        <div class="gallery-wrapper-relative">
+          <div class="c-sparks-wrap sparks-gallery"></div>
+          <div class="modal-gallery" id="${galleryKey}"></div>
+        </div>
+        
+        <div id="showMoreWrapper-${galleryKey}" class="btn-center-margin">
+          <button class="read-more-btn modal-btn-no-margin" onclick="toggleGalleryExpand('${galleryKey}')" id="showMoreBtn-${galleryKey}">
+            <span>${currentLang === 'ua' ? 'Показати ще' : 'Показать еще'}</span>
+          </button>
+        </div>
+        
+        <div class="admin-only-flex">
+          <button class="admin-btn btn-add-photo" onclick="addGalleryPhoto('${galleryKey}')">➕ Добавить фото</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderBioModalData(personId, data) {
   if (!data) return;
   const isUa = currentLang === 'ua';
 
-  const nameEl = document.getElementById(`${prefix}-name`);
+  const nameEl = document.getElementById(`${personId}-modal-name`); // Используем корректный ID из каркаса
   if (nameEl) nameEl.innerText = isUa ? data.nameUa : data.nameRu;
   
-  const datesEl = document.getElementById(`${prefix}-dates`);
+  const datesEl = document.getElementById(`${personId}-modal-dates`);
   if (datesEl) datesEl.innerText = isUa ? data.datesUa : data.datesRu;
   
-  const quoteEl = document.getElementById(`${prefix}-personal-quote`);
-  if (quoteEl) { quoteEl.innerText = isUa ? data.personalQuoteUa : data.personalQuoteRu; quoteEl.classList.add('editable-text'); }
+  const quoteEl = document.getElementById(`${personId}-modal-personal-quote`);
+  if (quoteEl) { quoteEl.innerText = isUa ? (data.personalQuoteUa || '') : (data.personalQuoteRu || ''); quoteEl.classList.add('editable-text'); }
 
-  const introEl = document.getElementById(`${prefix}-intro`);
-  if (introEl) { introEl.innerText = isUa ? data.introUa : data.introRu; introEl.classList.add('editable-text'); }
+  const introEl = document.getElementById(`${personId}-modal-intro`);
+  if (introEl) { introEl.innerText = isUa ? (data.introUa || '') : (data.introRu || ''); introEl.classList.add('editable-text'); }
 
-  const accContainer = document.getElementById(`${prefix}-accordion`);
+  const accContainer = document.getElementById(`${personId}-modal-accordion`);
   if (accContainer) {
     accContainer.innerHTML = '';
     if (data.accordion) {
@@ -204,8 +269,7 @@ function renderBioModal(prefix, data) {
         const itemEl = document.createElement('div');
         itemEl.className = 'accordion-item';
         const paragraphs = isUa ? item.paragraphsUa : item.paragraphsRu;
-        const pHTML = paragraphs ? paragraphs.map(p => `<p class="editable-text" data-index="${idx}">${p}</p>`).join('') : '';
-        
+        const pHTML = paragraphs ? paragraphs.map(p => `<p class="editable-text">${p}</p>`).join('') : '';
         itemEl.innerHTML = `
           <button class="accordion-header" onclick="toggleAccordion(this)">
             <span class="editable-text">${isUa ? item.titleUa : item.titleRu}</span>
@@ -218,7 +282,7 @@ function renderBioModal(prefix, data) {
     }
   }
 
-  const qContainer = document.getElementById(`${prefix}-quotes`);
+  const qContainer = document.getElementById(`${personId}-modal-quotes`);
   if (qContainer) {
     qContainer.innerHTML = '';
     if (data.quotes) {
@@ -227,13 +291,16 @@ function renderBioModal(prefix, data) {
         qEl.className = 'quote-card';
         qEl.innerHTML = `
           <span class="quote-icon">“</span>
-          <p class="quote-text editable-text">${isUa ? q.textUa : q.textRu}</p>
-          <p class="quote-author editable-text">${isUa ? q.authorUa : q.authorRu}</p>
+          <p class="quote-text editable-text">${isUa ? (q.textUa || q.textRu) : (q.textRu || q.textUa)}</p>
+          <p class="quote-author editable-text">${isUa ? (q.authorUa || q.authorRu) : (q.authorRu || q.authorUa)}</p>
         `;
         qContainer.appendChild(qEl);
       });
     }
   }
+
+  // После отрисовки данных инициализируем галереи (чтобы фото подгрузились в новые контейнеры)
+  if (typeof initGalleries === 'function') initGalleries();
 }
 
 function renderEpochModal(data) {
@@ -308,9 +375,8 @@ function setLang(lang) {
   document.title = currentLang === 'ua' ? "Цифровий Меморіал родини Голотріних" : "Цифровой Мемориал семьи Голотриных";
   
   if (typeof renderCandles === 'function') renderCandles(); 
-  if (typeof updateGalleryVisibility === 'function') {
-    updateGalleryVisibility('motherGallery'); 
-    updateGalleryVisibility('fatherGallery');
+  if (typeof updateGalleryVisibility === 'function' && window.SITE_CONTENT?.people) {
+    window.SITE_CONTENT.people.forEach(p => updateGalleryVisibility(p.galleryKey));
   }
 }
 
@@ -418,7 +484,7 @@ function initGalleries() {
       wrap.className = 'gallery-item-wrap';
       wrap.innerHTML = `
         <div class="gallery-item" onclick="openLightbox(this)">
-          <img id="${item.id}" src="${item.id}.webp" alt="Фото" loading="lazy">
+          <img id="${item.id}" src="img/${item.id}.webp" alt="Фото" loading="lazy">
           <button class="move-photo-btn move-photo-left" onclick="moveGalleryPhoto(this, -1); event.stopPropagation();" data-title-ru="Сдвинуть влево" data-title-ua="Зсунути ліворуч" title="${currentLang === 'ua' ? 'Зсунути ліворуч' : 'Сдвинуть влево'}">&#10094;</button>
           <button class="move-photo-btn move-photo-right" onclick="moveGalleryPhoto(this, 1); event.stopPropagation();" data-title-ru="Сдвинуть вправо" data-title-ua="Зсунути праворуч" title="${currentLang === 'ua' ? 'Зсунути праворуч' : 'Сдвинуть вправо'}">&#10095;</button>
           <button class="edit-photo-btn" onclick="triggerUpload('${item.id}'); event.stopPropagation();">📷 Загрузить</button>
@@ -436,8 +502,8 @@ function updateGalleryVisibility(galleryId) {
   const gallery = document.getElementById(galleryId);
   if (!gallery) return;
   const items = gallery.querySelectorAll('.gallery-item-wrap');
-  const showMoreWrapper = document.getElementById(galleryId === 'motherGallery' ? 'showMoreGalleryWrapper' : 'showMoreGalleryWrapperFather');
-  const showMoreBtn = document.getElementById(galleryId === 'motherGallery' ? 'showMoreGalleryBtn' : 'showMoreGalleryBtnFather');
+  const showMoreWrapper = document.getElementById(`showMoreWrapper-${galleryId}`);
+  const showMoreBtn = document.getElementById(`showMoreBtn-${galleryId}`);
 
   items.forEach((item, index) => item.style.display = (!isGalleryExpanded[galleryId] && index >= MAX_VISIBLE_GALLERY) ? 'none' : '');
 
@@ -519,9 +585,17 @@ function renderCandles() {
   const grid = document.getElementById('candlesGrid'); 
   if (!grid) return;
   grid.innerHTML = '';
+
+  const isAdmin = document.body.classList.contains('admin-mode');
   
   const MAX_VISIBLE = 4; 
-  window.DB_CANDLES.forEach((c, index) => {
+
+  // Фильтруем: админ видит всё, люди видят только одобренные или те, что зажгли сами только что
+  const visibleCandles = window.DB_CANDLES.filter(c => {
+    return isAdmin || c.status === 'approved' || c.isLocal === true;
+  });
+
+  visibleCandles.forEach((c, index) => {
     if (!isCandlesExpanded && index >= MAX_VISIBLE) return;
     const typeInfo = candleData[c.type] || candleData['classic']; 
     const typeName = currentLang === 'ru' ? typeInfo.nameRu : typeInfo.nameUa;
@@ -542,11 +616,13 @@ function renderCandles() {
     }
 
     const card = document.createElement('div'); 
-    card.className = 'candle-card fade-up visible';
+    // Подсвечиваем ожидающие модерации свечи для админа
+    const isPending = c.status === 'pending' || !c.status;
+    card.className = `candle-card fade-up visible ${isAdmin && isPending ? 'pending-moderation' : ''}`;
     card.innerHTML = `
       <div class="candle-admin-actions">
-        <button onclick="editCandle(${index})" data-title-ru="Редактировать" data-title-ua="Редагувати" title="${currentLang === 'ua' ? 'Редагувати' : 'Редактировать'}">✏️</button>
-        <button onclick="deleteCandle(${index})" data-title-ru="Удалить" data-title-ua="Видалити" title="${currentLang === 'ua' ? 'Видалити' : 'Удалить'}">🗑️</button>
+        <button onclick="editCandle('${c.id}')" title="Редактировать">✏️</button>
+        <button onclick="deleteCandle('${c.id}')" data-title-ru="Удалить" data-title-ua="Видалити" title="${currentLang === 'ua' ? 'Видалити' : 'Удалить'}">🗑️</button>
       </div>
       <div class="c-sparks-wrap"></div>
       <div style="display: flex; gap: 20px; flex-grow: 1; margin-bottom: 25px; z-index: 1; position: relative;">
@@ -564,9 +640,9 @@ function renderCandles() {
   const showMoreWrapper = document.getElementById('showMoreCandlesWrapper');
   const showMoreBtn = document.getElementById('showMoreCandlesBtn');
   
-  if (window.DB_CANDLES.length > MAX_VISIBLE) {
+  if (visibleCandles.length > MAX_VISIBLE) {
     showMoreWrapper.style.display = 'block';
-    showMoreBtn.innerText = isCandlesExpanded ? (currentLang === 'ua' ? 'Сховати' : 'Скрыть') : (currentLang === 'ua' ? `Показати ще (${window.DB_CANDLES.length - MAX_VISIBLE})` : `Показать еще (${window.DB_CANDLES.length - MAX_VISIBLE})`);
+    showMoreBtn.innerText = isCandlesExpanded ? (currentLang === 'ua' ? 'Сховати' : 'Скрыть') : (currentLang === 'ua' ? `Показати ще (${visibleCandles.length - MAX_VISIBLE})` : `Показать еще (${visibleCandles.length - MAX_VISIBLE})`);
   } else if (showMoreWrapper) showMoreWrapper.style.display = 'none';
 
   createSparks();
@@ -580,7 +656,7 @@ function toggleCandleForm() {
     btnWrapper.style.display = 'none'; 
     setTimeout(() => wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
   } else {
-    btnWrapper.style.display = 'block'; 
+    btnWrapper.style.display = 'flex'; 
     editCandleIndex = null;
     document.getElementById('candleForm').reset();
   }
@@ -593,9 +669,10 @@ async function handleCandleSubmit(e) {
   let nameInp = document.getElementById('cName').value.trim();
   let msgInp = document.getElementById('cMessage').value.trim();
   
-  const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
-  nameInp = nameInp.replace(urlRegex, '').replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
-  msgInp = msgInp.replace(urlRegex, '').replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+  // Защита: удаляем ссылки и HTML-теги полностью
+  const securityRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|<([^>+]+)>)/gi;
+  nameInp = nameInp.replace(securityRegex, '').trim();
+  msgInp = msgInp.replace(securityRegex, '').trim();
 
   const typeRad = document.querySelector('input[name="cType"]:checked').value;  
   const sourceLang = currentLang === 'ua' ? 'uk' : 'ru';
@@ -668,6 +745,7 @@ async function handleCandleSubmit(e) {
     window.DB_CANDLES[editCandleIndex].message_ru = final_msg_ru;
     window.DB_CANDLES[editCandleIndex].message_ua = final_msg_ua;
     window.DB_CANDLES[editCandleIndex].type = typeRad;
+    window.DB_CANDLES[editCandleIndex].status = 'approved'; // При ручном редактировании админом свеча одобряется
     renderCandles(); toggleCandleForm();
 
     if (isAdmin) {
@@ -684,43 +762,53 @@ async function handleCandleSubmit(e) {
     message_ru: final_msg_ru,
     message_ua: final_msg_ua,
     type: typeRad,
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    status: isAdmin ? 'approved' : 'pending', // Админ сразу одобряет
+    isLocal: !isAdmin // Флаг, чтобы человек видел свою свечу до обновления страницы
   };
 
-  const successAction = () => {
-    window.DB_CANDLES.unshift(newCandle);
-    renderCandles();
-    toggleCandleForm();
+  window.DB_CANDLES.unshift(newCandle);
+  renderCandles();
+  toggleCandleForm();
 
-    if (isAdmin) {
-        hasUnsavedChanges = true;
-        showToast(currentLang === 'ua' ? 'Свічку додано! Збережіть зміни в адмінці.' : 'Свеча добавлена! Сохраните изменения в админке.');
-    } else {
-        showToast(currentLang === 'ua' ? 'Свічку запалено! Дякуємо за світлу пам\'ять.' : 'Свеча зажжена! Спасибо за светлую память.');
-    }
-  };
-
-  const formData = new FormData(form);
-  fetch('https://formspree.io/f/xpqnezyg', {
-    method: 'POST',
-    body: formData,
-    headers: { 'Accept': 'application/json' }
-  }).then(successAction).catch(err => {
-    console.warn("Ошибка Formspree, но свеча отрисована локально:", err);
-    successAction();
-  });
+  if (isAdmin) {
+      hasUnsavedChanges = true;
+      showToast(currentLang === 'ua' ? 'Свічку додано!' : 'Свеча добавлена!');
+  } else {
+      sendTelegramNotification(newCandle);
+      showToast(currentLang === 'ua' ? 'Свічку запалено! Вона з\'явиться назавжди після модерації.' : 'Свеча зажжена! Она появится навсегда после модерации.');
+  }
 }
 
-function deleteCandle(index) { 
+function sendTelegramNotification(candle) {
+  // Данные бота и администратора
+  const botToken = '8863285747:AAEq4GUDP4okakCw21-jeR4XfX2XxKrdHys';
+  const chatId = '439903828';
+  
+  if (!botToken || botToken.includes('ВАШ_ТОКЕН')) return; 
+
+  const typeInfo = candleData[candle.type] || candleData['classic'];
+  const typeName = typeInfo.nameRu;
+  const siteUrl = window.location.origin + window.location.pathname;
+  const text = `🕯️ *Новая свеча на Мемориале Родителей!*\n\n*От:* ${candle.name_ru}\n*Тип:* ${typeName}\n*Текст:* ${candle.message_ru || '—'}\n\n🔗 Открыть Мемориал`;
+  
+  // Используем parse_mode=Markdown для красоты (жирный текст и ссылка)
+  fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}&parse_mode=Markdown`)
+    .catch(err => console.error("Telegram notify error", err));
+}
+
+function deleteCandle(id) { 
   customConfirm(currentLang === 'ua' ? 'Видалити цю свічку?' : 'Удалить эту свечу?', () => { 
-    window.DB_CANDLES.splice(index, 1); 
+    const idx = window.DB_CANDLES.findIndex(c => c.id === id);
+    if (idx !== -1) window.DB_CANDLES.splice(idx, 1); 
     renderCandles(); 
     if (document.body.classList.contains('admin-mode')) hasUnsavedChanges = true;
   }); 
 }
 
-function editCandle(index) { 
-  let c = window.DB_CANDLES[index]; 
+function editCandle(id) { 
+  const index = window.DB_CANDLES.findIndex(c => c.id === id);
+  if (index === -1) return;
   document.getElementById('cName').value = currentLang === 'ua' ? (c.name_ua || c.name_ru || c.name) : (c.name_ru || c.name_ua || c.name); 
   document.getElementById('cMessage').value = currentLang === 'ua' ? (c.message_ua || c.message_ru || c.message || '') : (c.message_ru || c.message_ua || c.message || ''); 
   document.querySelector(`input[name="cType"][value="${c.type}"]`).checked = true; 
@@ -808,49 +896,69 @@ async function downloadSiteData() {
   const isUa = currentLang === 'ua';
   const langSuffix = isUa ? 'Ua' : 'Ru';
   
+  // Определяем параметры для возможного перевода
+  const fromL = isUa ? 'uk' : 'ru';
+  const toL = isUa ? 'ru' : 'uk';
+  const oppSuffix = isUa ? 'Ru' : 'Ua';
+
   window.SITE_CONTENT.hero['title' + langSuffix] = document.getElementById('hero-title').innerText.trim();
   window.SITE_CONTENT.hero['subtitle' + langSuffix] = document.getElementById('hero-subtitle').innerText.trim();
   window.SITE_CONTENT.hero['quote' + langSuffix] = document.getElementById('hero-quote').innerText.trim();
 
-  window.SITE_CONTENT.parents.father['name' + langSuffix] = document.getElementById('father-name').innerText.trim();
-  window.SITE_CONTENT.parents.father['dates' + langSuffix] = document.getElementById('father-dates').innerText.trim();
-  window.SITE_CONTENT.parents.father['bio' + langSuffix] = document.getElementById('father-bio-preview').innerText.trim();
-
-  window.SITE_CONTENT.parents.mother['name' + langSuffix] = document.getElementById('mother-name').innerText.trim();
-  window.SITE_CONTENT.parents.mother['dates' + langSuffix] = document.getElementById('mother-dates').innerText.trim();
-  window.SITE_CONTENT.parents.mother['bio' + langSuffix] = document.getElementById('mother-bio-preview').innerText.trim();
-
-  // Синхронизируем подписи галерей в текущем языке перед сохранением
-  ['fatherGallery', 'motherGallery'].forEach(galId => {
-    document.querySelectorAll(`#${galId} .gallery-caption`).forEach(cap => {
-      cap.setAttribute('data-' + currentLang, cap.innerText.trim());
-    });
-  });
-
-  ['fbio', 'mbio'].forEach(prefix => {
-    const key = prefix === 'fbio' ? 'fatherBio' : 'motherBio';
-    const dataObj = window.SITE_CONTENT[key];
+  // 1. Динамический сбор данных по людям (People & Bios)
+  window.SITE_CONTENT.people.forEach(person => {
+    const nameEl = document.getElementById(`${person.id}-name`);
+    const datesEl = document.getElementById(`${person.id}-dates`);
+    const bioPrevEl = document.getElementById(`${person.id}-bio-preview`);
     
-    dataObj['personalQuote' + langSuffix] = document.getElementById(`${prefix}-personal-quote`).innerText.trim();
-    dataObj['intro' + langSuffix] = document.getElementById(`${prefix}-intro`).innerText.trim();
+    if (nameEl) person['name' + langSuffix] = nameEl.innerText.trim();
+    if (datesEl) person['dates' + langSuffix] = datesEl.innerText.trim();
+    if (bioPrevEl) person['bio' + langSuffix] = bioPrevEl.innerText.trim();
 
-    const accItems = document.querySelectorAll(`#${prefix}-accordion .accordion-item`);
-    accItems.forEach((item, idx) => {
-      if (!dataObj.accordion[idx]) return;
-      dataObj.accordion[idx]['title' + langSuffix] = item.querySelector('.accordion-header span').innerText.trim();
+    const bioData = window.SITE_CONTENT[person.bioKey];
+    if (bioData) {
+      bioData['name' + langSuffix] = person['name' + langSuffix]; // Синхрон имен
+      bioData['dates' + langSuffix] = person['dates' + langSuffix];
       
-      const pEls = item.querySelectorAll('.accordion-inner p');
-      dataObj.accordion[idx]['paragraphs' + langSuffix] = Array.from(pEls).map(p => p.innerText.trim());
-    });
+      const qEl = document.getElementById(`${person.id}-modal-personal-quote`);
+      const iEl = document.getElementById(`${person.id}-modal-intro`);
+      if (qEl) bioData['personalQuote' + langSuffix] = qEl.innerText.trim();
+      if (iEl) bioData['intro' + langSuffix] = iEl.innerText.trim();
 
-    const qCards = document.querySelectorAll(`#${prefix}-quotes .quote-card`);
-    qCards.forEach((card, idx) => {
-      if (!dataObj.quotes[idx]) return;
-      dataObj.quotes[idx]['text' + langSuffix] = card.querySelector('.quote-text').innerText.trim();
-      dataObj.quotes[idx]['author' + langSuffix] = card.querySelector('.quote-author').innerText.trim();
-    });
+      const accItems = document.querySelectorAll(`#${person.id}-modal-accordion .accordion-item`);
+      accItems.forEach((item, idx) => {
+        if (bioData.accordion[idx]) {
+          bioData.accordion[idx]['title' + langSuffix] = item.querySelector('.accordion-header span').innerText.trim();
+          const pEls = item.querySelectorAll('.accordion-inner p');
+          bioData.accordion[idx]['paragraphs' + langSuffix] = Array.from(pEls).map(p => p.innerText.trim());
+        }
+      });
+
+      const qCards = document.querySelectorAll(`#${person.id}-modal-quotes .quote-card`);
+      qCards.forEach((card, idx) => {
+        if (bioData.quotes[idx]) {
+          bioData.quotes[idx]['text' + langSuffix] = card.querySelector('.quote-text').innerText.trim();
+          bioData.quotes[idx]['author' + langSuffix] = card.querySelector('.quote-author').innerText.trim();
+        }
+      });
+    }
   });
 
+  // 2. Сбор Таймлайна
+  const tlContainer = document.getElementById('timeline-container');
+  if (tlContainer && window.SITE_CONTENT.timeline) {
+    const tlItems = tlContainer.querySelectorAll('.timeline-item');
+    tlItems.forEach((item, idx) => {
+       if (window.SITE_CONTENT.timeline.events[idx]) {
+          window.SITE_CONTENT.timeline.events[idx]['year' + langSuffix] = item.querySelector('.timeline-date').innerText.trim();
+          window.SITE_CONTENT.timeline.events[idx]['title' + langSuffix] = item.querySelector('.timeline-content h4').innerText.trim();
+          const pEl = item.querySelector('.timeline-content p, .timeline-content .timeline-epitaph');
+          if (pEl) window.SITE_CONTENT.timeline.events[idx]['text' + langSuffix] = pEl.innerText.trim();
+       }
+    });
+  }
+
+  // 3. Сбор Эпохи
   const epochContainer = document.getElementById('epoch-timeline-container');
   if (epochContainer && window.SITE_CONTENT.epochData) {
     const epData = window.SITE_CONTENT.epochData;
@@ -865,70 +973,106 @@ async function downloadSiteData() {
     });
   }
 
+  // 4. Сбор Галерей
+  const updatedGalleries = {};
+  if (window.SITE_CONTENT.people) {
+    window.SITE_CONTENT.people.forEach(person => {
+      const galId = person.galleryKey;
+      updatedGalleries[galId] = [];
+      const container = document.getElementById(galId);
+      if (!container) return;
+
+      container.querySelectorAll('.gallery-item-wrap').forEach(wrap => {
+      const img = wrap.querySelector('img[id]');
+      const cap = wrap.querySelector('.gallery-caption');
+      if (img) updatedGalleries[galId].push({ 
+        id: img.id, 
+          ru: cap.getAttribute('data-ru') || (currentLang === 'ru' ? cap.innerText.trim() : ''), 
+          ua: cap.getAttribute('data-ua') || (currentLang === 'ua' ? cap.innerText.trim() : '') 
+      });
+      });
+    });
+  }
+
   const msgTranslate = isUa
     ? 'Бажаєте автоматично перекласти оновлені тексти на іншу мовну версію?\n(ОК — перекласти, Скасувати — зберегти поточні ручні правки окремо для кожної мови)'
     : 'Хотите автоматически перевести обновленные тексты на другую языковую версию?\n(ОК — перевести, Отмена — сохранить текущие ручные правки отдельно для каждого языка)';
   
   if (confirm(msgTranslate)) {
-    const fromL = isUa ? 'uk' : 'ru';
-    const toL = isUa ? 'ru' : 'uk';
-    const oppSuffix = isUa ? 'Ru' : 'Ua';
+    showToast(currentLang === 'ua' ? 'Виконуємо автопереклад...' : 'Выполняем автоперевод...');
 
+    // Переводим Hero
     window.SITE_CONTENT.hero['title' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['title' + langSuffix], fromL, toL);
     window.SITE_CONTENT.hero['subtitle' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['subtitle' + langSuffix], fromL, toL);
     window.SITE_CONTENT.hero['quote' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['quote' + langSuffix], fromL, toL);
 
-    window.SITE_CONTENT.parents.father['name' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['name' + langSuffix], fromL, toL);
-    window.SITE_CONTENT.parents.father['dates' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['dates' + langSuffix], fromL, toL);
-    window.SITE_CONTENT.parents.father['bio' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['bio' + langSuffix], fromL, toL);
+    // Переводим Timeline
+    if (window.SITE_CONTENT.timeline) {
+      const th = window.SITE_CONTENT.timeline.header;
+      th['title' + oppSuffix] = await apiTranslateText(th['title' + langSuffix], fromL, toL);
+      th['subtitle' + oppSuffix] = await apiTranslateText(th['subtitle' + langSuffix], fromL, toL);
+      th['btn' + oppSuffix] = await apiTranslateText(th['btn' + langSuffix], fromL, toL);
+      for (const ev of window.SITE_CONTENT.timeline.events) {
+        ev['year' + oppSuffix] = await apiTranslateText(ev['year' + langSuffix], fromL, toL);
+        ev['title' + oppSuffix] = await apiTranslateText(ev['title' + langSuffix], fromL, toL);
+        ev['text' + oppSuffix] = await apiTranslateText(ev['text' + langSuffix], fromL, toL);
+      }
+    }
 
-    window.SITE_CONTENT.parents.mother['name' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['name' + langSuffix], fromL, toL);
-    window.SITE_CONTENT.parents.mother['dates' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['dates' + langSuffix], fromL, toL);
-    window.SITE_CONTENT.parents.mother['bio' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['bio' + langSuffix], fromL, toL);
+    for (const person of window.SITE_CONTENT.people) {
+      person['name' + oppSuffix] = await apiTranslateText(person['name' + langSuffix], fromL, toL);
+      person['dates' + oppSuffix] = await apiTranslateText(person['dates' + langSuffix], fromL, toL);
+      person['bio' + oppSuffix] = await apiTranslateText(person['bio' + langSuffix], fromL, toL);
 
-    for (const prefix of ['fbio', 'mbio']) {
-      const key = prefix === 'fbio' ? 'fatherBio' : 'motherBio';
-      const dataObj = window.SITE_CONTENT[key];
-      dataObj['personalQuote' + oppSuffix] = await apiTranslateText(dataObj['personalQuote' + langSuffix], fromL, toL);
-      dataObj['intro' + oppSuffix] = await apiTranslateText(dataObj['intro' + langSuffix], fromL, toL);
+      const dataObj = window.SITE_CONTENT[person.bioKey];
+      if (dataObj) {
+        dataObj['name' + oppSuffix] = person['name' + oppSuffix];
+        dataObj['dates' + oppSuffix] = person['dates' + oppSuffix];
+        dataObj['personalQuote' + oppSuffix] = await apiTranslateText(dataObj['personalQuote' + langSuffix], fromL, toL);
+        dataObj['intro' + oppSuffix] = await apiTranslateText(dataObj['intro' + langSuffix], fromL, toL);
+        if (dataObj.accordion) {
+          for (const item of dataObj.accordion) {
+            item['title' + oppSuffix] = await apiTranslateText(item['title' + langSuffix], fromL, toL);
+            item['paragraphs' + oppSuffix] = await Promise.all(item['paragraphs' + langSuffix].map(p => apiTranslateText(p, fromL, toL)));
+          }
+        }
+        if (dataObj.quotes) {
+          for (const q of dataObj.quotes) {
+            q['text' + oppSuffix] = await apiTranslateText(q['text' + langSuffix], fromL, toL);
+            q['author' + oppSuffix] = await apiTranslateText(q['author' + langSuffix], fromL, toL);
+          }
+        }
+      }
 
-      if (dataObj.accordion) {
-        for (let idx = 0; idx < dataObj.accordion.length; idx++) {
-          dataObj.accordion[idx]['title' + oppSuffix] = await apiTranslateText(dataObj.accordion[idx]['title' + langSuffix], fromL, toL);
-          if (dataObj.accordion[idx]['paragraphs' + langSuffix]) {
-            dataObj.accordion[idx]['paragraphs' + oppSuffix] = await Promise.all(
-              dataObj.accordion[idx]['paragraphs' + langSuffix].map(p => apiTranslateText(p, fromL, toL))
-            );
+      // Перевод подписей галерей
+      if (updatedGalleries[person.galleryKey]) {
+        for (const item of updatedGalleries[person.galleryKey]) {
+          const fromText = isUa ? item.ua : item.ru;
+          if (fromText) {
+            const trans = await apiTranslateText(fromText, fromL, toL);
+            if (isUa) item.ru = trans; else item.ua = trans;
           }
         }
       }
     }
 
-    // Перевод подписей галерей
-    const galleries = ['fatherGallery', 'motherGallery'];
-    for (const galId of galleries) {
-      const captions = document.querySelectorAll(`#${galId} .gallery-caption`);
-      for (const cap of captions) {
-        const currentText = cap.getAttribute(`data-${currentLang}`) || '';
-        if (currentText) {
-          const translated = await apiTranslateText(currentText, fromL, toL);
-          cap.setAttribute(`data-${oppSuffix.toLowerCase()}`, translated);
-        }
+    // Переводим EpochData
+    if (window.SITE_CONTENT.epochData) {
+      const ed = window.SITE_CONTENT.epochData;
+      ed.header['title' + oppSuffix] = await apiTranslateText(ed.header['title' + langSuffix], fromL, toL);
+      ed.header['subtitle' + oppSuffix] = await apiTranslateText(ed.header['subtitle' + langSuffix], fromL, toL);
+      for (const ev of ed.events) {
+        ev['date' + oppSuffix] = await apiTranslateText(ev['date' + langSuffix], fromL, toL);
+        ev['title' + oppSuffix] = await apiTranslateText(ev['title' + langSuffix], fromL, toL);
+        ev['paragraphs' + oppSuffix] = await Promise.all(ev['paragraphs' + langSuffix].map(p => apiTranslateText(p, fromL, toL)));
       }
     }
   }
 
-  const updatedGalleries = { fatherGallery: [], motherGallery: [] };
-  ['fatherGallery', 'motherGallery'].forEach(galId => {
-    document.querySelectorAll(`#${galId} .gallery-item-wrap`).forEach(wrap => {
-      const img = wrap.querySelector('img[id]');
-      const cap = wrap.querySelector('.gallery-caption');
-      if (img) updatedGalleries[galId].push({ 
-        id: img.id, 
-        ru: cap.getAttribute('data-ru') || '', 
-        ua: cap.getAttribute('data-ua') || '' 
-      });
-    });
+  // Перед сохранением переводим все новые свечи в статус "одобрено" и убираем локальные флаги
+  window.DB_CANDLES.forEach(c => {
+    if (c.status === 'pending' || !c.status) c.status = 'approved';
+    if (c.isLocal) delete c.isLocal;
   });
 
   const dataJsContent = `// === БАЗА ТЕКСТОВОГО КОНТЕНТА ===\nwindow.SITE_CONTENT = ${JSON.stringify(window.SITE_CONTENT, null, 2)};\n\n// === БАЗА ДАННЫХ СВЕЧЕЙ ===\nwindow.DB_CANDLES = ${JSON.stringify(window.DB_CANDLES, null, 2)};\n\n// === БАЗА ДАННЫХ ФОТОГАЛЕРЕЙ И ПОДПИСЕЙ ===\nwindow.DB_GALLERIES = ${JSON.stringify(updatedGalleries, null, 2)};`;
@@ -1068,7 +1212,7 @@ function initializeMemorialApp() {
             hasUnsavedChanges = true;
 
             customConfirm(currentLang === 'ua' ? 'Фото оптимізовано! Завантажити його одразу на GitHub?' : 'Фото оптимизировано! Загрузить его сразу на GitHub?', () => {
-              uploadImageToGitHub(blob, currentUploadId + '.webp');
+              uploadImageToGitHub(blob, 'img/' + currentUploadId + '.webp');
             });
           }, 'image/webp', 0.85);
         };

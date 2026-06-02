@@ -9,7 +9,7 @@
   <meta property="og:title" content="Цифровий Меморіал родини Голотріних">
   <meta property="og:description" content="Світла пам'ять та історія родини Голотріних. Дбайливо збережена для майбутніх поколінь. Digital Legacy.">
   <meta property="og:url" content="https://golotrina.github.io/memorial/">
-  <meta property="og:image" content="https://golotrina.github.io/memorial/photo-family.webp">
+  <meta property="og:image" content="https://golotrina.github.io/memorial/img/photo-family.webp">
   <meta property="og:type" content="website">
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚜️</text></svg>">
@@ -53,7 +53,7 @@
 
   <section class="hero fade-up visible">
     <div class="family-crest-wrapper-new" onclick="openLightbox(this)">
-      <img id="photo-crest" class="family-crest" src="photo-crest.webp" alt="Герб роду">
+      <img id="photo-crest" class="family-crest" src="img/photo-crest.webp" alt="Герб роду">
       <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-crest'); event.stopPropagation();">📷 Загрузить герб</button>
     </div>
     <h1 id="hero-title"></h1>
@@ -61,34 +61,12 @@
     <div class="separator"></div>
     <div id="hero-quote" class="intro-quote quote-pre-wrap"></div>
     <div class="family-photo fade-up visible" onclick="openLightbox(this)">
-      <img id="photo-family" src="photo-family.webp" alt="Сім'я" loading="lazy">
+      <img id="photo-family" src="img/photo-family.webp" alt="Сім'я" loading="lazy">
       <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-family'); event.stopPropagation();">📷 Загрузить общее фото</button>
     </div>
   </section>
   
-  <section id="parents" class="memorial-grid">
-    <div class="parent-card fade-up visible">
-      <div class="photo-wrapper" onclick="openLightbox(this)">
-        <img id="photo-father" src="photo-father.webp" alt="Батько" loading="lazy">
-        <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-father'); event.stopPropagation();">📷 Загрузить фото</button>
-      </div>
-      <h2 id="father-name" class="parent-name"></h2>
-      <div id="father-dates" class="parent-dates"></div>
-      <p id="father-bio-preview" class="parent-bio"></p>
-      <button class="read-more-btn" onclick="openBio('father-bio')"><span class="editable-text" data-ru="История Папы" data-ua="Історія Тата" contenteditable="false">Історія Тата</span></button>
-    </div>
-
-    <div class="parent-card fade-up visible">
-      <div class="photo-wrapper" onclick="openLightbox(this)">
-        <img id="photo-mother" src="photo-mother.webp" alt="Мати" loading="lazy">
-        <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-mother'); event.stopPropagation();">📷 Загрузить фото</button>
-      </div>
-      <h2 id="mother-name" class="parent-name"></h2>
-      <div id="mother-dates" class="parent-dates"></div>
-      <p id="mother-bio-preview" class="parent-bio"></p>
-      <button class="read-more-btn" onclick="openBio('mother-bio')"><span class="editable-text" data-ru="История Мамы" data-ua="Історія Мами" contenteditable="false">Історія Мами</span></button>
-    </div>
-  </section>
+  <section id="parents" class="memorial-grid"></section>
 
   <section id="timeline" class="timeline-section fade-up visible">
     <div class="timeline-header">
@@ -160,7 +138,7 @@
 
     <div class="tombstone-wrapper fade-up visible">
       <div class="tombstone-image-card" onclick="openLightbox(this)">
-        <img id="photo-tombstone" src="photo-tombstone.webp" alt="Памятник" loading="lazy">
+        <img id="photo-tombstone" src="img/photo-tombstone.webp" alt="Памятник" loading="lazy">
         <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-tombstone'); event.stopPropagation();">📷 Загрузить фото памятника</button>
       </div>
     </div>
@@ -170,75 +148,13 @@
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
   </button>
 
-  <div class="bio-modal" id="father-bio">
-    <div class="bio-modal-content">
-      <div class="c-sparks-wrap sparks-modal"></div>
-      <span class="bio-modal-close" onclick="closeBio('father-bio')">×</span>
-      <h2 id="fbio-name" class="modal-name-title"></h2>
-      <div id="fbio-dates" class="modal-dates modal-relative-z"></div>
-      
-      <div class="bio-text">
-        <p id="fbio-personal-quote" class="modal-personal-quote"></p>
-        <p id="fbio-intro" class="modal-intro-text"></p>
-        
-        <div id="fbio-accordion" class="accordion modal-relative-z"></div>
-        <div id="fbio-quotes" class="quotes-section"></div>
-
-        <h3 class="gallery-title editable-text" data-ru="Воспоминания" data-ua="Спогади" contenteditable="false">Спогади</h3>
-        
-        <div class="gallery-wrapper-relative">
-          <div class="c-sparks-wrap sparks-gallery"></div>
-          <div class="modal-gallery" id="fatherGallery"></div>
-        </div>
-        
-        <div id="showMoreGalleryWrapperFather" class="btn-center-margin">
-          <button class="read-more-btn modal-btn-no-margin" onclick="toggleGalleryExpand('fatherGallery')" id="showMoreGalleryBtnFather"><span class="editable-text" data-ru="Показати ще" data-ua="Показати ще">Показати ще (15)</span></button>
-        </div>
-        
-        <div class="admin-only-flex">
-          <button class="admin-btn btn-add-photo" onclick="addGalleryPhoto('fatherGallery')">➕ Добавить фото в альбом</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="bio-modal" id="mother-bio">
-    <div class="bio-modal-content">
-      <div class="c-sparks-wrap sparks-modal"></div>
-      <span class="bio-modal-close" onclick="closeBio('mother-bio')">×</span>
-      <h2 id="mbio-name" class="modal-name-title"></h2>
-      <div id="mbio-dates" class="modal-dates modal-relative-z"></div>
-      
-      <div class="bio-text">
-        <p id="mbio-personal-quote" class="modal-personal-quote"></p>
-        <p id="mbio-intro" class="modal-intro-text"></p>
-        
-        <div id="mbio-accordion" class="accordion modal-relative-z"></div>
-        <div id="mbio-quotes" class="quotes-section"></div>
-
-        <h3 class="gallery-title editable-text" data-ru="Воспоминания" data-ua="Спогади" contenteditable="false">Спогади</h3>
-        
-        <div class="gallery-wrapper-relative">
-          <div class="c-sparks-wrap sparks-gallery"></div>
-          <div class="modal-gallery" id="motherGallery"></div>
-        </div>
-        
-        <div id="showMoreGalleryWrapper" class="btn-center-margin">
-          <button class="read-more-btn modal-btn-no-margin" onclick="toggleGalleryExpand('motherGallery')" id="showMoreGalleryBtn"><span class="editable-text" data-ru="Показати ще" data-ua="Показати ще">Показати ще (18)</span></button>
-        </div>
-        
-        <div class="admin-only-flex">
-          <button class="admin-btn btn-add-photo" onclick="addGalleryPhoto('motherGallery')">➕ Добавить фото в альбом</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="dynamic-modals-container"></div>
 
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <div class="c-sparks-wrap sparks-lightbox"></div>
     <span class="lightbox-close">×</span>
     <span class="lightbox-nav lightbox-prev" onclick="prevImage(event)">❮</span>
-    <img id="lightbox-img" src="photo-tombstone.webp" alt="Full photo" onclick="event.stopPropagation();">
+    <img id="lightbox-img" src="img/photo-tombstone.webp" alt="Full photo" onclick="event.stopPropagation();">
     <span class="lightbox-nav lightbox-next" onclick="nextImage(event)">❯</span>
   </div>
 
