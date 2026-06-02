@@ -322,18 +322,24 @@ function toggleMobileMenu() {
 function createSparks() {
   document.querySelectorAll('.c-sparks-wrap').forEach(wrap => {
     if (wrap.children.length > 0) return; 
-    const sparksCount = 12; 
+    const isModal = wrap.closest('.bio-modal');
+    const sparksCount = isModal ? 22 : 12; 
     for (let i = 0; i < sparksCount; i++) {
       const spark = document.createElement('div');
       spark.className = 'c-spark';
       spark.style.left = Math.random() * 100 + '%';
-      spark.style.top = Math.random() * 100 + '%';
       
-      const size = Math.random() * 1 + 1.5;
+      const size = Math.random() * 2 + 1.5; // Увеличено: теперь размер варьируется от 1.5px до 3.5px
       spark.style.width = size + 'px';
       spark.style.height = size + 'px';
-      spark.style.boxShadow = `0 0 ${size * 2}px ${size/2}px rgba(255, 215, 0, 0.5)`;
-      spark.style.animation = `floatSpark ${12 + Math.random() * 12}s infinite ${Math.random() * 5}s linear`;
+      
+      // Сделаем ореол чуть более выраженным для видимости в галереях
+      const glowOpacity = document.body.classList.contains('dark-theme') ? 0.5 : 0.35;
+      spark.style.boxShadow = `0 0 ${size * 2}px rgba(217, 160, 91, ${glowOpacity})`;
+
+      const duration = isModal ? (70 + Math.random() * 70) : (40 + Math.random() * 30);
+      const delay = Math.random() * -duration; 
+      spark.style.animation = `floatSpark ${duration}s infinite ${delay}s linear`;
       wrap.appendChild(spark);
     }
   });
@@ -468,6 +474,7 @@ function addGalleryPhoto(galleryId) {
   const newId = 'gallery-' + galleryId.charAt(0) + '-' + Date.now(); 
   const wrap = document.createElement('div');
   wrap.className = 'gallery-item-wrap';
+  const isAdm = document.body.classList.contains('admin-mode');
   wrap.innerHTML = `
     <div class="gallery-item" onclick="openLightbox(this)">
       <img id="${newId}" src="https://images.unsplash.com/photo-1506869640319-fea1a278e0db?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Фото" loading="lazy">
@@ -476,7 +483,7 @@ function addGalleryPhoto(galleryId) {
       <button class="edit-photo-btn" onclick="triggerUpload('${newId}'); event.stopPropagation();">📷 Загрузить</button>
       <button class="delete-photo-btn" onclick="deleteGalleryPhoto(this); event.stopPropagation();" data-title-ru="Удалить" data-title-ua="Видалити" title="${currentLang === 'ua' ? 'Видалити' : 'Удалить'}">🗑️</button>
     </div>
-    <div class="gallery-caption editable-text" contenteditable="true" data-ru="" data-ua=""></div>
+    <div class="gallery-caption editable-text" contenteditable="${isAdm}" data-placeholder="${currentLang === 'ua' ? 'Додати підпис...' : 'Добавить подпись...'}" data-placeholder-ru="Добавить подпись..." data-placeholder-ua="Додати подпись..." data-ru="" data-ua=""></div>
   `;
   gallery.appendChild(wrap);
   updateGalleryVisibility(galleryId);
@@ -813,6 +820,13 @@ async function downloadSiteData() {
   window.SITE_CONTENT.parents.mother['dates' + langSuffix] = document.getElementById('mother-dates').innerText.trim();
   window.SITE_CONTENT.parents.mother['bio' + langSuffix] = document.getElementById('mother-bio-preview').innerText.trim();
 
+  // Синхронизируем подписи галерей в текущем языке перед сохранением
+  ['fatherGallery', 'motherGallery'].forEach(galId => {
+    document.querySelectorAll(`#${galId} .gallery-caption`).forEach(cap => {
+      cap.setAttribute('data-' + currentLang, cap.innerText.trim());
+    });
+  });
+
   ['fbio', 'mbio'].forEach(prefix => {
     const key = prefix === 'fbio' ? 'fatherBio' : 'motherBio';
     const dataObj = window.SITE_CONTENT[key];
@@ -872,7 +886,7 @@ async function downloadSiteData() {
     window.SITE_CONTENT.parents.mother['dates' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['dates' + langSuffix], fromL, toL);
     window.SITE_CONTENT.parents.mother['bio' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['bio' + langSuffix], fromL, toL);
 
-    ['fbio', 'mbio'].forEach(async (prefix) => {
+    for (const prefix of ['fbio', 'mbio']) {
       const key = prefix === 'fbio' ? 'fatherBio' : 'motherBio';
       const dataObj = window.SITE_CONTENT[key];
       dataObj['personalQuote' + oppSuffix] = await apiTranslateText(dataObj['personalQuote' + langSuffix], fromL, toL);
@@ -888,7 +902,20 @@ async function downloadSiteData() {
           }
         }
       }
-    });
+    }
+
+    // Перевод подписей галерей
+    const galleries = ['fatherGallery', 'motherGallery'];
+    for (const galId of galleries) {
+      const captions = document.querySelectorAll(`#${galId} .gallery-caption`);
+      for (const cap of captions) {
+        const currentText = cap.getAttribute(`data-${currentLang}`) || '';
+        if (currentText) {
+          const translated = await apiTranslateText(currentText, fromL, toL);
+          cap.setAttribute(`data-${oppSuffix.toLowerCase()}`, translated);
+        }
+      }
+    }
   }
 
   const updatedGalleries = { fatherGallery: [], motherGallery: [] };
@@ -973,6 +1000,10 @@ function initializeMemorialApp() {
   document.addEventListener('input', function(e) {
     if (e.target.classList.contains('editable-text')) {
       hasUnsavedChanges = true;
+      // Синхронизируем текст подписи с атрибутами данных
+      if (e.target.classList.contains('gallery-caption')) {
+        e.target.setAttribute(`data-${currentLang}`, e.target.innerText.trim());
+      }
     }
   });
 
