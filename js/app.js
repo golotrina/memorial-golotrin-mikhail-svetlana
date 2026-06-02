@@ -75,6 +75,7 @@ function scrollToTop() {
   else window.scrollTo({ top: 0, behavior: 'smooth' }); 
 }
 
+
 // Шпион за прокруткой для кнопки "Вверх"
 function handleScroll() {
   const scrollBtn = document.getElementById('scrollTopBtn');
@@ -83,15 +84,26 @@ function handleScroll() {
   const activeModal = document.querySelector('.bio-modal.active');
   let scrolled = 0;
   
-  if (activeModal) scrolled = activeModal.scrollTop;
-  else scrolled = window.scrollY;
+  if (activeModal) {
+    scrolled = activeModal.scrollTop; // Читаем скролл внутри окна
+  } else {
+    scrolled = window.scrollY || document.documentElement.scrollTop; // Читаем скролл сайта
+  }
 
-  if (scrolled > 300) scrollBtn.classList.add('visible');
-  else scrollBtn.classList.remove('visible');
+  if (scrolled > 300) {
+    scrollBtn.classList.add('visible');
+  } else {
+    scrollBtn.classList.remove('visible');
+  }
 }
 
 window.addEventListener('scroll', handleScroll);
-// Добавим слушателей для модальных окон в момент их инициализации
+
+// Навешиваем шпиона на все модальные окна, чтобы кнопка появлялась внутри них
+document.querySelectorAll('.bio-modal').forEach(modal => {
+  modal.addEventListener('scroll', handleScroll);
+});
+
 
 // ==========================================
 // 3. УМНЫЙ РЕНДЕРИНГ ДАННЫХ
