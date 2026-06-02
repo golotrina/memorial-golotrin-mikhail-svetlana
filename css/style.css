@@ -193,31 +193,42 @@ body.dark-theme .timeline-item:hover .timeline-content { box-shadow: 0 15px 35px
 .timeline-epitaph { font-style: italic; line-height: 1.8; color: var(--gold-dark); text-align: center; margin-top: 15px; font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 500; white-space: pre-wrap; }
 body.dark-theme .timeline-epitaph { color: var(--gold-light); }
 
-/* === ИСПРАВЛЕНО: ГАЛЕРЕЯ АЛЬБОМА (ЭЛИТНАЯ ЗОЛОТАЯ ПОДЛОЖКА, МЕНЬШИЙ РАЗМЕР И Ч/Б ЭФФЕКТ) === */
+/* === ГАЛЕРЕЯ АЛЬБОМА (ПРЕМИУМ ГЕОМЕТРИЯ И ИЕРАРХИЯ РЯДОВ) === */
 .modal-gallery { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 24px; margin-top: 30px; margin-bottom: 40px; align-items: start; }
-.gallery-item-wrap { width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
 
-/* Добавлен внутренний отступ и золотой градиент подложки в стиле главных фото */
+/* ИСПРАВЛЕНО: Структура ряда теперь независима от наличия или отсутствия текста подписи */
+.gallery-item-wrap { width: 100%; position: relative; display: block; }
+
 .gallery-item { width: 100%; aspect-ratio: 4/3; padding: 6px; background: var(--btn-volumetric-bg); border-radius: 16px; cursor: zoom-in; position: relative; transition: all 0.4s ease; box-shadow: var(--shadow-soft); overflow: hidden; }
 .gallery-item:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
 
-/* Внедрена фильтрация: превью строго черно-белые, при наведении возвращается цвет */
 .gallery-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; filter: grayscale(100%) contrast(1.1) brightness(0.95); transition: filter 0.8s ease; display: block; }
 .gallery-item:hover img { filter: grayscale(0%) contrast(1.05) brightness(1); }
-.gallery-caption { width: 100%; text-align: center; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; color: var(--text-color); margin-top: 12px; min-height: 24px; font-style: italic; }
 
+/* ИСПРАВЛЕНО: Подпись перенесена в благородный внутренний оверлей — ряды теперь идеально выровнены */
+.gallery-caption { position: absolute; bottom: 6px; left: 6px; right: 6px; padding: 25px 10px 10px; text-align: center; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 500; color: #FDF9F1 !important; background: linear-gradient(to top, rgba(18, 14, 10, 0.85) 0%, rgba(18, 14, 10, 0) 100%); border-radius: 0 0 12px 12px; margin: 0; z-index: 2; pointer-events: none; font-style: italic; }
+
+/* ИСПРАВЛЕНО: Кнопки гарантированно скрыты в обычном режиме и больше не пробивают границы рамки */
+.gallery-item .move-photo-btn,
+.gallery-item .delete-photo-btn,
+.gallery-item .edit-photo-btn,
+.gallery-item .move-photo-left,
+.gallery-item .move-photo-right { display: none !important; }
+
+/* Отображение элементов управления исключительно при активном режиме администратора */
 .admin-mode .gallery-item .move-photo-btn,
 .admin-mode .gallery-item .delete-photo-btn,
-.admin-mode .gallery-item .edit-photo-btn { position: absolute; z-index: 5; background: rgba(18, 14, 10, 0.75); backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFF; padding: 6px 10px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; height: auto; min-width: auto; max-width: auto; margin: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-shadow: none; }
+.admin-mode .gallery-item .edit-photo-btn { position: absolute; z-index: 5; background: rgba(18, 14, 10, 0.75); backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFF; padding: 6px 10px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; display: inline-flex !important; align-items: center; justify-content: center; height: auto; min-width: auto; max-width: auto; margin: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-shadow: none; }
 
-.admin-mode .gallery-item .move-photo-left { bottom: 10px; left: 10px; }
-.admin-mode .gallery-item .move-photo-right { bottom: 10px; left: 45px; }
-.admin-mode .gallery-item .delete-photo-btn { top: 10px; right: 10px; background: rgba(220, 53, 69, 0.85); border-color: rgba(255,255,255,0.1); }
-.admin-mode .gallery-item .edit-photo-btn { top: 10px; left: 10px; bottom: auto; transform: none; font-size: 0.8rem; padding: 5px 10px; }
+.admin-mode .gallery-item .move-photo-left { bottom: 10px; left: 10px; display: inline-flex !important; }
+.admin-mode .gallery-item .move-photo-right { bottom: 10px; left: 45px; display: inline-flex !important; }
+.admin-mode .gallery-item .delete-photo-btn { top: 10px; right: 10px; background: rgba(220, 53, 69, 0.85); border-color: rgba(255,255,255,0.1); display: inline-flex !important; }
+.admin-mode .gallery-item .edit-photo-btn { top: 10px; left: 10px; bottom: auto; transform: none; font-size: 0.8rem; padding: 5px 10px; display: inline-flex !important; }
 
 .admin-mode .gallery-item .move-photo-btn:hover,
 .admin-mode .gallery-item .edit-photo-btn:hover { background: var(--gold-dark); color: #FFF; border-color: var(--gold-light); }
 .admin-mode .gallery-item .delete-photo-btn:hover { background: #DC3545; }
+
 
 /* === ЦИТАТЫ (КОМПАКТНЫЕ И ЭЛЕГАНТНЫЕ) === */
 .quotes-section { margin: 40px 0; display: grid; gap: 20px; justify-content: center; }
@@ -288,12 +299,14 @@ body.dark-theme .type-label input:checked + .type-card { background: rgba(194, 1
 .sphere-heavenly { background: radial-gradient(circle at 35% 35%, #FFFFFF, #B0C4DE); }
 .sphere-unquenchable { background: radial-gradient(circle at 35% 35%, #FF69B4, #DC143C); }
 
-/* === ЛОКАЛИЗОВАННЫЕ ИСКРЫ (ПРИВЯЗКА К РОДИТЕЛЯМ) === */
+/* === ЛОКАЛИЗОВАННЫЕ ИСКРЫ === */
 .c-sparks-wrap { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 1; }
-.c-spark { position: absolute; width: 4px; height: 4px; background: var(--spark-color); border-radius: 50%; box-shadow: 0 0 8px 3px var(--spark-glow); opacity: 0; pointer-events: none; animation: floatSpark 12s infinite linear; }
 
-/* ИСПРАВЛЕНО: Замедление скорости полета искр в модальных окнах истории родителей до умиротворяющего, торжественного темпа */
-.bio-modal .c-spark { animation: floatSpark 26s infinite linear; }
+/* ИСПРАВЛЕНО: Кардинальное замедление общего полета искр для исключения суеты */
+.c-spark { position: absolute; width: 4px; height: 4px; background: var(--spark-color); border-radius: 50%; box-shadow: 0 0 8px 3px var(--spark-glow); opacity: 0; pointer-events: none; animation: floatSpark 38s infinite linear; }
+
+/* ИСПРАВЛЕНО: Сверхплавное, глубокое и умиротворяющее движение огоньков в модальных окнах */
+.bio-modal .c-spark { animation: floatSpark 55s infinite linear; }
 
 .candle-card, .bio-modal-content, .site-footer { position: relative; }
 
