@@ -17,25 +17,25 @@
   <script src="js/html2canvas.min.js"></script>
   <script src="js/qrcode.min.js"></script>
 </head>
-<body class="dark-theme" style="overflow: auto;">
+<body class="dark-theme body-overflow-auto">
 
   <header>
     <div class="header-controls">
-      <button class="hamburger-btn" onclick="toggleMobileMenu()">☰</button>
+      <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Открыть мобильное меню">☰</button>
       
-      <nav class="control-pill desktop-nav" style="padding: 4px 10px;">
+      <nav class="control-pill desktop-nav nav-padding">
         <a href="#parents" class="nav-link editable-text" data-ru="Родители" data-ua="Батьки" contenteditable="false">Батьки</a>
         <a href="#timeline" class="nav-link editable-text" data-ru="Линия жизни" data-ua="Лінія життя" contenteditable="false">Лінія життя</a>
         <a href="#timeline" class="nav-link editable-text" data-ru="Эпоха 1942-2022" data-ua="Епоха 1942-2022" contenteditable="false">Епоха 1942-2022</a>
         <a href="#ritual" class="nav-link editable-text" data-ru="Свеча Памяти" data-ua="Свічка Пам'яті" contenteditable="false">Свічка Пам'яті</a>
-        <button class="zoom-btn" onclick="shareSite()" data-title-ru="Поделиться ссылкой" data-title-ua="Поділитися посиланням" title="Поділитися посиланням"><span class="icon-3d">🔗</span></button>
+        <button class="zoom-btn" onclick="shareSite()" data-title-ru="Поделиться ссылкой" data-title-ua="Поділитися посиланням" title="Поділитися посиланням" aria-label="Поделиться ссылкой"><span class="icon-3d">🔗</span></button>
       </nav>
       
       <div class="control-pill">
-        <button class="zoom-btn" onclick="changeZoom(-2)" data-title-ru="Уменьшить шрифт" data-title-ua="Зменшити шрифт" title="Зменшити шрифт">A−</button>
+        <button class="zoom-btn" onclick="changeZoom(-2)" data-title-ru="Уменьшить шрифт" data-title-ua="Зменшити шрифт" title="Зменшити шрифт" aria-label="Уменьшить шрифт">A−</button>
         <span class="zoom-value" id="zoomValueDisplay">100%</span>
-        <button class="zoom-btn" onclick="changeZoom(2)" data-title-ru="Увеличить шрифт" data-title-ua="Збільшити шрифт" title="Збільшити шрифт">A+</button>
-        <button class="zoom-btn" onclick="toggleTheme()" data-title-ru="Светлая тема" data-title-ua="Світла тема" title="Світла тема" style="margin-left: 5px; border-left: 1px solid rgba(194, 155, 73, 0.2); padding-left: 15px;">
+        <button class="zoom-btn" onclick="changeZoom(2)" data-title-ru="Увеличить шрифт" data-title-ua="Збільшити шрифт" title="Збільшити шрифт" aria-label="Увеличить шрифт">A+</button>
+        <button class="zoom-btn theme-toggle-btn" onclick="toggleTheme()" data-title-ru="Светлая тема" data-title-ua="Світла тема" title="Світла тема" aria-label="Переключить тему">
           <span class="icon-3d" id="theme-icon">☀️</span>
         </button>
       </div>
@@ -52,9 +52,9 @@
       <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-crest'); event.stopPropagation();">📷 Загрузить герб</button>
     </div>
     <h1 id="hero-title"></h1>
-    <p id="hero-subtitle" style="letter-spacing: 4px; font-weight: 500;"></p>
+    <p id="hero-subtitle" class="hero-subtitle-styled"></p>
     <div class="separator"></div>
-    <div id="hero-quote" class="intro-quote" style="white-space: pre-wrap;"></div>
+    <div id="hero-quote" class="intro-quote quote-pre-wrap"></div>
     <div class="family-photo fade-up visible" onclick="openLightbox(this)">
       <img id="photo-family" src="photo-family.webp" alt="Сім'я" loading="lazy">
       <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-family'); event.stopPropagation();">📷 Загрузить общее фото</button>
@@ -90,8 +90,8 @@
       <h2 id="timeline-main-title"></h2>
       <p id="timeline-subtitle"></p>
 
-      <div style="text-align: center; margin-top: 25px;">
-        <button class="read-more-btn" onclick="openBio('epochModal')" style="margin-top: 0;">
+      <div class="timeline-action-wrap">
+        <button class="read-more-btn" onclick="openBio('epochModal')">
           <span id="timeline-epoch-btn"></span>
         </button>
       </div>
@@ -102,17 +102,20 @@
 
   <section id="ritual" class="ritual-section fade-up visible">
     <div class="ritual-header">
-      <h2><span class="icon-3d title-candle-glow">🕯️</span> <span class="editable-text" data-ru="Ритуал зажжения свечи памяти" data-ua="Ритуал запалювання свічки пам'яті" contenteditable="false">Ритуал запалювання свічки пам'яті</span></h2>
+      <h2>
+        <span class="icon-3d title-candle-glow">🕯️</span> 
+        <span class="editable-text" data-ru="Ритуал зажжения свечи памяти" data-ua="Ритуал запалювання свічки пам'яті" contenteditable="false">Ритуал запалювання свічки пам'яті</span>
+      </h2>
       <p class="editable-text" data-ru="Каждое доброе слово - это невидимый огонек, согревающий сквозь холод утраты. Зажгите свечу и поделитесь воспоминанием. Пусть свет нашей памяти продолжает согревать их души." data-ua="Кожне добре слово - це невидимий вогник, що зігріває крізь холод втрати. Запаліть свічку та поділіться спогадом. Нехай світло нашої пам'яті продовжує зігрівати їхні душі." contenteditable="false">Кожне добре слово - це невидимий вогник, що зігріває крізь холод втрати. Запаліть свічку та поділіться спошадом. Нехай світло нашої пам'яті продовжує зігрівати їхні душі.</p>
     </div>
     
     <div class="lit-candles-grid fade-up visible" id="candlesGrid"></div>
     
-    <div style="text-align: center; margin-top: 20px; display: block;" id="showMoreCandlesWrapper" class="fade-up visible">
+    <div id="showMoreCandlesWrapper" class="fade-up visible btn-center-margin">
       <button class="read-more-btn" onclick="toggleCandlesExpand()" id="showMoreCandlesBtn">Показати ще (1)</button>
     </div>
 
-    <div style="text-align: center; margin-top: 40px; margin-bottom: 20px; display: block;" id="openFormBtnWrapper" class="fade-up visible">
+    <div id="openFormBtnWrapper" class="fade-up visible btn-center-margin-large">
       <button class="submit-btn" onclick="toggleCandleForm()"><span class="editable-text" data-ru="Зажечь свечу памяти" data-ua="Запалити свічку пам'яті" contenteditable="false">Запалити свічку пам'яті</span></button>
     </div>
 
@@ -150,45 +153,45 @@
       </div>
     </div>
 
-    <div class="tombstone-wrapper fade-up visible" style="text-align: center; margin-top: 50px;">
-      <div style="position: relative; display: block; margin: 0px auto; max-width: 800px; padding: 8px; background: var(--btn-volumetric-bg); box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 35px, rgba(255, 255, 255, 0.9) 0px 2px 5px inset, rgba(0, 0, 0, 0.2) 0px -3px 6px inset; border-radius: 24px; cursor: zoom-in;" onclick="openLightbox(this)">
-        <img id="photo-tombstone" src="photo-tombstone.webp" alt="Памятник" style="width: 100%; aspect-ratio: 16/9; border-radius: 16px; object-fit: cover; display: block;">
+    <div class="tombstone-wrapper fade-up visible">
+      <div class="tombstone-image-card" onclick="openLightbox(this)">
+        <img id="photo-tombstone" src="photo-tombstone.webp" alt="Памятник" loading="lazy">
         <button class="edit-photo-btn admin-only" onclick="triggerUpload('photo-tombstone'); event.stopPropagation();">📷 Загрузить фото памятника</button>
       </div>
     </div>
   </section>
 
-  <button id="scrollTopBtn" class="scroll-top-btn visible" onclick="scrollToTop()">
+  <button id="scrollTopBtn" class="scroll-top-btn" onclick="scrollToTop()" aria-label="Наверх">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
   </button>
 
   <div class="bio-modal" id="father-bio">
     <div class="bio-modal-content">
-      <div class="c-sparks-wrap" style="border-radius: 24px; opacity: 0.8; z-index: 0;"></div>
+      <div class="c-sparks-wrap sparks-modal"></div>
       <span class="bio-modal-close" onclick="closeBio('father-bio')">×</span>
-      <h2 id="fbio-name" style="text-align: center; color: var(--gold); font-size: 2.5rem; position: relative; z-index: 1;"></h2>
-      <div id="fbio-dates" class="modal-dates" style="position: relative; z-index: 1;"></div>
+      <h2 id="fbio-name" class="modal-name-title"></h2>
+      <div id="fbio-dates" class="modal-dates modal-relative-z"></div>
       
       <div class="bio-text">
         <p id="fbio-personal-quote" class="modal-personal-quote"></p>
-        <p id="fbio-intro" style="margin-bottom: 25px;"></p>
+        <p id="fbio-intro" class="modal-intro-text"></p>
         
-        <div id="fbio-accordion" class="accordion"></div>
+        <div id="fbio-accordion" class="accordion modal-relative-z"></div>
         <div id="fbio-quotes" class="quotes-section"></div>
 
         <h3 class="gallery-title editable-text" data-ru="Воспоминания" data-ua="Спогади" contenteditable="false">Спогади</h3>
         
-        <div style="position: relative; padding: 20px 0; margin-top: 10px;">
-          <div class="c-sparks-wrap" style="border-radius: 16px; opacity: 1; z-index: 0; pointer-events: none;"></div>
-          <div class="modal-gallery" id="fatherGallery" style="position: relative; z-index: 1;"></div>
+        <div class="gallery-wrapper-relative">
+          <div class="c-sparks-wrap sparks-gallery"></div>
+          <div class="modal-gallery" id="fatherGallery"></div>
         </div>
         
-        <div style="text-align: center; display: block;" id="showMoreGalleryWrapperFather">
-          <button class="read-more-btn" style="margin-top: 0; margin-bottom: 30px;" onclick="toggleGalleryExpand('fatherGallery')" id="showMoreGalleryBtnFather"><span class="editable-text" data-ru="Показати ще" data-ua="Показати ще">Показати ще (15)</span></button>
+        <div id="showMoreGalleryWrapperFather" class="btn-center-margin">
+          <button class="read-more-btn modal-btn-no-margin" onclick="toggleGalleryExpand('fatherGallery')" id="showMoreGalleryBtnFather"><span class="editable-text" data-ru="Показати ще" data-ua="Показати ще">Показати ще (15)</span></button>
         </div>
         
         <div class="admin-only-flex">
-          <button class="admin-btn" onclick="addGalleryPhoto('fatherGallery')" style="font-size: 1rem; padding: 12px 25px;">➕ Добавить фото в альбом</button>
+          <button class="admin-btn btn-add-photo" onclick="addGalleryPhoto('fatherGallery')">➕ Добавить фото в альбом</button>
         </div>
       </div>
     </div>
@@ -196,51 +199,51 @@
 
   <div class="bio-modal" id="mother-bio">
     <div class="bio-modal-content">
-      <div class="c-sparks-wrap" style="border-radius: 24px; opacity: 0.8; z-index: 0;"></div>
+      <div class="c-sparks-wrap sparks-modal"></div>
       <span class="bio-modal-close" onclick="closeBio('mother-bio')">×</span>
-      <h2 id="mbio-name" style="text-align: center; color: var(--gold); font-size: 2.5rem; position: relative; z-index: 1;"></h2>
-      <div id="mbio-dates" class="modal-dates" style="position: relative; z-index: 1;"></div>
+      <h2 id="mbio-name" class="modal-name-title"></h2>
+      <div id="mbio-dates" class="modal-dates modal-relative-z"></div>
       
       <div class="bio-text">
         <p id="mbio-personal-quote" class="modal-personal-quote"></p>
-        <p id="mbio-intro" style="margin-bottom: 25px;"></p>
+        <p id="mbio-intro" class="modal-intro-text"></p>
         
-        <div id="mbio-accordion" class="accordion"></div>
+        <div id="mbio-accordion" class="accordion modal-relative-z"></div>
         <div id="mbio-quotes" class="quotes-section"></div>
 
         <h3 class="gallery-title editable-text" data-ru="Воспоминания" data-ua="Спогади" contenteditable="false">Спогади</h3>
         
-        <div style="position: relative; padding: 20px 0; margin-top: 10px;">
-          <div class="c-sparks-wrap" style="border-radius: 16px; opacity: 1; z-index: 0; pointer-events: none;"></div>
-          <div class="modal-gallery" id="motherGallery" style="position: relative; z-index: 1;"></div>
+        <div class="gallery-wrapper-relative">
+          <div class="c-sparks-wrap sparks-gallery"></div>
+          <div class="modal-gallery" id="motherGallery"></div>
         </div>
         
-        <div style="text-align: center; display: block;" id="showMoreGalleryWrapper">
-          <button class="read-more-btn" style="margin-top: 0; margin-bottom: 30px;" onclick="toggleGalleryExpand('motherGallery')" id="showMoreGalleryBtn"><span class="editable-text" data-ru="Показати ще" data-ua="Показати ще">Показати ще (18)</span></button>
+        <div id="showMoreGalleryWrapper" class="btn-center-margin">
+          <button class="read-more-btn modal-btn-no-margin" onclick="toggleGalleryExpand('motherGallery')" id="showMoreGalleryBtn"><span class="editable-text" data-ru="Показати ще" data-ua="Показати ще">Показати ще (18)</span></button>
         </div>
         
         <div class="admin-only-flex">
-          <button class="admin-btn" onclick="addGalleryPhoto('motherGallery')" style="font-size: 1rem; padding: 12px 25px;">➕ Добавить фото в альбом</button>
+          <button class="admin-btn btn-add-photo" onclick="addGalleryPhoto('motherGallery')">➕ Добавить фото в альбом</button>
         </div>
       </div>
     </div>
   </div>
 
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <div class="c-sparks-wrap" style="border-radius: 0; opacity: 1; z-index: 0;"></div>
+    <div class="c-sparks-wrap sparks-lightbox"></div>
     <span class="lightbox-close">×</span>
-    <span class="lightbox-nav lightbox-prev" onclick="prevImage(event)" style="display: none;">❮</span>
-    <img id="lightbox-img" src="https://golotrina.github.io/memorial/photo-tombstone.webp" alt="Full photo" onclick="event.stopPropagation();" style="position: relative; z-index: 10;">
-    <span class="lightbox-nav lightbox-next" onclick="nextImage(event)" style="display: none;">❯</span>
+    <span class="lightbox-nav lightbox-prev" onclick="prevImage(event)">❮</span>
+    <img id="lightbox-img" src="photo-tombstone.webp" alt="Full photo" onclick="event.stopPropagation();">
+    <span class="lightbox-nav lightbox-next" onclick="nextImage(event)">❯</span>
   </div>
 
   <footer class="site-footer fade-up visible">
-    <div class="c-sparks-wrap" style="border-radius: 0; opacity: 0.8; z-index: 0;"></div>
+    <div class="c-sparks-wrap sparks-footer"></div>
     <div class="footer-content">
       <p class="footer-quote editable-text" data-ru="Бесконечно благодарю. Бесконечно люблю. Бесконечно прошу прощения. Ваша Таня (Tanya-Tango)." data-ua="Безмежно дякую. Безмежно люблю. Безмежно прошу вибачення. Ваша Таня (Tanya-Tango)." contenteditable="false">Безмежно дякую. Безмежно люблю. Безмежно прошу вибачення. Ваша Таня (Tanya-Tango).</p>
       <div class="footer-separator"></div>
       <div class="footer-bottom">
-        <span><span class="secret-trigger" onclick="promptAdmin()" style="cursor: pointer; user-select: none;" title="">©</span> <span class="editable-text" data-ru="2026 Цифровой мемориал памяти семьи Голотриных" data-ua="2026 Цифровий меморіал пам'яті родини Голотріних" contenteditable="false">2026 Цифровий меморіал пам'яті родини Голотріних</span></span>
+        <span><span class="secret-trigger" onclick="promptAdmin()" title="">©</span> <span class="editable-text" data-ru="2026 Цифровой мемориал памяти семьи Голотриных" data-ua="2026 Цифровий меморіал пам'яті родини Голотріних" contenteditable="false">2026 Цифровий меморіал пам'яті родини Голотріних</span></span>
         <span class="editable-text" data-ru="Вечная память светлым людям" data-ua="Світла пам'ять світлим людям" contenteditable="false">Світла пам'ять світлим людям</span>
       </div>
       
@@ -254,54 +257,54 @@
     </div>
   </footer>
 
-  <div class="admin-panel" id="adminPanel" style="display: none;">
+  <div class="admin-panel" id="adminPanel">
     <button class="admin-btn" id="adminToggleBtn" onclick="toggleAdmin()">⚙️ Режим редактора</button>
     <button class="admin-btn" onclick="openQrModal()">📱 QR-код</button>
     <button class="admin-btn" onclick="downloadSiteData()">💾 Сохранить изменения</button>
   </div>
   
-  <input type="file" id="file-uploader" accept="image/*" style="display: none;">
+  <input type="file" id="file-uploader" accept="image/*" class="hidden-input">
 
   <div class="qr-modal" id="adminAuthModal">
-    <div class="qr-container" style="max-width: 350px; padding: 30px;">
+    <div class="qr-container auth-container">
       <span class="qr-close" onclick="document.getElementById('adminAuthModal').classList.remove('active')">×</span>
-      <h3 class="editable-text" style="color: var(--gold); margin-bottom: 20px; font-size: 1.5rem;" data-ru="Доступ редактора" data-ua="Доступ редактора" contenteditable="false">Доступ редактора</h3>
-      <input type="password" id="adminPwdInput" class="qr-input" style="text-align: center; font-size: 1.2rem; letter-spacing: 5px; margin-bottom: 15px;" placeholder="****">
-      <button class="submit-btn" style="width: 100%; padding: 12px;" onclick="checkAdminPassword()"><span class="editable-text" data-ru="Войти" data-ua="Увійти" contenteditable="false">Увійти</span></button>
-      <p id="adminPwdError" class="editable-text" style="color: rgb(220, 53, 69); display: none; margin-top: 15px; font-size: 0.85rem; font-weight: 500;" data-ru="Неверный пароль!" data-ua="Невірний пароль!" contenteditable="false">Невірний пароль!</p>
+      <h3 class="editable-text auth-title" data-ru="Доступ редактора" data-ua="Доступ редактора" contenteditable="false">Доступ редактора</h3>
+      <input type="password" id="adminPwdInput" class="qr-input auth-input" placeholder="****">
+      <button class="submit-btn auth-btn" onclick="checkAdminPassword()"><span class="editable-text" data-ru="Войти" data-ua="Увійти" contenteditable="false">Увійти</span></button>
+      <p id="adminPwdError" class="editable-text auth-error" data-ru="Неверный пароль!" data-ua="Невірний пароль!" contenteditable="false">Невірний пароль!</p>
     </div>
   </div>
 
   <div class="qr-modal" id="qrModal">
-    <div class="qr-container" style="max-width: 500px; padding: 40px; text-align: left;">
+    <div class="qr-container qr-main-container">
       <span class="qr-close" onclick="closeQrModal()">×</span>
       
-      <h2 class="qr-title editable-text" style="margin-bottom: 10px; color: var(--gold-dark);" data-ru="Табличка с QR-кодом" data-ua="Табличка з QR-кодом" contenteditable="false">Табличка з QR-кодом</h2>
-      <p class="qr-title editable-text" style="font-size: 0.95rem; color: rgb(119, 119, 119); margin-bottom: 25px; line-height: 1.5;" data-ru="Введите финальную ссылку на ваш site, чтобы создать код для памятника." data-ua="Введіть фінальне посилання на ваш сайт, щоб створити код для пам'ятника." contenteditable="false">Введіть фінальне посилання на ваш сайт, щоб створити код для пам'ятника.</p>
+      <h2 class="qr-title editable-text qr-title-main" data-ru="Табличка с QR-кодом" data-ua="Табличка з QR-кодом" contenteditable="false">Табличка з QR-кодом</h2>
+      <p class="qr-title editable-text qr-desc" data-ru="Введите финальную ссылку на ваш site, чтобы создать код для памятника." data-ua="Введіть фінальне посилання на ваш сайт, щоб створити код для пам'ятника." contenteditable="false">Введіть фінальне посилання на ваш сайт, щоб створити код для пам'ятника.</p>
 
-      <div class="qr-input-group" style="display: flex; gap: 15px; margin-bottom: 30px;">
-        <input type="text" id="qrUrlInput" class="qr-input" style="flex-grow: 1; padding: 12px 15px; border: 1px solid rgb(235, 229, 217); border-radius: 12px;" placeholder="тест">
-        <button class="qr-btn" style="background: var(--gold-gradient); color: rgb(50, 33, 8); border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 600; box-shadow: rgba(194, 155, 73, 0.3) 0px 4px 10px;" onclick="generateQr()"><span class="editable-text" data-ru="Создать" data-ua="Створити" contenteditable="false">Створити</span></button>
+      <div class="qr-input-group">
+        <input type="text" id="qrUrlInput" class="qr-input url-input" placeholder="тест">
+        <button class="qr-btn" onclick="generateQr()"><span class="editable-text" data-ru="Создать" data-ua="Створити" contenteditable="false">Створити</span></button>
       </div>
 
-      <div class="qr-print-area" id="qrPrintArea" style="border: 2px dashed var(--gold); border-radius: 16px; padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; background: rgb(255, 255, 255);">
-        <h1 class="editable-text" style="color: var(--gold-dark); font-size: 2.2rem; margin-bottom: 5px; line-height: 1;" data-ru="Цифровой Мемориал" data-ua="Цифровий Меморіал" contenteditable="false">Цифровий Меморіал</h1>
-        <p class="editable-text" style="font-size: 0.8rem; font-weight: 700; color: rgb(136, 136, 136); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px;" data-ru="СЕМЬИ ГОЛОТРИНЫХ" data-ua="РОДИНИ ГОЛОТРІНИХ" contenteditable="false">РОДИНИ ГОЛОТРІНИХ</p>
+      <div class="qr-print-area" id="qrPrintArea">
+        <h1 class="editable-text qr-print-title" data-ru="Цифровой Мемориал" data-ua="Цифровий Меморіал" contenteditable="false">Цифровий Меморіал</h1>
+        <p class="editable-text qr-print-subtitle" data-ru="СЕМЬИ ГОЛОТРИНЫХ" data-ua="РОДИНИ ГОЛОТРІНИХ" contenteditable="false">РОДИНИ ГОЛОТРІНИХ</p>
         
-        <p class="editable-text" style="font-size: 0.9rem; color: rgb(102, 102, 102); max-width: 250px; margin: 0px auto 20px; line-height: 1.4;" data-ru="Наведите камеру смартфона на код, чтобы открыть страницу памяти" data-ua="Наведіть камеру смартфона на код, щоб відкрити сторінку пам'яті" contenteditable="false">Наведіть камеру смартфона на код, щоб відкрити сторінку пам'яті</p>
+        <p class="editable-text qr-print-desc" data-ru="Наведите камеру смартфона на код, чтобы открыть страницу памяти" data-ua="Наведіть камеру смартфона на код, щоб відкрити сторінку пам'яті" contenteditable="false">Наведіть камеру смартфона на код, щоб відкрити сторінку пам'яті</p>
         
-        <div id="qrCodeImg" style="width: 200px; height: 200px; margin: 0 auto 20px; padding: 10px; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center;"></div>
+        <div id="qrCodeImg" class="qr-code-wrapper"></div>
         
-        <p id="qrUrlDisplay" style="font-size: 0.85rem; font-weight: 600; color: rgb(50, 33, 8); margin-bottom: 15px; letter-spacing: 0.5px;"></p>
-        <p class="editable-text" style="font-size: 0.85rem; font-weight: 600; color: rgb(153, 153, 153);" data-ru="Здесь бережно сохранена история нашей семьи" data-ua="Тут дбайливо збережена історія нашої родини" contenteditable="false">Тут дбайливо збережена історія нашої родини</p>
+        <p id="qrUrlDisplay" class="qr-url-display"></p>
+        <p class="editable-text qr-print-footer" data-ru="Здесь бережно сохранена история нашей семьи" data-ua="Тут дбайливо збережена історія нашої родини" contenteditable="false">Тут дбайливо збережена історія нашої родини</p>
       </div>
 
-      <div class="print-btn-wrap" id="printBtnWrap" style="display: flex; justify-content: space-between; gap: 15px; margin-top: 25px;">
-        <button style="flex: 1 1 0%; padding: 14px; border-radius: 12px; background: rgb(200, 169, 98); color: rgb(50, 33, 8); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="window.print()">
+      <div class="print-btn-wrap" id="printBtnWrap">
+        <button class="action-btn btn-print" onclick="window.print()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
           <span class="editable-text" data-ru="Распечатать" data-ua="Роздрукувати" contenteditable="false">Роздрукувати</span>
         </button>
-        <button style="flex: 1 1 0%; padding: 14px; border-radius: 12px; background: rgb(17, 17, 17); color: rgb(255, 255, 255); font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="downloadQr()">
+        <button class="action-btn btn-download" onclick="downloadQr()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           <span class="editable-text" data-ru="Скачать код" data-ua="Завантажити" contenteditable="false">Завантажити</span>
         </button>
@@ -309,12 +312,12 @@
     </div>
   </div>
 
-  <div class="qr-modal" id="confirmModal" style="z-index: 9999;">
-    <div class="qr-container" style="max-width: 400px; padding: 30px;">
-      <h3 style="color: var(--text-color); margin-bottom: 25px; font-size: 1.2rem;" id="confirmModalText">Оновити переклад іншої версії автоматично? (Скасуйте, щоб зберегти ручні правки)</h3>
-      <div style="display: flex; gap: 15px; justify-content: center;">
+  <div class="qr-modal confirm-modal" id="confirmModal">
+    <div class="qr-container confirm-container">
+      <h3 id="confirmModalText" class="confirm-title">Оновити переклад іншої версії автоматично? (Скасуйте, щоб зберегти ручні правки)</h3>
+      <div class="confirm-actions">
         <button class="cancel-btn" onclick="document.getElementById('confirmModal').classList.remove('active')"><span class="editable-text" data-ru="Отмена" data-ua="Скасувати" contenteditable="false">Скасувати</span></button>
-        <button class="submit-btn" style="padding: 10px 25px;" onclick="if(window.currentConfirmCallback) window.currentConfirmCallback();"><span class="editable-text" data-ru="Да" data-ua="Так" contenteditable="false">Так</span></button>
+        <button class="submit-btn confirm-btn-yes" onclick="if(window.currentConfirmCallback) window.currentConfirmCallback();"><span class="editable-text" data-ru="Да" data-ua="Так" contenteditable="false">Так</span></button>
       </div>
     </div>
   </div>
@@ -327,21 +330,21 @@
       <a href="#timeline" class="editable-text" onclick="toggleMobileMenu()" data-ru="ЛИНИЯ ЖИЗНИ" data-ua="ЛІНІЯ ЖИТТЯ" contenteditable="false">ЛІНІЯ ЖИТТЯ</a>
       <a href="#timeline" class="editable-text" onclick="toggleMobileMenu()" data-ru="ЭПОХА 1942-2022" data-ua="ЕПОХА 1942-2022" contenteditable="false">ЕПОХА 1942-2022</a>
       <a href="#ritual" class="editable-text" onclick="toggleMobileMenu()" data-ru="СВЕЧА ПАМЯТИ" data-ua="СВІЧКА СПОГАДІВ" contenteditable="false">СВІЧКА СПОГАДІВ</a>
-      <button class="submit-btn" style="margin-top: 20px; font-size: 1rem; padding: 10px 25px;" onclick="shareSite(); toggleMobileMenu()"><span class="editable-text" data-ru="Поделиться ссылкой" data-ua="Поділитися посиланням" contenteditable="false">Поділитися посиланням</span></button>
+      <button class="submit-btn mobile-share-btn" onclick="shareSite(); toggleMobileMenu()"><span class="editable-text" data-ru="Поделиться ссылкой" data-ua="Поділитися посиланням" contenteditable="false">Поділитися посиланням</span></button>
     </div>
   </div>
 
   <div id="epochModal" class="bio-modal">
-    <div class="bio-modal-content" style="max-width: 800px;">
-      <div class="c-sparks-wrap" style="border-radius: 24px; opacity: 0.8; z-index: 0;"></div>
+    <div class="bio-modal-content epoch-modal-content">
+      <div class="c-sparks-wrap sparks-modal"></div>
       <span class="bio-modal-close" onclick="closeBio('epochModal')">×</span>
       
-      <div class="timeline-header" style="margin-top: 20px; position: relative; z-index: 1;">
+      <div class="timeline-header modal-relative-z epoch-header-margin">
         <h2 id="epoch-main-title"></h2>
         <p id="epoch-subtitle"></p>
       </div>
       
-      <div id="epoch-timeline-container" class="timeline" style="position: relative; z-index: 1;"></div>
+      <div id="epoch-timeline-container" class="timeline modal-relative-z"></div>
     </div>
   </div>
 
