@@ -424,6 +424,15 @@ window.SITE_CONTENT = {
 // === БАЗА ДАННЫХ СВЕЧЕЙ ===
 window.DB_CANDLES = [
   {
+    "id": "c_1780387101725",
+    "name_ru": "Ірина",
+    "name_ua": "Ирина",
+    "message_ru": "Світла памʼять",
+    "message_ua": "Светлая память",
+    "type": "classic",
+    "timestamp": 1780387101725
+  },
+  {
     "id": "c_1780241593775",
     "name_ru": "Лидия Колесник",
     "name_ua": "Лідія Колесник",
