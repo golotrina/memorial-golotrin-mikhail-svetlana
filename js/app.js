@@ -31,21 +31,6 @@ function showToast(text) {
   setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
 }
 
-// Вспомогательная функция для фонового перевода длинных текстов через Google API
-async function apiTranslateText(text, from, to) {
-  if (!text) return '';
-  try {
-    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`);
-    const data = await res.json();
-    if (data && data[0]) {
-      return data[0].map(item => item[0]).join('');
-    }
-  } catch (e) {
-    console.error("Ошибка перевода текста через API:", e);
-  }
-  return text;
-}
-
 function showLongWarningToast(text) {
   const toast = document.createElement('div');
   toast.className = 'toast-notification';
@@ -63,6 +48,16 @@ function customConfirm(text, onConfirm) {
   window.currentConfirmCallback = () => { document.getElementById('confirmModal').classList.remove('active'); onConfirm(); };
 }
 
+async function apiTranslateText(text, from, to) {
+  if (!text) return '';
+  try {
+    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`);
+    const data = await res.json();
+    if (data && data[0]) return data[0].map(item => item[0]).join('');
+  } catch (e) { console.error("Translate error:", e); }
+  return text;
+}
+
 function shareSite() {
   const shareTitle = currentLang === 'ua' ? "Цифровий Меморіал родини Голотріних" : "Цифровой Мемориал семьи Голотриных";
   if (navigator.share) {
@@ -73,11 +68,30 @@ function shareSite() {
   }
 }
 
+// Умный скролл (обрабатывает и страницу, и модальные окна)
 function scrollToTop() { 
   const activeModal = document.querySelector('.bio-modal.active');
   if (activeModal) activeModal.scrollTo({ top: 0, behavior: 'smooth' });
   else window.scrollTo({ top: 0, behavior: 'smooth' }); 
 }
+
+// Шпион за прокруткой для кнопки "Вверх"
+function handleScroll() {
+  const scrollBtn = document.getElementById('scrollTopBtn');
+  if (!scrollBtn) return;
+  
+  const activeModal = document.querySelector('.bio-modal.active');
+  let scrolled = 0;
+  
+  if (activeModal) scrolled = activeModal.scrollTop;
+  else scrolled = window.scrollY;
+
+  if (scrolled > 300) scrollBtn.classList.add('visible');
+  else scrollBtn.classList.remove('visible');
+}
+
+window.addEventListener('scroll', handleScroll);
+// Добавим слушателей для модальных окон в момент их инициализации
 
 // ==========================================
 // 3. УМНЫЙ РЕНДЕРИНГ ДАННЫХ
@@ -138,8 +152,8 @@ function renderTimeline() {
     const descText = isUa ? item.textUa : item.textRu;
     
     let textHTML = item.isEpitaph 
-      ? `<div class="timeline-epitaph editable-text" style="white-space: pre-wrap;">${descText}</div>`
-      : `<p class="editable-text" style="white-space: pre-wrap;">${descText}</p>`;
+      ? `<div class="timeline-epitaph editable-text">${descText}</div>`
+      : `<p class="editable-text">${descText}</p>`;
 
     const eventEl = document.createElement('div');
     eventEl.className = 'timeline-item fade-up visible';
@@ -233,7 +247,7 @@ function renderEpochModal(data) {
       const evEl = document.createElement('div');
       evEl.className = 'timeline-item fade-up visible';
       
-      let pHTML = paragraphs ? paragraphs.map((p, pIdx) => `<p class="editable-text" data-epoch-idx="${idx}" data-p-idx="${pIdx}" style="white-space: pre-wrap;">${p}</p>`).join('') : '';
+      let pHTML = paragraphs ? paragraphs.map((p, pIdx) => `<p class="editable-text" data-epoch-idx="${idx}" data-p-idx="${pIdx}">${p}</p>`).join('') : '';
       
       evEl.innerHTML = `
         <span class="timeline-date editable-text" data-epoch-date-idx="${idx}">${dateText}</span>
@@ -256,7 +270,6 @@ function changeZoom(step) {
 
 function setLang(lang) {
   currentLang = lang;
-  
   if (typeof renderStaticContent === 'function') renderStaticContent(); 
 
   document.getElementById('btn-lang-ua')?.classList.toggle('active', lang === 'ua');
@@ -297,7 +310,6 @@ function toggleMobileMenu() {
 function createSparks() {
   document.querySelectorAll('.c-sparks-wrap').forEach(wrap => {
     if (wrap.children.length > 0) return; 
-    
     const sparksCount = 12; 
     for (let i = 0; i < sparksCount; i++) {
       const spark = document.createElement('div');
@@ -314,6 +326,24 @@ function createSparks() {
     }
   });
 }
+
+function toggleTheme() {
+  document.body.classList.toggle('dark-theme');
+  const isDark = document.body.classList.contains('dark-theme');
+  localStorage.setItem('memorial_theme', isDark ? 'dark' : 'light');
+  
+  const themeIcon = document.getElementById('theme-icon');
+  if (themeIcon) {
+    themeIcon.innerText = isDark ? '☀️' : '🌙';
+    const btn = themeIcon.parentElement;
+    if (btn) {
+      btn.setAttribute('data-title-ru', isDark ? 'Светлая тема' : 'Ночная тема');
+      btn.setAttribute('data-title-ua', isDark ? 'Світла тема' : 'Нічна тема');
+      btn.title = btn.getAttribute(`data-title-${currentLang}`) || '';
+    }
+  }
+}
+
 
 // ==========================================
 // 4. АДМИН-ПАНЕЛЬ И НАСТРОЙКИ
@@ -455,7 +485,8 @@ function openLightbox(wrapper) {
     document.querySelector('.lightbox-prev').style.display = 'none'; document.querySelector('.lightbox-next').style.display = 'none';
   }
   document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex];
-  lb.classList.add('active'); document.body.style.overflow = 'hidden';
+  lb.classList.add('active'); 
+  document.body.style.overflow = 'hidden';
 }
 
 function nextImage(e) { if(e) e.stopPropagation(); if(currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
@@ -463,27 +494,7 @@ function prevImage(e) { if(e) e.stopPropagation(); if(currentGalleryImages.lengt
 function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); if (!document.querySelector('.bio-modal.active')) document.body.style.overflow = 'auto'; }
 
 // ==========================================
-// 5.1 ТЕМА ОФОРМЛЕНИЯ (ИСПРАВЛЕННАЯ ЛОГИКА)
-// ==========================================
-function toggleTheme() {
-  document.body.classList.toggle('dark-theme');
-  const isDark = document.body.classList.contains('dark-theme');
-  localStorage.setItem('memorial_theme', isDark ? 'dark' : 'light');
-  
-  const themeIcon = document.getElementById('theme-icon');
-  if (themeIcon) {
-    themeIcon.innerText = isDark ? '☀️' : '🌙';
-    const btn = themeIcon.parentElement;
-    if (btn) {
-      btn.setAttribute('data-title-ru', isDark ? 'Светлая тема' : 'Ночная тема');
-      btn.setAttribute('data-title-ua', isDark ? 'Світла тема' : 'Нічна тема');
-      btn.title = btn.getAttribute(`data-title-${currentLang}`) || '';
-    }
-  }
-}
-
-// ==========================================
-// 6. СВЕЧИ И РИТУАЛ ПАМЯТИ
+// 6. СВЕЧИ И РИТУАЛ ПАМЯТИ (ИСПРАВЛЕННАЯ ЛОГИКА)
 // ==========================================
 function renderCandles() {
   const grid = document.getElementById('candlesGrid'); 
@@ -498,13 +509,14 @@ function renderCandles() {
     const dateObj = new Date(c.timestamp); 
     const dateStr = dateObj.toLocaleDateString('ru-RU') + ', ' + dateObj.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
     
+    // Берем язык строго по текущей версии, если его нет - fallback на другой
     const cName = currentLang === 'ua' ? (c.name_ua || c.name_ru || c.name) : (c.name_ru || c.name_ua || c.name);
     const cMessage = currentLang === 'ua' ? (c.message_ua || c.message_ru || c.message) : (c.message_ru || c.message_ua || c.message);
 
     let isLongMsg = cMessage && (cMessage.length > 150 || (cMessage.match(/\n/g) || []).length >= 3);
     let msgHtml = '';
     if (cMessage) {
-      msgHtml = `<div class="candle-msg-text ${isLongMsg ? 'collapsible' : ''}">« ${cMessage} »</div>`;
+      msgHtml = `<div class="candle-msg-text ${isLongMsg ? 'collapsible' : ''}">${cMessage}</div>`;
       if (isLongMsg) {
         msgHtml += `<button class="candle-expand-btn" onclick="this.previousElementSibling.classList.toggle('expanded'); this.innerText = this.previousElementSibling.classList.contains('expanded') ? (currentLang === 'ua' ? 'Сховати' : 'Скрыть') : (currentLang === 'ua' ? 'Читати далі...' : 'Читать далее...')">${currentLang === 'ua' ? 'Читати далі...' : 'Читать далее...'}</button>`;
       }
@@ -584,9 +596,11 @@ async function handleCandleSubmit(e) {
     msgChanged = msgInp !== oldMsgCur;
   }
 
+  // УМНАЯ ЛОГИКА АВТОПЕРЕВОДА
   let doAutoTranslate = true;
-
-  if (isEditing && isAdmin && (nameChanged || msgChanged)) {
+  
+  if (isAdmin && isEditing && (nameChanged || msgChanged)) {
+     // Админа спрашиваем, переводить ли, чтобы не стереть его возможные ручные правки в другом языке
      let targetHasText = currentLang === 'ua' ? (c.name_ru || c.message_ru) : (c.name_ua || c.message_ua);
      if (targetHasText) {
          let msg = currentLang === 'ua'
@@ -594,6 +608,10 @@ async function handleCandleSubmit(e) {
              : 'Обновить перевод другой версии автоматически?\n(ОК - перевести заново, Отмена - сохранить ваши прошлые ручные правки)';
          doAutoTranslate = confirm(msg);
      }
+  } else if (!isAdmin) {
+      // Обычный посетитель: переводим ТИХО, без окон, чтобы сразу заполнить базу на 2 языках
+      showToast(currentLang === 'ua' ? 'Запалюємо свічку...' : 'Зажигаем свечу...');
+      doAutoTranslate = true;
   }
 
   let final_name_ru = nameInp;
@@ -609,11 +627,20 @@ async function handleCandleSubmit(e) {
 
       if (currentLang === 'ua') { final_name_ua = nameInp; final_msg_ua = msgInp; }
       else { final_name_ru = nameInp; final_msg_ru = msgInp; }
+  } else {
+      if (currentLang === 'ua') { final_name_ua = nameInp; final_msg_ua = msgInp; }
+      else { final_name_ru = nameInp; final_msg_ru = msgInp; }
   }
 
   if (doAutoTranslate && (nameChanged || msgChanged)) {
-    if (nameInp && nameChanged) final_name_ua = await apiTranslateText(nameInp, sourceLang, targetLang);
-    if (msgInp && msgChanged) final_msg_ua = await apiTranslateText(msgInp, sourceLang, targetLang);
+    if (nameInp && nameChanged) {
+        let translatedName = await apiTranslateText(nameInp, sourceLang, targetLang);
+        if (currentLang === 'ua') final_name_ru = translatedName; else final_name_ua = translatedName;
+    }
+    if (msgInp && msgChanged) {
+        let translatedMsg = await apiTranslateText(msgInp, sourceLang, targetLang);
+        if (currentLang === 'ua') final_msg_ru = translatedMsg; else final_msg_ua = translatedMsg;
+    }
   }
 
   if (isEditing) {
@@ -627,8 +654,6 @@ async function handleCandleSubmit(e) {
     if (isAdmin) {
         hasUnsavedChanges = true; 
         showToast(currentLang === 'ua' ? 'Зміни збережено. Не забудьте "Зберегти зміни" в адмінці!' : 'Изменения сохранены. Нажмите "Сохранить изменения" в админке!');
-    } else {
-        showToast(currentLang === 'ua' ? 'Зміни збережено!' : 'Изменения сохранены!');
     }
     return;
   }
@@ -687,403 +712,3 @@ function editCandle(index) {
 }
 
 function toggleCandlesExpand() { isCandlesExpanded = !isCandlesExpanded; renderCandles(); }
-
-// ==========================================
-// 7. МОДАЛКИ И АККОРДЕОНЫ
-// ==========================================
-function openBio(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
-function closeBio(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = 'auto'; }
-function toggleAccordion(button) {
-  const item = button.parentElement;
-  if (!item.classList.contains('active')) {
-    item.parentElement.querySelectorAll('.accordion-item').forEach(el => el.classList.remove('active'));
-    item.classList.add('active');
-    setTimeout(() => button.scrollIntoView({ behavior: 'smooth', block: 'center' }), 350);
-  }
-}
-
-// ==========================================
-// 8. УМНЫЙ QR-ГЕНЕРАТОР С МАСКОЙ ЗАЩИТЫ
-// ==========================================
-function openQrModal() { 
-  const currentUrl = window.location.href.split('#')[0];
-  document.getElementById('qrUrlInput').value = currentUrl;
-  document.getElementById('qrPrintArea').style.display = 'none';
-  document.getElementById('printBtnWrap').style.display = 'none';
-  document.getElementById('qrModal').classList.add('active'); 
-}
-
-function closeQrModal() { document.getElementById('qrModal').classList.remove('active'); }
-
-function generateQr() {
-  let url = document.getElementById('qrUrlInput').value.trim();
-  if (!url) { showToast(currentLang === 'ua' ? 'Введіть посилання!' : 'Введите ссылку!'); return; }
-  
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    url = 'https://' + url;
-    document.getElementById('qrUrlInput').value = url;
-  }
-  
-  const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-  if (!urlPattern.test(url)) {
-    showToast(currentLang === 'ua' ? '❌ Некоректний формат посилання!' : '❌ Некорректный формат ссылки!');
-    return;
-  }
-  
-  const qrContainer = document.getElementById('qrCodeImg');
-  qrContainer.innerHTML = ''; 
-  
-  const urlDisplay = document.getElementById('qrUrlDisplay');
-  if (urlDisplay) urlDisplay.innerText = url;
-  
-  new QRCode(qrContainer, {
-    text: url, width: 180, height: 180,
-    colorDark : "#322108", colorLight : "#ffffff",
-    correctLevel : QRCode.CorrectLevel.H
-  });
-
-  document.getElementById('qrPrintArea').style.display = 'flex'; 
-  document.getElementById('printBtnWrap').style.display = 'flex'; 
-}
-
-function downloadQr() {
-  const printArea = document.getElementById('qrPrintArea');
-  html2canvas(printArea, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
-    const link = document.createElement('a');
-    link.href = canvas.toDataURL("image/png");
-    link.download = 'Memorial_Table_QR.png';
-    link.click();
-  });
-}
-
-// ==========================================
-// 9. СБОР ДАННЫХ И ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
-// ==========================================
-async function downloadSiteData() {
-  if (window.SITE_CONTENT) {
-    const isUa = currentLang === 'ua';
-    const langSuffix = isUa ? 'Ua' : 'Ru';
-    
-    window.SITE_CONTENT.hero['title' + langSuffix] = document.getElementById('hero-title').innerText.trim();
-    window.SITE_CONTENT.hero['subtitle' + langSuffix] = document.getElementById('hero-subtitle').innerText.trim();
-    window.SITE_CONTENT.hero['quote' + langSuffix] = document.getElementById('hero-quote').innerText.trim();
-
-    window.SITE_CONTENT.parents.father['name' + langSuffix] = document.getElementById('father-name').innerText.trim();
-    window.SITE_CONTENT.parents.father['dates' + langSuffix] = document.getElementById('father-dates').innerText.trim();
-    window.SITE_CONTENT.parents.father['bio' + langSuffix] = document.getElementById('father-bio-preview').innerText.trim();
-
-    window.SITE_CONTENT.parents.mother['name' + langSuffix] = document.getElementById('mother-name').innerText.trim();
-    window.SITE_CONTENT.parents.mother['dates' + langSuffix] = document.getElementById('mother-dates').innerText.trim();
-    window.SITE_CONTENT.parents.mother['bio' + langSuffix] = document.getElementById('mother-bio-preview').innerText.trim();
-
-    ['fbio', 'mbio'].forEach(prefix => {
-      const key = prefix === 'fbio' ? 'fatherBio' : 'motherBio';
-      const dataObj = window.SITE_CONTENT[key];
-      
-      dataObj['personalQuote' + langSuffix] = document.getElementById(`${prefix}-personal-quote`).innerText.trim();
-      dataObj['intro' + langSuffix] = document.getElementById(`${prefix}-intro`).innerText.trim();
-
-      const accItems = document.querySelectorAll(`#${prefix}-accordion .accordion-item`);
-      accItems.forEach((item, idx) => {
-        if (!dataObj.accordion[idx]) return;
-        dataObj.accordion[idx]['title' + langSuffix] = item.querySelector('.accordion-header span').innerText.trim();
-        
-        const pEls = item.querySelectorAll('.accordion-inner p');
-        dataObj.accordion[idx]['paragraphs' + langSuffix] = Array.from(pEls).map(p => p.innerText.trim());
-      });
-
-      const qCards = document.querySelectorAll(`#${prefix}-quotes .quote-card`);
-      qCards.forEach((card, idx) => {
-        if (!dataObj.quotes[idx]) return;
-        dataObj.quotes[idx]['text' + langSuffix] = card.querySelector('.quote-text').innerText.trim();
-        dataObj.quotes[idx]['author' + langSuffix] = card.querySelector('.quote-author').innerText.trim();
-      });
-    });
-
-    const epochContainer = document.getElementById('epoch-timeline-container');
-    if (epochContainer && window.SITE_CONTENT.epochData) {
-      const epData = window.SITE_CONTENT.epochData;
-      const epItems = epochContainer.querySelectorAll('.timeline-item');
-      epItems.forEach((item, idx) => {
-        if (!epData.events[idx]) return;
-        epData.events[idx]['date' + langSuffix] = item.querySelector('.timeline-date').innerText.trim();
-        epData.events[idx]['title' + langSuffix] = item.querySelector('.timeline-content h4').innerText.trim();
-        
-        const pEls = item.querySelectorAll('.timeline-content p');
-        epData.events[idx]['paragraphs' + langSuffix] = Array.from(pEls).map(p => p.innerText.trim());
-      });
-    }
-
-    // Интерактивный запрос на запуск фонового нейросетевого автоперевода измененных зон
-    const msgTranslate = isUa
-      ? 'Бажаєте автоматично перекласти оновлені тексти на іншу мовну версію?\n(ОК — перекласти, Скасувати — зберегти поточні ручні правки окремо для кожної мови)'
-      : 'Хотите автоматически перевести обновленные тексты на другую языковую версию?\n(ОК — перевести, Отмена — сохранить текущие ручные правки отдельно для каждого языка)';
-    
-    if (confirm(msgTranslate)) {
-      const fromL = isUa ? 'uk' : 'ru';
-      const toL = isUa ? 'ru' : 'uk';
-      const oppSuffix = isUa ? 'Ru' : 'Ua';
-
-      window.SITE_CONTENT.hero['title' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['title' + langSuffix], fromL, toL);
-      window.SITE_CONTENT.hero['subtitle' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['subtitle' + langSuffix], fromL, toL);
-      window.SITE_CONTENT.hero['quote' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['quote' + langSuffix], fromL, toL);
-
-      window.SITE_CONTENT.parents.father['name' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['name' + langSuffix], fromL, toL);
-      window.SITE_CONTENT.parents.father['dates' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['dates' + langSuffix], fromL, toL);
-      window.SITE_CONTENT.parents.father['bio' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['bio' + langSuffix], fromL, toL);
-
-      window.SITE_CONTENT.parents.mother['name' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['name' + langSuffix], fromL, toL);
-      window.SITE_CONTENT.parents.mother['dates' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['dates' + langSuffix], fromL, toL);
-      window.SITE_CONTENT.parents.mother['bio' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['bio' + langSuffix], fromL, toL);
-
-      ['fbio', 'mbio'].forEach(async (prefix) => {
-        const key = prefix === 'fbio' ? 'fatherBio' : 'motherBio';
-        const dataObj = window.SITE_CONTENT[key];
-        dataObj['personalQuote' + oppSuffix] = await apiTranslateText(dataObj['personalQuote' + langSuffix], fromL, toL);
-        dataObj['intro' + oppSuffix] = await apiTranslateText(dataObj['intro' + langSuffix], fromL, toL);
-
-        if (dataObj.accordion) {
-          for (let idx = 0; idx < dataObj.accordion.length; idx++) {
-            dataObj.accordion[idx]['title' + oppSuffix] = await apiTranslateText(dataObj.accordion[idx]['title' + langSuffix], fromL, toL);
-            if (dataObj.accordion[idx]['paragraphs' + langSuffix]) {
-              dataObj.accordion[idx]['paragraphs' + oppSuffix] = await Promise.all(
-                dataObj.accordion[idx]['paragraphs' + langSuffix].map(p => apiTranslateText(p, fromL, toL))
-              );
-            }
-          }
-        }
-      });
-    }
-  }
-
-  const updatedGalleries = { fatherGallery: [], motherGallery: [] };
-  ['fatherGallery', 'motherGallery'].forEach(galId => {
-    document.querySelectorAll(`#${galId} .gallery-item-wrap`).forEach(wrap => {
-      const img = wrap.querySelector('img[id]');
-      const cap = wrap.querySelector('.gallery-caption');
-      if (img) updatedGalleries[galId].push({ 
-        id: img.id, 
-        ru: cap.getAttribute('data-ru') || '', 
-        ua: cap.getAttribute('data-ua') || '' 
-      });
-    });
-  });
-
-  const dataJsContent = `// === БАЗА ТЕКСТОВОГО КОНТЕНТА ===\nwindow.SITE_CONTENT = ${JSON.stringify(window.SITE_CONTENT, null, 2)};\n\n// === БАЗА ДАННЫХ СВЕЧЕЙ ===\nwindow.DB_CANDLES = ${JSON.stringify(window.DB_CANDLES, null, 2)};\n\n// === БАЗА ДАННЫХ ФОТОГАЛЕРЕЙ И ПОДПИСЕЙ ===\nwindow.DB_GALLERIES = ${JSON.stringify(updatedGalleries, null, 2)};`;
-
-  let ghOwner = localStorage.getItem('gh_owner');
-  let ghRepo = localStorage.getItem('gh_repo');
-  let ghToken = localStorage.getItem('gh_token');
-
-  if (!ghOwner || !ghRepo || !ghToken) {
-    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub:", ghOwner || "");
-    if (!ghOwner) return;
-    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория:", ghRepo || "");
-    if (!ghRepo) return;
-    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token:", ghToken || "");
-    if (!ghToken) return;
-
-    localStorage.setItem('gh_owner', ghOwner.trim());
-    localStorage.setItem('gh_repo', ghRepo.trim());
-    localStorage.setItem('gh_token', ghToken.trim());
-  }
-
-  showToast(currentLang === 'ua' ? 'Відправка файлів на GitHub...' : 'Отправка файлов на GitHub...');
-
-  try {
-    const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/js/data.js`;
-    const getRes = await fetch(url, { headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' } });
-    
-    let sha = null;
-    if (getRes.ok) {
-      const fileData = await getRes.json();
-      sha = fileData.sha;
-    }
-
-    const encodedContent = btoa(unescape(encodeURIComponent(dataJsContent)));
-    const putRes = await fetch(url, {
-      method: 'PUT',
-      headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Обновление Мемориала: база данных (Авто-коммит)', content: encodedContent, sha: sha })
-    });
-
-    if (!putRes.ok) throw new Error(`Ошибка при записи js/data.js`);
-
-    hasUnsavedChanges = false;
-    showLongWarningToast(currentLang === 'ua' 
-      ? '✅ УСПІХ! Дані оновлено на GitHub.<br><br><b>УВАГА: Не оновлюйте сторінку найближчі 2-3 хвилини!</b>' 
-      : '✅ УСПЕХ! Данные обновлены на GitHub.<br><br><b>ВНИМАНИЕ: Не обновляйте страницу ближайшие 2-3 минуты!</b>');
-  } catch (error) {
-    console.error(error);
-    alert(`Ошибка: ${error.message}`);
-  }
-}
-
-function initializeMemorialApp() {
-  initGalleries(); 
-  renderCandles();
-  createSparks(); 
-  
-  // Корректная и безопасная синхронизация сохраненной темы
-  const savedTheme = localStorage.getItem('memorial_theme');
-  if (savedTheme === 'light' && document.body.classList.contains('dark-theme')) {
-    toggleTheme();
-  } else if (savedTheme === 'dark' && !document.body.classList.contains('dark-theme')) {
-    toggleTheme();
-  }
-  const themeIcon = document.getElementById('theme-icon');
-  if (themeIcon) themeIcon.innerText = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
-
-  setLang('ua');
-
-  // Фиксация ввода любых букв для защиты вкладки от закрытия
-  document.addEventListener('input', function(e) {
-    if (e.target.classList.contains('editable-text')) {
-      hasUnsavedChanges = true;
-    }
-  });
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
-      e.preventDefault(); 
-      document.execCommand('insertText', false, '\n'); 
-      hasUnsavedChanges = true; 
-    }
-  });
-
-  document.addEventListener('paste', function(e) {
-    if (e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
-      e.preventDefault();
-      const text = (e.originalEvent || e).clipboardData.getData('text/plain');
-      document.execCommand('insertText', false, text);
-      hasUnsavedChanges = true;
-    }
-  });
-  
-  const urlParams = new URLSearchParams(window.location.search);
-  const adminParam = urlParams.get('admin');
-  if (adminParam && btoa(adminParam) === 'MTk3OA==') {
-    document.getElementById('adminPanel').style.display = 'flex';
-    if (!document.body.classList.contains('admin-mode')) toggleAdmin();
-    showToast(currentLang === 'ua' ? 'Режим редактора увімкнено через посилання!' : 'Режим редактора включен по ссылке!');
-  }
-
-  const pwdInput = document.getElementById('adminPwdInput');
-  if (pwdInput) {
-    pwdInput.addEventListener('keypress', function (e) {
-      if (e.key === 'Enter') checkAdminPassword();
-    });
-  }
-
-  window.addEventListener('beforeunload', function (e) {
-    if (hasUnsavedChanges) {
-      const confirmationMessage = 'У вас есть несохраненные изменения. Точно хотите выйти?';
-      e.returnValue = confirmationMessage;
-      return confirmationMessage;
-    }
-  });
-
-  document.getElementById('file-uploader').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file && currentUploadId) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas'); 
-          const ctx = canvas.getContext('2d');
-          let width = img.width, height = img.height; const maxWidth = 1600;
-          if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
-          canvas.width = width; canvas.height = height;
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          canvas.toBlob((blob) => {
-            if (!blob) return;
-            const blobUrl = URL.createObjectURL(blob);
-            document.getElementById(currentUploadId).src = blobUrl;
-            hasUnsavedChanges = true;
-
-            customConfirm(currentLang === 'ua' ? 'Фото оптимізовано! Завантажити його одразу на GitHub?' : 'Фото оптимизировано! Загрузить его сразу на GitHub?', () => {
-              uploadImageToGitHub(blob, currentUploadId + '.webp');
-            });
-          }, 'image/webp', 0.85);
-        };
-        img.src = event.target.result;
-      }; 
-      reader.readAsDataURL(file);
-    }
-  });
-
-  const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1 });
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-}
-
-// Контролируемый цикл опроса памяти (развертывание объектов базы данных)
-function checkAndStartApp() {
-  if (window.SITE_CONTENT && window.DB_CANDLES && window.DB_GALLERIES) {
-    initializeMemorialApp();
-  } else {
-    setTimeout(checkAndStartApp, 50);
-  }
-}
-
-checkAndStartApp();
-
-// ==========================================
-// 10. ЗАГРУЗКА ИЗОБРАЖЕНИЙ НА GITHUB API
-// ==========================================
-async function uploadImageToGitHub(blob, filename) {
-  let ghOwner = localStorage.getItem('gh_owner');
-  let ghRepo = localStorage.getItem('gh_repo');
-  let ghToken = localStorage.getItem('gh_token');
-
-  if (!ghOwner || !ghRepo || !ghToken) {
-    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub:", ghOwner || "");
-    if (!ghOwner) return;
-    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория:", ghRepo || "");
-    if (!ghRepo) return;
-    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token:", ghToken || "");
-    if (!ghToken) return;
-    
-    localStorage.setItem('gh_owner', ghOwner.trim());
-    localStorage.setItem('gh_repo', ghRepo.trim());
-    localStorage.setItem('gh_token', ghToken.trim());
-  }
-
-  showToast(currentLang === 'ua' ? 'Відправка фото на GitHub...' : 'Отправка фото на GitHub...');
-
-  const reader = new FileReader();
-  reader.readAsDataURL(blob);
-  reader.onloadend = async function() {
-    const base64data = reader.result.split(',')[1]; 
-    
-    try {
-      const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filename}`;
-      let sha = null;
-      try {
-        const getRes = await fetch(url, { headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' } });
-        if (getRes.ok) {
-          const fileData = await getRes.json();
-          sha = fileData.sha;
-        }
-      } catch(e) {}
-
-      const bodyData = { message: `Обновление фото: ${filename}`, content: base64data };
-      if (sha) bodyData.sha = sha;
-
-      const putRes = await fetch(url, {
-        method: 'PUT',
-        headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify(bodyData)
-      });
-
-      if (!putRes.ok) throw new Error('Ошибка записи в репозиторий');
-      
-      hasUnsavedChanges = false;
-      showToast(currentLang === 'ua' ? '✅ Фото успішно завантажено!' : '✅ Фото успешно загружено!');
-    } catch (error) {
-      console.error(error);
-      alert('Ошибка загрузки фото: ' + error.message);
-    }
-  };
-}
