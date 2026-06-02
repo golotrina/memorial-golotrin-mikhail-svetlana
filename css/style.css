@@ -354,3 +354,35 @@ body:has(.bio-modal.active) { overflow: hidden !important; }
   #qrPrintArea { display: flex !important; margin-top: 2cm !important; padding: 40px !important;}
   @page { margin: 0; }
 }
+
+
+/* ==========================================================================
+   ВОССТАНОВИТЕЛЬНЫЙ ПАТЧ (АДМИНКА, ИСКРЫ, АККОРДЕОН, ФУТЕР)
+   ========================================================================== */
+
+/* 1. Возврат админ-панели и модального окна в скрытый режим (поверх сайта) */
+#adminAuthModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 8, 6, 0.95); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+#adminAuthModal.active { display: flex; }
+.auth-container { background: #fff; padding: 40px; border-radius: 24px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 2px solid var(--gold); }
+.auth-title { color: var(--gold-dark); font-size: 1.5rem; margin-bottom: 20px; font-family: 'Playfair Display', serif; }
+.auth-input { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #EBE5D9; border-radius: 12px; font-size: 1.2rem; text-align: center; letter-spacing: 3px; font-family: 'Montserrat', sans-serif; outline: none; }
+.auth-input:focus { border-color: var(--gold); }
+.auth-error { color: #dc3545; display: none; margin-bottom: 15px; font-size: 0.9rem; font-weight: 600; }
+
+#adminPanel { position: fixed; bottom: 20px; left: 20px; display: none; gap: 15px; z-index: 4000; background: rgba(10, 8, 6, 0.85); padding: 15px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(194, 155, 73, 0.5); flex-wrap: wrap; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+#adminPanel .admin-btn { min-width: auto !important; padding: 10px 20px !important; font-size: 0.95rem !important; margin: 0 !important; }
+@media (max-width: 600px) { #adminPanel { bottom: 10px; left: 10px; right: 10px; justify-content: center; } }
+
+/* 2. Восстановление синей ссылки в футере */
+.creator-link { color: #999 !important; text-decoration: none !important; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; font-family: 'Montserrat', sans-serif; font-weight: 300;}
+.creator-link:hover { color: var(--gold-light) !important; }
+
+/* 3. Восстановление красивых искр */
+.c-sparks-wrap { position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; pointer-events: none; z-index: 0; border-radius: 16px; }
+.c-spark { position: absolute; width: 4px; height: 4px; background: #FFD700; border-radius: 50%; box-shadow: 0 0 8px 3px rgba(255, 215, 0, 0.8); opacity: 0; pointer-events: none; }
+
+/* 4. Восстановление работы аккордеона в историях */
+.accordion-item { border: none; margin-bottom: 15px; }
+.accordion-icon { font-size: 1.8rem; font-weight: 300; transition: transform 0.4s ease; color: var(--gold); }
+.accordion-item.active .accordion-icon { transform: rotate(45deg); color: var(--btn-text-dark); }
+.accordion-item.active .accordion-header { background: var(--btn-volumetric-bg); color: var(--btn-text-dark); border-color: var(--btn-border); box-shadow: var(--btn-shadow); }
