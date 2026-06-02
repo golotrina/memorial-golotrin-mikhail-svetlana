@@ -71,7 +71,7 @@ body.dark-theme {
 @keyframes pulseGlow { 0% { transform: scale(0.95); opacity: 0.5; } 100% { transform: scale(1.05); opacity: 0.75; } }
 @keyframes flickerFlame { 0% { transform: scale(1) skewX(-0.5deg); opacity: 0.9; } 100% { transform: scale(1.03) skewX(0.5deg); opacity: 1; } }
 
-/* Физический вертикальный полет искр снизу вверх через весь контейнер свечи */
+/* Физический вертикальный полет искр снизу вверх через весь контейнер */
 @keyframes floatSpark { 
   0% { top: 100%; opacity: 0; transform: scale(0.5); } 
   20% { opacity: 0.9; transform: scale(1.2); } 
@@ -193,14 +193,17 @@ body.dark-theme .timeline-item:hover .timeline-content { box-shadow: 0 15px 35px
 .timeline-epitaph { font-style: italic; line-height: 1.8; color: var(--gold-dark); text-align: center; margin-top: 15px; font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 500; white-space: pre-wrap; }
 body.dark-theme .timeline-epitaph { color: var(--gold-light); }
 
-/* === ГАЛЕРЕЯ АЛЬБОМА (ПРЕМИУМ ГЕОМЕТРИЯ И ФИКСИРОВАННЫЙ РАЗМЕР) === */
-.modal-gallery { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; margin-top: 30px; margin-bottom: 40px; align-items: start; }
+/* === ИСПРАВЛЕНО: ГАЛЕРЕЯ АЛЬБОМА (ЭЛИТНАЯ ЗОЛОТАЯ ПОДЛОЖКА, МЕНЬШИЙ РАЗМЕР И Ч/Б ЭФФЕКТ) === */
+.modal-gallery { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 24px; margin-top: 30px; margin-bottom: 40px; align-items: start; }
 .gallery-item-wrap { width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
 
-.gallery-item { width: 100%; aspect-ratio: 4/3; background: transparent; border-radius: 16px; cursor: zoom-in; position: relative; transition: all 0.4s ease; box-shadow: var(--shadow-soft); overflow: hidden; }
+/* Добавлен внутренний отступ и золотой градиент подложки в стиле главных фото */
+.gallery-item { width: 100%; aspect-ratio: 4/3; padding: 6px; background: var(--btn-volumetric-bg); border-radius: 16px; cursor: zoom-in; position: relative; transition: all 0.4s ease; box-shadow: var(--shadow-soft); overflow: hidden; }
 .gallery-item:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
 
-.gallery-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; display: block; }
+/* Внедрена фильтрация: превью строго черно-белые, при наведении возвращается цвет */
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; filter: grayscale(100%) contrast(1.1) brightness(0.95); transition: filter 0.8s ease; display: block; }
+.gallery-item:hover img { filter: grayscale(0%) contrast(1.05) brightness(1); }
 .gallery-caption { width: 100%; text-align: center; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; color: var(--text-color); margin-top: 12px; min-height: 24px; font-style: italic; }
 
 .admin-mode .gallery-item .move-photo-btn,
@@ -223,6 +226,11 @@ body.dark-theme .timeline-epitaph { color: var(--gold-light); }
 
 /* ИСПРАВЛЕНО: Адаптивный цвет кавычек, исключающий слияние с фоном */
 .quote-icon { position: absolute; top: -10px; left: 15px; font-size: 4rem; color: var(--quote-icon-color); font-family: 'Playfair Display', serif; line-height: 1; pointer-events: none; }
+
+/* ИСПРАВЛЕНО: Высокая премиальная контрастность декоративных кавычек в модальных окнах родителей на темном фоне */
+.bio-modal .quote-icon { color: rgba(230, 194, 122, 0.45) !important; filter: drop-shadow(0 2px 8px rgba(194, 155, 73, 0.3)); }
+body:not(.dark-theme) .bio-modal .quote-icon { color: rgba(156, 114, 16, 0.35) !important; filter: none; }
+
 .quote-text { font-style: italic; font-size: 1.1rem; color: var(--text-color); margin-bottom: 12px; position: relative; z-index: 1; line-height: 1.75; text-align: justify; white-space: pre-wrap; padding-top: 15px; }
 .quote-author { font-weight: 600; color: var(--gold-dark); font-size: 0.85rem; text-align: right; text-transform: uppercase; letter-spacing: 1px; }
 body.dark-theme .quote-author { color: var(--gold-light); }
@@ -230,8 +238,10 @@ body.dark-theme .quote-author { color: var(--gold-light); }
 /* === РИТУАЛ СВЕЧЕЙ === */
 .ritual-section { max-width: 1100px; margin: 0 auto 100px; padding: 0 20px; scroll-margin-top: 100px; position: relative; }
 .ritual-header { margin-bottom: 40px; text-align: center; }
+
+/* ИСПРАВЛЕНО: Полное удаление иконки свечи и ее анимации возле заголовка "Ритуал зажжения свечи памяти" для идеального центрирования текста */
 .ritual-header h2 { font-size: 2.5rem; color: var(--text-color); display: flex; align-items: center; justify-content: center; gap: 15px; }
-.title-candle-glow { animation: titleCandlePulse 2.5s infinite alternate ease-in-out; display: inline-block; }
+.ritual-header .title-candle-glow { display: none !important; }
 
 .candle-form-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.5s ease; }
 .candle-form-wrapper.active { grid-template-rows: 1fr; }
@@ -282,6 +292,9 @@ body.dark-theme .type-label input:checked + .type-card { background: rgba(194, 1
 .c-sparks-wrap { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 1; }
 .c-spark { position: absolute; width: 4px; height: 4px; background: var(--spark-color); border-radius: 50%; box-shadow: 0 0 8px 3px var(--spark-glow); opacity: 0; pointer-events: none; animation: floatSpark 12s infinite linear; }
 
+/* ИСПРАВЛЕНО: Замедление скорости полета искр в модальных окнах истории родителей до умиротворяющего, торжественного темпа */
+.bio-modal .c-spark { animation: floatSpark 26s infinite linear; }
+
 .candle-card, .bio-modal-content, .site-footer { position: relative; }
 
 /* === МОДАЛЬНЫЕ ОКНА БИОГРАФИЙ === */
@@ -311,7 +324,7 @@ body.dark-theme .modal-personal-quote { color: var(--gold-light); }
 .accordion-inner p { margin-bottom: 25px; color: var(--text-color); text-align: justify; font-size: 1.2rem; line-height: 1.9; padding-top: 15px; }
 .accordion-item.active .accordion-content { grid-template-rows: 1fr; }
 
-/* ИСПРАВЛЕНО: Абсолютное центрирование кнопок "Показать еще" и разделов */
+/* ИСПРАВЛЕНО: Премиальное центрирование кнопок "Показать еще" и внутренних блоков */
 .btn-center-margin, #showMoreCandlesWrapper { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; margin: 35px auto !important; padding: 0 !important; clear: both !important; float: none !important; }
 
 /* === ПРОФЕССИОНАЛЬНЫЙ ЛАЙТБОКС === */
@@ -332,17 +345,15 @@ body.dark-theme .modal-personal-quote { color: var(--gold-light); }
 body.dark-theme .scroll-top-btn { background: linear-gradient(145deg, #1C1510 0%, #120E0A 100%); border: 1px solid var(--gold); color: var(--gold-light); }
 body.dark-theme .scroll-top-btn svg { stroke: var(--gold-light); }
 
-/* === ИСПРАВЛЕНО: СТИЛЬНЫЙ БЕСШОВНЫЙ ФУТЕР (ЕДИНЫЙ БЛОК И ТЕКСТОВАЯ ИЕРАРХИЯ) === */
+/* === СТИЛЬНЫЙ БЕСШОВНЫЙ ФУТЕР (ЕДИНЫЙ БЛОК И ТЕКСТОВАЯ ИЕРАРХИЯ) === */
 .site-footer { background: transparent; color: var(--text-color); padding: 80px 20px 60px; text-align: center; margin-top: 80px; position: relative; }
 .footer-content { max-width: 850px; margin: 0 auto; position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 25px; }
 
-/* Главная фраза является визуальной доминантой */
 .footer-quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.45rem; color: var(--gold); line-height: 1.8; white-space: pre-wrap; margin: 0; max-width: 100%; }
 body.dark-theme .footer-quote { color: var(--gold-light); }
 
 .footer-separator { width: 80px; height: 1px; background: var(--border-color); margin: 5px auto; }
 
-/* Копирайт и данные создателя сгруппированы аккуратным мелким шрифтом */
 .footer-bottom { display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--text-light); line-height: 1.5; }
 .secret-trigger { cursor: pointer; color: inherit; }
 .creator-link { color: var(--text-light) !important; text-decoration: none !important; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 0.85rem; margin-top: 5px; }
@@ -389,7 +400,7 @@ body:has(.bio-modal.active) { overflow: hidden !important; }
 .toast-notification { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(18, 14, 10, 0.95); color: #FFF; padding: 14px 28px; border-radius: 30px; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; z-index: 999999; box-shadow: 0 10px 30px rgba(0,0,0,0.3); opacity: 0; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); border: 1px solid rgba(212, 175, 55, 0.4); text-align: center; white-space: nowrap; backdrop-filter: blur(5px); }
 .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-/* === МЕДИА-ЗАПРОСЫ (ПОЛНАЯ АДАПТИВНОСТЬ СИСТЕМЫ) === */
+/* === МЕДИА-ЗАПРОСЫ === */
 @media (max-width: 1024px) {
   .memorial-grid { gap: 30px; }
   .parent-card { padding: 30px; }
@@ -446,7 +457,7 @@ body:has(.bio-modal.active) { overflow: hidden !important; }
   .scroll-top-btn { right: 15px !important; bottom: 15px !important; width: 55px !important; height: 55px !important; }
 }
 
-/* === НАСТРОЙКИ ДЛЯ ПЕЧАТИ QR-ТАБЛИЧКИ === */
+/* === НАСТРОЙКИ ДЛЯ ПЕЧАТИ === */
 @media print {
   body > * { display: none !important; }
   body > #qrModal { display: block !important; position: absolute !important; left: 0 !important; top: 0 !important; background: #FFFFFF !important; width: 100% !important; height: auto !important; margin: 0 !important; padding: 0 !important; }
