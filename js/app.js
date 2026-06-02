@@ -712,3 +712,398 @@ function editCandle(index) {
 }
 
 function toggleCandlesExpand() { isCandlesExpanded = !isCandlesExpanded; renderCandles(); }
+
+// ==========================================
+// 7. МОДАЛКИ И АККОРДЕОНЫ
+// ==========================================
+function openBio(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeBio(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = 'auto'; }
+function toggleAccordion(button) {
+  const item = button.parentElement;
+  if (!item.classList.contains('active')) {
+    item.parentElement.querySelectorAll('.accordion-item').forEach(el => el.classList.remove('active'));
+    item.classList.add('active');
+    setTimeout(() => button.scrollIntoView({ behavior: 'smooth', block: 'center' }), 350);
+  }
+}
+
+// ==========================================
+// 8. УМНЫЙ QR-ГЕНЕРАТОР С МАСКОЙ ЗАЩИТЫ
+// ==========================================
+function openQrModal() { 
+  const currentUrl = window.location.href.split('#')[0];
+  document.getElementById('qrUrlInput').value = currentUrl;
+  document.getElementById('qrPrintArea').style.display = 'none';
+  document.getElementById('printBtnWrap').style.display = 'none';
+  document.getElementById('qrModal').classList.add('active'); 
+}
+
+function closeQrModal() { document.getElementById('qrModal').classList.remove('active'); }
+
+function generateQr() {
+  let url = document.getElementById('qrUrlInput').value.trim();
+  if (!url) { showToast(currentLang === 'ua' ? 'Введіть посилання!' : 'Введите ссылку!'); return; }
+  
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://' + url;
+    document.getElementById('qrUrlInput').value = url;
+  }
+  
+  const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+  if (!urlPattern.test(url)) {
+    showToast(currentLang === 'ua' ? '❌ Некоректний формат посилання!' : '❌ Некорректный формат ссылки!');
+    return;
+  }
+  
+  const qrContainer = document.getElementById('qrCodeImg');
+  qrContainer.innerHTML = ''; 
+  
+  const urlDisplay = document.getElementById('qrUrlDisplay');
+  if (urlDisplay) urlDisplay.innerText = url;
+  
+  new QRCode(qrContainer, {
+    text: url, width: 180, height: 180,
+    colorDark : "#322108", colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+  });
+
+  document.getElementById('qrPrintArea').style.display = 'flex'; 
+  document.getElementById('printBtnWrap').style.display = 'flex'; 
+}
+
+function downloadQr() {
+  const printArea = document.getElementById('qrPrintArea');
+  html2canvas(printArea, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL("image/png");
+    link.download = 'Memorial_Table_QR.png';
+    link.click();
+  });
+}
+
+// ==========================================
+// 9. СБОР ДАННЫХ И ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
+// ==========================================
+async function downloadSiteData() {
+  if (!window.SITE_CONTENT) return;
+  const isUa = currentLang === 'ua';
+  const langSuffix = isUa ? 'Ua' : 'Ru';
+  
+  window.SITE_CONTENT.hero['title' + langSuffix] = document.getElementById('hero-title').innerText.trim();
+  window.SITE_CONTENT.hero['subtitle' + langSuffix] = document.getElementById('hero-subtitle').innerText.trim();
+  window.SITE_CONTENT.hero['quote' + langSuffix] = document.getElementById('hero-quote').innerText.trim();
+
+  window.SITE_CONTENT.parents.father['name' + langSuffix] = document.getElementById('father-name').innerText.trim();
+  window.SITE_CONTENT.parents.father['dates' + langSuffix] = document.getElementById('father-dates').innerText.trim();
+  window.SITE_CONTENT.parents.father['bio' + langSuffix] = document.getElementById('father-bio-preview').innerText.trim();
+
+  window.SITE_CONTENT.parents.mother['name' + langSuffix] = document.getElementById('mother-name').innerText.trim();
+  window.SITE_CONTENT.parents.mother['dates' + langSuffix] = document.getElementById('mother-dates').innerText.trim();
+  window.SITE_CONTENT.parents.mother['bio' + langSuffix] = document.getElementById('mother-bio-preview').innerText.trim();
+
+  ['fbio', 'mbio'].forEach(prefix => {
+    const key = prefix === 'fbio' ? 'fatherBio' : 'motherBio';
+    const dataObj = window.SITE_CONTENT[key];
+    
+    dataObj['personalQuote' + langSuffix] = document.getElementById(`${prefix}-personal-quote`).innerText.trim();
+    dataObj['intro' + langSuffix] = document.getElementById(`${prefix}-intro`).innerText.trim();
+
+    const accItems = document.querySelectorAll(`#${prefix}-accordion .accordion-item`);
+    accItems.forEach((item, idx) => {
+      if (!dataObj.accordion[idx]) return;
+      dataObj.accordion[idx]['title' + langSuffix] = item.querySelector('.accordion-header span').innerText.trim();
+      
+      const pEls = item.querySelectorAll('.accordion-inner p');
+      dataObj.accordion[idx]['paragraphs' + langSuffix] = Array.from(pEls).map(p => p.innerText.trim());
+    });
+
+    const qCards = document.querySelectorAll(`#${prefix}-quotes .quote-card`);
+    qCards.forEach((card, idx) => {
+      if (!dataObj.quotes[idx]) return;
+      dataObj.quotes[idx]['text' + langSuffix] = card.querySelector('.quote-text').innerText.trim();
+      dataObj.quotes[idx]['author' + langSuffix] = card.querySelector('.quote-author').innerText.trim();
+    });
+  });
+
+  const epochContainer = document.getElementById('epoch-timeline-container');
+  if (epochContainer && window.SITE_CONTENT.epochData) {
+    const epData = window.SITE_CONTENT.epochData;
+    const epItems = epochContainer.querySelectorAll('.timeline-item');
+    epItems.forEach((item, idx) => {
+      if (!epData.events[idx]) return;
+      epData.events[idx]['date' + langSuffix] = item.querySelector('.timeline-date').innerText.trim();
+      epData.events[idx]['title' + langSuffix] = item.querySelector('.timeline-content h4').innerText.trim();
+      
+      const pEls = item.querySelectorAll('.timeline-content p');
+      epData.events[idx]['paragraphs' + langSuffix] = Array.from(pEls).map(p => p.innerText.trim());
+    });
+  }
+
+  const msgTranslate = isUa
+    ? 'Бажаєте автоматично перекласти оновлені тексти на іншу мовну версію?\n(ОК — перекласти, Скасувати — зберегти поточні ручні правки окремо для кожної мови)'
+    : 'Хотите автоматически перевести обновленные тексты на другую языковую версию?\n(ОК — перевести, Отмена — сохранить текущие ручные правки отдельно для каждого языка)';
+  
+  if (confirm(msgTranslate)) {
+    const fromL = isUa ? 'uk' : 'ru';
+    const toL = isUa ? 'ru' : 'uk';
+    const oppSuffix = isUa ? 'Ru' : 'Ua';
+
+    window.SITE_CONTENT.hero['title' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['title' + langSuffix], fromL, toL);
+    window.SITE_CONTENT.hero['subtitle' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['subtitle' + langSuffix], fromL, toL);
+    window.SITE_CONTENT.hero['quote' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['quote' + langSuffix], fromL, toL);
+
+    window.SITE_CONTENT.parents.father['name' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['name' + langSuffix], fromL, toL);
+    window.SITE_CONTENT.parents.father['dates' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['dates' + langSuffix], fromL, toL);
+    window.SITE_CONTENT.parents.father['bio' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.father['bio' + langSuffix], fromL, toL);
+
+    window.SITE_CONTENT.parents.mother['name' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['name' + langSuffix], fromL, toL);
+    window.SITE_CONTENT.parents.mother['dates' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['dates' + langSuffix], fromL, toL);
+    window.SITE_CONTENT.parents.mother['bio' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.parents.mother['bio' + langSuffix], fromL, toL);
+
+    ['fbio', 'mbio'].forEach(async (prefix) => {
+      const key = prefix === 'fbio' ? 'fatherBio' : 'motherBio';
+      const dataObj = window.SITE_CONTENT[key];
+      dataObj['personalQuote' + oppSuffix] = await apiTranslateText(dataObj['personalQuote' + langSuffix], fromL, toL);
+      dataObj['intro' + oppSuffix] = await apiTranslateText(dataObj['intro' + langSuffix], fromL, toL);
+
+      if (dataObj.accordion) {
+        for (let idx = 0; idx < dataObj.accordion.length; idx++) {
+          dataObj.accordion[idx]['title' + oppSuffix] = await apiTranslateText(dataObj.accordion[idx]['title' + langSuffix], fromL, toL);
+          if (dataObj.accordion[idx]['paragraphs' + langSuffix]) {
+            dataObj.accordion[idx]['paragraphs' + oppSuffix] = await Promise.all(
+              dataObj.accordion[idx]['paragraphs' + langSuffix].map(p => apiTranslateText(p, fromL, toL))
+            );
+          }
+        }
+      }
+    });
+  }
+
+  const updatedGalleries = { fatherGallery: [], motherGallery: [] };
+  ['fatherGallery', 'motherGallery'].forEach(galId => {
+    document.querySelectorAll(`#${galId} .gallery-item-wrap`).forEach(wrap => {
+      const img = wrap.querySelector('img[id]');
+      const cap = wrap.querySelector('.gallery-caption');
+      if (img) updatedGalleries[galId].push({ 
+        id: img.id, 
+        ru: cap.getAttribute('data-ru') || '', 
+        ua: cap.getAttribute('data-ua') || '' 
+      });
+    });
+  });
+
+  const dataJsContent = `// === БАЗА ТЕКСТОВОГО КОНТЕНТА ===\nwindow.SITE_CONTENT = ${JSON.stringify(window.SITE_CONTENT, null, 2)};\n\n// === БАЗА ДАННЫХ СВЕЧЕЙ ===\nwindow.DB_CANDLES = ${JSON.stringify(window.DB_CANDLES, null, 2)};\n\n// === БАЗА ДАННЫХ ФОТОГАЛЕРЕЙ И ПОДПИСЕЙ ===\nwindow.DB_GALLERIES = ${JSON.stringify(updatedGalleries, null, 2)};`;
+
+  let ghOwner = localStorage.getItem('gh_owner');
+  let ghRepo = localStorage.getItem('gh_repo');
+  let ghToken = localStorage.getItem('gh_token');
+
+  if (!ghOwner || !ghRepo || !ghToken) {
+    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub:", ghOwner || "");
+    if (!ghOwner) return;
+    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория:", ghRepo || "");
+    if (!ghRepo) return;
+    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token:", ghToken || "");
+    if (!ghToken) return;
+
+    localStorage.setItem('gh_owner', ghOwner.trim());
+    localStorage.setItem('gh_repo', ghRepo.trim());
+    localStorage.setItem('gh_token', ghToken.trim());
+  }
+
+  showToast(currentLang === 'ua' ? 'Відправка файлів на GitHub...' : 'Отправка файлов на GitHub...');
+
+  try {
+    const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/js/data.js`;
+    const getRes = await fetch(url, { headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' } });
+    
+    let sha = null;
+    if (getRes.ok) {
+      const fileData = await getRes.json();
+      sha = fileData.sha;
+    }
+
+    const encodedContent = btoa(unescape(encodeURIComponent(dataJsContent)));
+    const putRes = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'Обновление Мемориала: база данных (Авто-коммит)', content: encodedContent, sha: sha })
+    });
+
+    if (!putRes.ok) throw new Error(`Ошибка при записи js/data.js`);
+
+    hasUnsavedChanges = false;
+    showLongWarningToast(currentLang === 'ua' 
+      ? '✅ УСПІХ! Дані оновлено на GitHub.<br><br><b>УВАГА: Не оновлюйте сторінку найближчі 2-3 хвилини!</b>' 
+      : '✅ УСПЕХ! Данные обновлены на GitHub.<br><br><b>ВНИМАНИЕ: Не обновляйте страницу ближайшие 2-3 минуты!</b>');
+  } catch (error) {
+    console.error(error);
+    alert(`Ошибка: ${error.message}`);
+  }
+}
+
+function initializeMemorialApp() {
+  initGalleries(); 
+  renderCandles();
+  createSparks(); 
+  
+  const savedTheme = localStorage.getItem('memorial_theme');
+  if (savedTheme === 'light' && document.body.classList.contains('dark-theme')) {
+    toggleTheme();
+  } else if (savedTheme === 'dark' && !document.body.classList.contains('dark-theme')) {
+    toggleTheme();
+  }
+  const themeIcon = document.getElementById('theme-icon');
+  if (themeIcon) themeIcon.innerText = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
+
+  setLang('ua');
+
+  document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('editable-text')) {
+      hasUnsavedChanges = true;
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
+      e.preventDefault(); 
+      document.execCommand('insertText', false, '\n'); 
+      hasUnsavedChanges = true; 
+    }
+  });
+
+  document.addEventListener('paste', function(e) {
+    if (e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
+      e.preventDefault();
+      const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+      document.execCommand('insertText', false, text);
+      hasUnsavedChanges = true;
+    }
+  });
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const adminParam = urlParams.get('admin');
+  if (adminParam && btoa(adminParam) === 'MTk3OA==') {
+    document.getElementById('adminPanel').style.display = 'flex';
+    if (!document.body.classList.contains('admin-mode')) toggleAdmin();
+    showToast(currentLang === 'ua' ? 'Режим редактора увімкнено через посилання!' : 'Режим редактора включен по ссылке!');
+  }
+
+  const pwdInput = document.getElementById('adminPwdInput');
+  if (pwdInput) {
+    pwdInput.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') checkAdminPassword();
+    });
+  }
+
+  window.addEventListener('beforeunload', function (e) {
+    if (hasUnsavedChanges) {
+      const confirmationMessage = 'У вас есть несохраненные изменения. Точно хотите выйти?';
+      e.returnValue = confirmationMessage;
+      return confirmationMessage;
+    }
+  });
+
+  document.getElementById('file-uploader').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file && currentUploadId) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas'); 
+          const ctx = canvas.getContext('2d');
+          let width = img.width, height = img.height; const maxWidth = 1600;
+          if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
+          canvas.width = width; canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            if (!blob) return;
+            const blobUrl = URL.createObjectURL(blob);
+            document.getElementById(currentUploadId).src = blobUrl;
+            hasUnsavedChanges = true;
+
+            customConfirm(currentLang === 'ua' ? 'Фото оптимізовано! Завантажити його одразу на GitHub?' : 'Фото оптимизировано! Загрузить его сразу на GitHub?', () => {
+              uploadImageToGitHub(blob, currentUploadId + '.webp');
+            });
+          }, 'image/webp', 0.85);
+        };
+        img.src = event.target.result;
+      }; 
+      reader.readAsDataURL(file);
+    }
+  });
+
+  const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+}
+
+function checkAndStartApp() {
+  if (window.SITE_CONTENT && window.DB_CANDLES && window.DB_GALLERIES) {
+    initializeMemorialApp();
+  } else {
+    setTimeout(checkAndStartApp, 50);
+  }
+}
+
+checkAndStartApp();
+
+// ==========================================
+// 10. ЗАГРУЗКА ИЗОБРАЖЕНИЙ НА GITHUB API
+// ==========================================
+async function uploadImageToGitHub(blob, filename) {
+  let ghOwner = localStorage.getItem('gh_owner');
+  let ghRepo = localStorage.getItem('gh_repo');
+  let ghToken = localStorage.getItem('gh_token');
+
+  if (!ghOwner || !ghRepo || !ghToken) {
+    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub:", ghOwner || "");
+    if (!ghOwner) return;
+    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория:", ghRepo || "");
+    if (!ghRepo) return;
+    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token:", ghToken || "");
+    if (!ghToken) return;
+    
+    localStorage.setItem('gh_owner', ghOwner.trim());
+    localStorage.setItem('gh_repo', ghRepo.trim());
+    localStorage.setItem('gh_token', ghToken.trim());
+  }
+
+  showToast(currentLang === 'ua' ? 'Відправка фото на GitHub...' : 'Отправка фото на GitHub...');
+
+  const reader = new FileReader();
+  reader.readAsDataURL(blob);
+  reader.onloadend = async function() {
+    const base64data = reader.result.split(',')[1]; 
+    
+    try {
+      const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filename}`;
+      let sha = null;
+      try {
+        const getRes = await fetch(url, { headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' } });
+        if (getRes.ok) {
+          const fileData = await getRes.json();
+          sha = fileData.sha;
+        }
+      } catch(e) {}
+
+      const bodyData = { message: `Обновление фото: ${filename}`, content: base64data };
+      if (sha) bodyData.sha = sha;
+
+      const putRes = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(bodyData)
+      });
+
+      if (!putRes.ok) throw new Error('Ошибка записи в репозиторий');
+      
+      hasUnsavedChanges = false;
+      showToast(currentLang === 'ua' ? '✅ Фото успішно завантажено!' : '✅ Фото успешно загружено!');
+    } catch (error) {
+      console.error(error);
+      alert('Ошибка загрузки фото: ' + error.message);
+    }
+  };
+}
