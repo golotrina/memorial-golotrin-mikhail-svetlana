@@ -469,39 +469,62 @@ body.dark-theme .admin-mode .gallery-caption:empty:before { color: rgba(255,255,
 
 
 /* =========================================
-   === ИСПРАВЛЕНИЯ ПОСЛЕ ТЕСТИРОВАНИЯ ===
+   === КОМПЛЕКСНЫЙ ПРОФЕССИОНАЛЬНЫЙ UI-ПАТЧ ===
    ========================================= */
 
-/* 1. Идеальные кнопки (защита от сплющивания текста) */
-.read-more-btn {
+/* 1. Глобальный стандарт для ВСЕХ интерактивных кнопок на сайте */
+.read-more-btn, 
+.submit-btn, 
+.action-btn,
+.admin-btn {
   padding: 14px 40px !important;
   font-size: 1.15rem !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  white-space: nowrap !important; /* Строго запрещаем тексту переноситься */
-  min-width: max-content !important; /* Кнопка будет растягиваться под текст */
+  white-space: nowrap !important; /* Строгий запрет на перенос слов */
+  min-width: 280px !important;    /* Минимальная премиальная ширина для всех кнопок */
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-/* 2. Кнопка "Вверх" (Увеличенная и закрепленная СЛЕВА) */
+/* Отдельно для маленьких мобильных экранов, чтобы кнопки не вылезали */
+@media (max-width: 360px) {
+  .read-more-btn, .submit-btn, .action-btn, .admin-btn {
+    min-width: 100% !important;
+    font-size: 1rem !important;
+    padding: 12px 20px !important;
+  }
+}
+
+/* 2. Кнопка "Вверх" — Крупная, СПРАВА, поверх всех модальных окон */
 .scroll-top-btn {
-  left: 30px !important;  /* Прижимаем влево */
-  right: auto !important; /* Отменяем правое расположение */
-  width: 60px !important;
-  height: 60px !important;
-  z-index: 9999 !important;
+  right: 30px !important;
+  left: auto !important;
+  width: 65px !important;
+  height: 65px !important;
+  z-index: 99999 !important; /* Максимальный приоритет видимости */
 }
 .scroll-top-btn svg {
-  width: 28px !important;
-  height: 28px !important;
+  width: 30px !important;
+  height: 30px !important;
 }
 
-/* 3. Убираем двойной скролл (когда открыто модальное окно истории) */
+/* 3. Годы жизни в модальных окнах — Крупно, благородно, по центру */
+.modal-dates {
+  text-align: center !important;
+  font-size: 1.4rem !important;
+  width: 100% !important;
+  display: block !important;
+  margin-bottom: 35px !important;
+}
+
+/* 4. Блокировка двойной прокрутки при открытых историях */
 body:has(.bio-modal.active) {
   overflow: hidden !important;
 }
 
-/* 4. Фотография памятника - делаем цветной по умолчанию */
+/* 5. Фотография памятника — сочная и цветная по умолчанию */
 .tombstone-image-card img {
   filter: none !important;
 }
