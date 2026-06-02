@@ -112,7 +112,7 @@ body.dark-theme .lang-btn { color: var(--gold-light); }
 body.dark-theme .lang-btn.active { color: var(--btn-text-dark); }
 
 /* === УНИВЕРСАЛЬНЫЙ ЕДИНЫЙ СТАНДАРТ КНОПОК === */
-.read-more-btn, .submit-btn, .action-btn, .admin-btn { position: relative; overflow: hidden; background: var(--btn-volumetric-bg); color: var(--btn-text-dark); border: 1px solid var(--btn-border); border-radius: 40px; box-shadow: var(--btn-shadow); text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.3); cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); font-family: 'Playfair Display', serif; font-weight: 600; letter-spacing: 0.5px; padding: 14px 40px; font-size: 1.15rem; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; min-width: 280px; max-width: 100%; box-sizing: border-box; margin: 0 auto; }
+.read-more-btn, .submit-btn, .action-btn, .admin-btn { position: relative; overflow: hidden; background: var(--btn-volumetric-bg); color: var(--btn-text-dark); border: 1px solid var(--btn-border); border-radius: 40px; box-shadow: var(--btn-shadow); text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.3); cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); font-family: 'Playfair Display', serif; font-weight: 600; letter-spacing: 0.5px; padding: 14px 40px; font-size: 1.15rem; display: inline-flex; align-items: center; justify-content: center; white-space: normal; min-width: 280px; max-width: 100%; box-sizing: border-box; margin: 0 auto; text-align: center; line-height: 1.4; }: 40px; box-shadow: var(--btn-shadow); text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.3); cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); font-family: 'Playfair Display', serif; font-weight: 600; letter-spacing: 0.5px; padding: 14px 40px; font-size: 1.15rem; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; min-width: 280px; max-width: 100%; box-sizing: border-box; margin: 0 auto; }
 .read-more-btn::after, .submit-btn::after, .action-btn::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); animation: buttonSheen 8s infinite ease-in-out; }
 .read-more-btn:hover, .submit-btn:hover, .admin-btn:hover, .action-btn:hover { background: var(--btn-volumetric-hover); box-shadow: var(--btn-shadow-hover); transform: translateY(-3px); }
 .cancel-btn { background: transparent; border: none; color: var(--text-light); cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 1rem; transition: color 0.3s; }
@@ -468,6 +468,13 @@ body:has(.bio-modal.active) { overflow: hidden !important; }
   .qr-container { padding: 25px 15px; width: 95%; }
   .print-btn-wrap { flex-direction: column; gap: 10px; }
   .scroll-top-btn { right: 15px !important; bottom: 15px !important; width: 55px !important; height: 55px !important; }
+
+   /* правило для адаптивности длинных кнопок */
+   .read-more-btn, .submit-btn, .action-btn { 
+      padding: 12px 20px; 
+      font-size: 1.05rem; 
+      width: 100%; 
+  }
 }
 
 /* === НАСТРОЙКИ ДЛЯ ПЕЧАТИ === */
