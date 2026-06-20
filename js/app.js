@@ -22,6 +22,17 @@ const candleData = {
 // ==========================================
 // 2. УТИЛИТЫ И СКРОЛЛ
 // ==========================================
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>'"]/g, tag => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;'
+  }[tag]));
+}
+
 function showToast(text) {
   const toast = document.createElement('div');
   toast.className = 'toast-notification';
@@ -34,7 +45,7 @@ function showToast(text) {
 function showLongWarningToast(text) {
   const toast = document.createElement('div');
   toast.className = 'toast-notification';
-  toast.innerHTML = text; 
+  toast.innerHTML = text;
   toast.style.backgroundColor = 'rgba(180, 30, 30, 0.95)';
   toast.style.border = '1px solid #ff6b6b';
   document.body.appendChild(toast);
@@ -69,10 +80,10 @@ function shareSite() {
 }
 
 // Умный скролл (обрабатывает и страницу, и модальные окна)
-function scrollToTop() { 
+function scrollToTop() {
   const activeModal = document.querySelector('.bio-modal.active');
   if (activeModal) activeModal.scrollTo({ top: 0, behavior: 'smooth' });
-  else window.scrollTo({ top: 0, behavior: 'smooth' }); 
+  else window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 
@@ -80,10 +91,10 @@ function scrollToTop() {
 function handleScroll() {
   const scrollBtn = document.getElementById('scrollTopBtn');
   if (!scrollBtn) return;
-  
+
   const activeModal = document.querySelector('.bio-modal.active');
   let scrolled = 0;
-  
+
   if (activeModal) {
     scrolled = activeModal.scrollTop; // Читаем скролл внутри окна
   } else {
@@ -114,7 +125,7 @@ function renderStaticContent() {
   const isUa = currentLang === 'ua';
   const grid = document.getElementById('parents');
   const modalsContainer = document.getElementById('dynamic-modals-container');
-  
+
   // Применяем настройки из конфига (Бизнес-настройка)
   if (content.config) {
     document.documentElement.style.setProperty('--gold', content.config.primaryColor);
@@ -163,7 +174,7 @@ function renderStaticContent() {
 
   if (typeof renderTimeline === 'function') renderTimeline();
   if (typeof renderEpochModal === 'function') renderEpochModal(content.epochData);
-  
+
   if (document.body.classList.contains('admin-mode') && typeof toggleAdmin === 'function') toggleAdmin(true);
 }
 
@@ -174,10 +185,10 @@ function renderTimeline() {
 
   const mTitle = document.getElementById('timeline-main-title');
   if (mTitle) { mTitle.innerText = isUa ? tData.header.titleUa : tData.header.titleRu; mTitle.classList.add('editable-text'); }
-  
+
   const mSub = document.getElementById('timeline-subtitle');
   if (mSub) { mSub.innerText = isUa ? tData.header.subtitleUa : tData.header.subtitleRu; mSub.classList.add('editable-text'); }
-  
+
   const epBtn = document.getElementById('timeline-epoch-btn');
   if (epBtn) epBtn.innerText = isUa ? tData.header.btnUa : tData.header.btnRu;
 
@@ -189,8 +200,8 @@ function renderTimeline() {
     const yearText = isUa ? item.yearUa : item.yearRu;
     const titleText = isUa ? item.titleUa : item.titleRu;
     const descText = isUa ? item.textUa : item.textRu;
-    
-    let textHTML = item.isEpitaph 
+
+    let textHTML = item.isEpitaph
       ? `<div class="timeline-epitaph editable-text">${descText}</div>`
       : `<p class="editable-text">${descText}</p>`;
 
@@ -251,10 +262,10 @@ function renderBioModalData(personId, data) {
 
   const nameEl = document.getElementById(`${personId}-modal-name`); // Используем корректный ID из каркаса
   if (nameEl) nameEl.innerText = isUa ? data.nameUa : data.nameRu;
-  
+
   const datesEl = document.getElementById(`${personId}-modal-dates`);
   if (datesEl) datesEl.innerText = isUa ? data.datesUa : data.datesRu;
-  
+
   const quoteEl = document.getElementById(`${personId}-modal-personal-quote`);
   if (quoteEl) { quoteEl.innerText = isUa ? (data.personalQuoteUa || '') : (data.personalQuoteRu || ''); quoteEl.classList.add('editable-text'); }
 
@@ -309,30 +320,38 @@ function renderEpochModal(data) {
 
   const mTitle = document.getElementById('epoch-main-title');
   if (mTitle) mTitle.innerText = isUa ? data.header.titleUa : data.header.titleRu;
-  
+
   const mSub = document.getElementById('epoch-subtitle');
   if (mSub) mSub.innerText = isUa ? data.header.subtitleUa : data.header.subtitleRu;
 
   const container = document.getElementById('epoch-timeline-container');
   if (!container) return;
   container.innerHTML = '';
-  
+
   if (data.events) {
     data.events.forEach((ev, idx) => {
       const dateText = isUa ? ev.dateUa : ev.dateRu;
       const titleText = isUa ? ev.titleUa : ev.titleRu;
       const paragraphs = isUa ? ev.paragraphsUa : ev.paragraphsRu;
-      
+
       const evEl = document.createElement('div');
-      evEl.className = 'timeline-item fade-up visible';
-      
+      evEl.className = 'accordion-item fade-up visible';
+
       let pHTML = paragraphs ? paragraphs.map((p, pIdx) => `<p class="editable-text" data-epoch-idx="${idx}" data-p-idx="${pIdx}">${p}</p>`).join('') : '';
-      
+
       evEl.innerHTML = `
-        <span class="timeline-date editable-text" data-epoch-date-idx="${idx}">${dateText}</span>
-        <div class="timeline-content">
-          <h4 class="editable-text" data-epoch-title-idx="${idx}">${titleText}</h4>
-          ${pHTML}
+        <button class="accordion-header" onclick="toggleAccordion(this)">
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <span class="editable-text" data-epoch-date-idx="${idx}" style="color: var(--gold); font-weight: bold;">${dateText}</span>
+            <span style="color: var(--gold-light);">|</span>
+            <span class="editable-text" data-epoch-title-idx="${idx}">${titleText}</span>
+          </div>
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-inner">
+            ${pHTML}
+          </div>
         </div>
       `;
       container.appendChild(evEl);
@@ -341,7 +360,7 @@ function renderEpochModal(data) {
 }
 
 function changeZoom(step) {
-  if (step === 0) baseFontSize = 16; else baseFontSize += step; 
+  if (step === 0) baseFontSize = 16; else baseFontSize += step;
   if (baseFontSize < 14) baseFontSize = 14; if (baseFontSize > 26) baseFontSize = 26;
   document.documentElement.style.fontSize = baseFontSize + 'px';
   document.getElementById('zoomValueDisplay').innerText = Math.round((baseFontSize / 16) * 100) + '%';
@@ -349,18 +368,18 @@ function changeZoom(step) {
 
 function setLang(lang) {
   currentLang = lang;
-  if (typeof renderStaticContent === 'function') renderStaticContent(); 
+  if (typeof renderStaticContent === 'function') renderStaticContent();
 
   document.getElementById('btn-lang-ua')?.classList.toggle('active', lang === 'ua');
   document.getElementById('btn-lang-ru')?.classList.toggle('active', lang === 'ru');
-  
+
   document.querySelectorAll('[data-ua][data-ru]').forEach(el => el.innerHTML = el.getAttribute(`data-${currentLang}`));
   document.querySelectorAll('[data-placeholder-ua][data-placeholder-ru]').forEach(el => el.placeholder = el.getAttribute(`data-placeholder-${currentLang}`));
-  
+
   document.querySelectorAll('[data-title-ua][data-title-ru]').forEach(el => {
     el.title = el.getAttribute(`data-title-${currentLang}`);
   });
-  
+
   const creatorLink = document.querySelector('.creator-link');
   if (creatorLink) {
     creatorLink.title = currentLang === 'ua' ? 'Скопіювати Email творця' : 'Скопировать Email создателя';
@@ -369,12 +388,12 @@ function setLang(lang) {
   document.querySelectorAll('.gallery-caption').forEach(el => {
     el.setAttribute('data-placeholder', el.getAttribute(`data-placeholder-${currentLang}`));
     const text = el.getAttribute(`data-${currentLang}`);
-    if (text !== null) el.innerText = text; 
+    if (text !== null) el.innerText = text;
   });
-  
+
   document.title = currentLang === 'ua' ? "Цифровий Меморіал родини Голотріних" : "Цифровой Мемориал семьи Голотриных";
-  
-  if (typeof renderCandles === 'function') renderCandles(); 
+
+  if (typeof renderCandles === 'function') renderCandles();
   if (typeof updateGalleryVisibility === 'function' && window.SITE_CONTENT?.people) {
     window.SITE_CONTENT.people.forEach(p => updateGalleryVisibility(p.galleryKey));
   }
@@ -387,24 +406,24 @@ function toggleMobileMenu() {
 
 function createSparks() {
   document.querySelectorAll('.c-sparks-wrap').forEach(wrap => {
-    if (wrap.children.length > 0) return; 
+    if (wrap.children.length > 0) return;
     const isModal = wrap.closest('.bio-modal');
-    const sparksCount = isModal ? 22 : 12; 
+    const sparksCount = isModal ? 22 : 12;
     for (let i = 0; i < sparksCount; i++) {
       const spark = document.createElement('div');
       spark.className = 'c-spark';
       spark.style.left = Math.random() * 100 + '%';
-      
+
       const size = Math.random() * 2 + 1.5; // Увеличено: теперь размер варьируется от 1.5px до 3.5px
       spark.style.width = size + 'px';
       spark.style.height = size + 'px';
-      
+
       // Сделаем ореол чуть более выраженным для видимости в галереях
       const glowOpacity = document.body.classList.contains('dark-theme') ? 0.5 : 0.35;
       spark.style.boxShadow = `0 0 ${size * 2}px rgba(217, 160, 91, ${glowOpacity})`;
 
       const duration = isModal ? (70 + Math.random() * 70) : (40 + Math.random() * 30);
-      const delay = Math.random() * -duration; 
+      const delay = Math.random() * -duration;
       spark.style.animation = `floatSpark ${duration}s infinite ${delay}s linear`;
       wrap.appendChild(spark);
     }
@@ -415,7 +434,7 @@ function toggleTheme() {
   document.body.classList.toggle('dark-theme');
   const isDark = document.body.classList.contains('dark-theme');
   localStorage.setItem('memorial_theme', isDark ? 'dark' : 'light');
-  
+
   const themeIcon = document.getElementById('theme-icon');
   if (themeIcon) {
     themeIcon.innerText = isDark ? '☀️' : '🌙';
@@ -438,12 +457,49 @@ function promptAdmin() {
   document.getElementById('adminPwdInput').focus();
 }
 
-function checkAdminPassword() {
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
+
+function openSettingsModal() {
+  document.getElementById('settingsModal').classList.add('active');
+  const token = localStorage.getItem('gh_token');
+  document.getElementById('ghTokenInput').value = token ? token : '';
+  document.getElementById('newAdminPwdInput').value = '';
+}
+
+function closeSettingsModal() {
+  document.getElementById('settingsModal').classList.remove('active');
+}
+
+async function saveSettings() {
+  const token = document.getElementById('ghTokenInput').value.trim();
+  const newPwd = document.getElementById('newAdminPwdInput').value.trim();
+  
+  if (token) {
+    localStorage.setItem('gh_token', token);
+  }
+  
+  if (newPwd) {
+    window.SITE_CONFIG.adminPasswordHash = await sha256(newPwd);
+    hasUnsavedChanges = true;
+  }
+  
+  closeSettingsModal();
+  showToast(currentLang === 'ua' ? 'Налаштування збережено!' : 'Настройки сохранены!');
+}
+
+async function checkAdminPassword() {
   const pwd = document.getElementById('adminPwdInput').value;
-  if (btoa(pwd) === 'MTk3OA==') {
+  const hashed = await sha256(pwd);
+  if (hashed === window.SITE_CONFIG.adminPasswordHash) {
     document.getElementById('adminAuthModal').classList.remove('active');
     document.getElementById('adminPanel').style.display = 'flex';
-    if (!document.body.classList.contains('admin-mode')) toggleAdmin(); 
+    if (!document.body.classList.contains('admin-mode')) toggleAdmin();
     showToast(currentLang === 'ua' ? 'Режим редактора увімкнено!' : 'Режим редактора включен!');
   } else {
     const errorEl = document.getElementById('adminPwdError');
@@ -516,28 +572,28 @@ function updateGalleryVisibility(galleryId) {
 function toggleGalleryExpand(galleryId) { isGalleryExpanded[galleryId] = !isGalleryExpanded[galleryId]; updateGalleryVisibility(galleryId); }
 function triggerUpload(imgId) { currentUploadId = imgId; document.getElementById('file-uploader').click(); }
 
-function deleteGalleryPhoto(btn) { 
-  customConfirm(currentLang === 'ua' ? 'Видалити це фото?' : 'Удалить это фото?', () => { 
-    const wrap = btn.closest('.gallery-item-wrap'); 
-    const galleryId = wrap.closest('.modal-gallery').id; 
-    if (wrap) wrap.remove(); 
-    updateGalleryVisibility(galleryId); 
-    hasUnsavedChanges = true; 
-  }); 
+function deleteGalleryPhoto(btn) {
+  customConfirm(currentLang === 'ua' ? 'Видалити це фото?' : 'Удалить это фото?', () => {
+    const wrap = btn.closest('.gallery-item-wrap');
+    const galleryId = wrap.closest('.modal-gallery').id;
+    if (wrap) wrap.remove();
+    updateGalleryVisibility(galleryId);
+    hasUnsavedChanges = true;
+  });
 }
 
-function moveGalleryPhoto(btn, direction) { 
-  const itemWrap = btn.closest('.gallery-item-wrap'); 
-  const gallery = itemWrap.parentElement; 
-  if (direction === -1 && itemWrap.previousElementSibling) gallery.insertBefore(itemWrap, itemWrap.previousElementSibling); 
-  else if (direction === 1 && itemWrap.nextElementSibling) gallery.insertBefore(itemWrap.nextElementSibling, itemWrap); 
-  hasUnsavedChanges = true; 
+function moveGalleryPhoto(btn, direction) {
+  const itemWrap = btn.closest('.gallery-item-wrap');
+  const gallery = itemWrap.parentElement;
+  if (direction === -1 && itemWrap.previousElementSibling) gallery.insertBefore(itemWrap, itemWrap.previousElementSibling);
+  else if (direction === 1 && itemWrap.nextElementSibling) gallery.insertBefore(itemWrap.nextElementSibling, itemWrap);
+  hasUnsavedChanges = true;
 }
 
 function addGalleryPhoto(galleryId) {
   const gallery = document.getElementById(galleryId);
   if (!gallery) return;
-  const newId = 'gallery-' + galleryId.charAt(0) + '-' + Date.now(); 
+  const newId = 'gallery-' + galleryId.charAt(0) + '-' + Date.now();
   const wrap = document.createElement('div');
   wrap.className = 'gallery-item-wrap';
   const isAdm = document.body.classList.contains('admin-mode');
@@ -549,18 +605,18 @@ function addGalleryPhoto(galleryId) {
       <button class="edit-photo-btn" onclick="triggerUpload('${newId}'); event.stopPropagation();">📷 Загрузить</button>
       <button class="delete-photo-btn" onclick="deleteGalleryPhoto(this); event.stopPropagation();" data-title-ru="Удалить" data-title-ua="Видалити" title="${currentLang === 'ua' ? 'Видалити' : 'Удалить'}">🗑️</button>
     </div>
-    <div class="gallery-caption editable-text" contenteditable="${isAdm}" data-placeholder="${currentLang === 'ua' ? 'Додати підпис...' : 'Добавить подпись...'}" data-placeholder-ru="Добавить подпись..." data-placeholder-ua="Додати подпись..." data-ru="" data-ua=""></div>
+    <div class="gallery-caption editable-text" contenteditable="${isAdm}" data-placeholder="${currentLang === 'ua' ? 'Додати підпис...' : 'Добавить подпись...'}" data-placeholder-ru="Добавить подпись..." data-placeholder-ua="Додати підпис..." data-ru="" data-ua=""></div>
   `;
   gallery.appendChild(wrap);
   updateGalleryVisibility(galleryId);
-  hasUnsavedChanges = true; 
+  hasUnsavedChanges = true;
 }
 
 function openLightbox(wrapper) {
   const img = wrapper.querySelector('img');
   const galleryContainer = wrapper.closest('.modal-gallery');
   const lb = document.getElementById('lightbox');
-  
+
   if (galleryContainer) {
     const items = Array.from(galleryContainer.querySelectorAll('img'));
     currentGalleryImages = items.map(i => i.src); currentGalleryIndex = items.indexOf(img);
@@ -570,25 +626,25 @@ function openLightbox(wrapper) {
     document.querySelector('.lightbox-prev').style.display = 'none'; document.querySelector('.lightbox-next').style.display = 'none';
   }
   document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex];
-  lb.classList.add('active'); 
+  lb.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
 
-function nextImage(e) { if(e) e.stopPropagation(); if(currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
-function prevImage(e) { if(e) e.stopPropagation(); if(currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
+function nextImage(e) { if (e) e.stopPropagation(); if (currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
+function prevImage(e) { if (e) e.stopPropagation(); if (currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
 function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); if (!document.querySelector('.bio-modal.active')) document.body.style.overflow = 'auto'; }
 
 // ==========================================
 // 6. СВЕЧИ И РИТУАЛ ПАМЯТИ (ИСПРАВЛЕННАЯ ЛОГИКА)
 // ==========================================
 function renderCandles() {
-  const grid = document.getElementById('candlesGrid'); 
+  const grid = document.getElementById('candlesGrid');
   if (!grid) return;
   grid.innerHTML = '';
 
   const isAdmin = document.body.classList.contains('admin-mode');
-  
-  const MAX_VISIBLE = 4; 
+
+  const MAX_VISIBLE = 4;
 
   // Фильтруем: админ видит всё, люди видят только одобренные или те, что зажгли сами только что
   const visibleCandles = window.DB_CANDLES.filter(c => {
@@ -597,14 +653,17 @@ function renderCandles() {
 
   visibleCandles.forEach((c, index) => {
     if (!isCandlesExpanded && index >= MAX_VISIBLE) return;
-    const typeInfo = candleData[c.type] || candleData['classic']; 
+    const typeInfo = candleData[c.type] || candleData['classic'];
     const typeName = currentLang === 'ru' ? typeInfo.nameRu : typeInfo.nameUa;
-    const dateObj = new Date(c.timestamp); 
-    const dateStr = dateObj.toLocaleDateString('ru-RU') + ', ' + dateObj.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
-    
+    const dateObj = new Date(c.timestamp);
+    const dateStr = dateObj.toLocaleDateString('ru-RU') + ', ' + dateObj.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
     // Берем язык строго по текущей версии, если его нет - fallback на другой
-    const cName = currentLang === 'ua' ? (c.name_ua || c.name_ru || c.name) : (c.name_ru || c.name_ua || c.name);
-    const cMessage = currentLang === 'ua' ? (c.message_ua || c.message_ru || c.message) : (c.message_ru || c.message_ua || c.message);
+    let cName = currentLang === 'ua' ? (c.name_ua || c.name_ru || c.name) : (c.name_ru || c.name_ua || c.name);
+    let cMessage = currentLang === 'ua' ? (c.message_ua || c.message_ru || c.message) : (c.message_ru || c.message_ua || c.message);
+
+    cName = escapeHTML(cName);
+    cMessage = escapeHTML(cMessage);
 
     let isLongMsg = cMessage && (cMessage.length > 150 || (cMessage.match(/\n/g) || []).length >= 3);
     let msgHtml = '';
@@ -615,7 +674,7 @@ function renderCandles() {
       }
     }
 
-    const card = document.createElement('div'); 
+    const card = document.createElement('div');
     // Подсвечиваем ожидающие модерации свечи для админа
     const isPending = c.status === 'pending' || !c.status;
     card.className = `candle-card fade-up visible ${isAdmin && isPending ? 'pending-moderation' : ''}`;
@@ -636,10 +695,10 @@ function renderCandles() {
     `;
     grid.appendChild(card);
   });
-  
+
   const showMoreWrapper = document.getElementById('showMoreCandlesWrapper');
   const showMoreBtn = document.getElementById('showMoreCandlesBtn');
-  
+
   if (visibleCandles.length > MAX_VISIBLE) {
     showMoreWrapper.style.display = 'block';
     showMoreBtn.innerText = isCandlesExpanded ? (currentLang === 'ua' ? 'Сховати' : 'Скрыть') : (currentLang === 'ua' ? `Показати ще (${visibleCandles.length - MAX_VISIBLE})` : `Показать еще (${visibleCandles.length - MAX_VISIBLE})`);
@@ -649,14 +708,14 @@ function renderCandles() {
 }
 
 function toggleCandleForm() {
-  const wrapper = document.getElementById('candleFormWrapper'); 
+  const wrapper = document.getElementById('candleFormWrapper');
   const btnWrapper = document.getElementById('openFormBtnWrapper');
   wrapper.classList.toggle('active');
   if (wrapper.classList.contains('active')) {
-    btnWrapper.style.display = 'none'; 
+    btnWrapper.style.display = 'none';
     setTimeout(() => wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
   } else {
-    btnWrapper.style.display = 'flex'; 
+    btnWrapper.style.display = 'flex';
     editCandleIndex = null;
     document.getElementById('candleForm').reset();
   }
@@ -665,16 +724,16 @@ function toggleCandleForm() {
 async function handleCandleSubmit(e) {
   e.preventDefault();
   const form = e.target;
-  
+
   let nameInp = document.getElementById('cName').value.trim();
   let msgInp = document.getElementById('cMessage').value.trim();
-  
+
   // Защита: удаляем ссылки и HTML-теги полностью
   const securityRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|<([^>+]+)>)/gi;
   nameInp = nameInp.replace(securityRegex, '').trim();
   msgInp = msgInp.replace(securityRegex, '').trim();
 
-  const typeRad = document.querySelector('input[name="cType"]:checked').value;  
+  const typeRad = document.querySelector('input[name="cType"]:checked').value;
   const sourceLang = currentLang === 'ua' ? 'uk' : 'ru';
   const targetLang = currentLang === 'ua' ? 'ru' : 'uk';
   const isAdmin = document.body.classList.contains('admin-mode');
@@ -694,20 +753,20 @@ async function handleCandleSubmit(e) {
 
   // УМНАЯ ЛОГИКА АВТОПЕРЕВОДА
   let doAutoTranslate = true;
-  
+
   if (isAdmin && isEditing && (nameChanged || msgChanged)) {
-     // Админа спрашиваем, переводить ли, чтобы не стереть его возможные ручные правки в другом языке
-     let targetHasText = currentLang === 'ua' ? (c.name_ru || c.message_ru) : (c.name_ua || c.message_ua);
-     if (targetHasText) {
-         let msg = currentLang === 'ua'
-             ? 'Оновити переклад іншої версії автоматично?\n(ОК - перекласти заново, Скасувати - зберегти ваші минулі ручні правки)'
-             : 'Обновить перевод другой версии автоматически?\n(ОК - перевести заново, Отмена - сохранить ваши прошлые ручные правки)';
-         doAutoTranslate = confirm(msg);
-     }
+    // Админа спрашиваем, переводить ли, чтобы не стереть его возможные ручные правки в другом языке
+    let targetHasText = currentLang === 'ua' ? (c.name_ru || c.message_ru) : (c.name_ua || c.message_ua);
+    if (targetHasText) {
+      let msg = currentLang === 'ua'
+        ? 'Оновити переклад іншої версії автоматично?\n(ОК - перекласти заново, Скасувати - зберегти ваші минулі ручні правки)'
+        : 'Обновить перевод другой версии автоматически?\n(ОК - перевести заново, Отмена - сохранить ваши прошлые ручные правки)';
+      doAutoTranslate = confirm(msg);
+    }
   } else if (!isAdmin) {
-      // Обычный посетитель: переводим ТИХО, без окон, чтобы сразу заполнить базу на 2 языках
-      showToast(currentLang === 'ua' ? 'Запалюємо свічку...' : 'Зажигаем свечу...');
-      doAutoTranslate = true;
+    // Обычный посетитель: переводим ТИХО, без окон, чтобы сразу заполнить базу на 2 языках
+    showToast(currentLang === 'ua' ? 'Запалюємо свічку...' : 'Зажигаем свечу...');
+    doAutoTranslate = true;
   }
 
   let final_name_ru = nameInp;
@@ -716,26 +775,26 @@ async function handleCandleSubmit(e) {
   let final_msg_ua = msgInp;
 
   if (isEditing) {
-      final_name_ru = c.name_ru || nameInp;
-      final_name_ua = c.name_ua || nameInp;
-      final_msg_ru = c.message_ru || msgInp;
-      final_msg_ua = c.message_ua || msgInp;
+    final_name_ru = c.name_ru || nameInp;
+    final_name_ua = c.name_ua || nameInp;
+    final_msg_ru = c.message_ru || msgInp;
+    final_msg_ua = c.message_ua || msgInp;
 
-      if (currentLang === 'ua') { final_name_ua = nameInp; final_msg_ua = msgInp; }
-      else { final_name_ru = nameInp; final_msg_ru = msgInp; }
+    if (currentLang === 'ua') { final_name_ua = nameInp; final_msg_ua = msgInp; }
+    else { final_name_ru = nameInp; final_msg_ru = msgInp; }
   } else {
-      if (currentLang === 'ua') { final_name_ua = nameInp; final_msg_ua = msgInp; }
-      else { final_name_ru = nameInp; final_msg_ru = msgInp; }
+    if (currentLang === 'ua') { final_name_ua = nameInp; final_msg_ua = msgInp; }
+    else { final_name_ru = nameInp; final_msg_ru = msgInp; }
   }
 
   if (doAutoTranslate && (nameChanged || msgChanged)) {
     if (nameInp && nameChanged) {
-        let translatedName = await apiTranslateText(nameInp, sourceLang, targetLang);
-        if (currentLang === 'ua') final_name_ru = translatedName; else final_name_ua = translatedName;
+      let translatedName = await apiTranslateText(nameInp, sourceLang, targetLang);
+      if (currentLang === 'ua') final_name_ru = translatedName; else final_name_ua = translatedName;
     }
     if (msgInp && msgChanged) {
-        let translatedMsg = await apiTranslateText(msgInp, sourceLang, targetLang);
-        if (currentLang === 'ua') final_msg_ru = translatedMsg; else final_msg_ua = translatedMsg;
+      let translatedMsg = await apiTranslateText(msgInp, sourceLang, targetLang);
+      if (currentLang === 'ua') final_msg_ru = translatedMsg; else final_msg_ua = translatedMsg;
     }
   }
 
@@ -749,8 +808,8 @@ async function handleCandleSubmit(e) {
     renderCandles(); toggleCandleForm();
 
     if (isAdmin) {
-        hasUnsavedChanges = true; 
-        showToast(currentLang === 'ua' ? 'Зміни збережено. Не забудьте "Зберегти зміни" в адмінці!' : 'Изменения сохранены. Нажмите "Сохранить изменения" в админке!');
+      hasUnsavedChanges = true;
+      showToast(currentLang === 'ua' ? 'Зміни збережено. Не забудьте "Зберегти зміни" в адмінці!' : 'Изменения сохранены. Нажмите "Сохранить изменения" в админке!');
     }
     return;
   }
@@ -772,11 +831,11 @@ async function handleCandleSubmit(e) {
   toggleCandleForm();
 
   if (isAdmin) {
-      hasUnsavedChanges = true;
-      showToast(currentLang === 'ua' ? 'Свічку додано!' : 'Свеча добавлена!');
+    hasUnsavedChanges = true;
+    showToast(currentLang === 'ua' ? 'Свічку додано!' : 'Свеча добавлена!');
   } else {
-      sendTelegramNotification(newCandle);
-      showToast(currentLang === 'ua' ? 'Свічку запалено! Вона з\'явиться назавжди після модерації.' : 'Свеча зажжена! Она появится навсегда после модерации.');
+    sendTelegramNotification(newCandle);
+    showToast(currentLang === 'ua' ? 'Свічку запалено! Вона з\'явиться назавжди після модерації.' : 'Свеча зажжена! Она появится навсегда после модерации.');
   }
 }
 
@@ -784,38 +843,39 @@ function sendTelegramNotification(candle) {
   // Данные бота и администратора
   const botToken = '8863285747:AAEq4GUDP4okakCw21-jeR4XfX2XxKrdHys';
   const chatId = '439903828';
-  
-  if (!botToken || botToken.includes('ВАШ_ТОКЕН')) return; 
+
+  if (!botToken || botToken.includes('ВАШ_ТОКЕН')) return;
 
   const typeInfo = candleData[candle.type] || candleData['classic'];
   const typeName = typeInfo.nameRu;
   const siteUrl = window.location.origin + window.location.pathname;
   const text = `🕯️ *Новая свеча на Мемориале Родителей!*\n\n*От:* ${candle.name_ru}\n*Тип:* ${typeName}\n*Текст:* ${candle.message_ru || '—'}\n\n🔗 Открыть Мемориал`;
-  
+
   // Используем parse_mode=Markdown для красоты (жирный текст и ссылка)
   fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}&parse_mode=Markdown`)
     .catch(err => console.error("Telegram notify error", err));
 }
 
-function deleteCandle(id) { 
-  customConfirm(currentLang === 'ua' ? 'Видалити цю свічку?' : 'Удалить эту свечу?', () => { 
+function deleteCandle(id) {
+  customConfirm(currentLang === 'ua' ? 'Видалити цю свічку?' : 'Удалить эту свечу?', () => {
     const idx = window.DB_CANDLES.findIndex(c => c.id === id);
-    if (idx !== -1) window.DB_CANDLES.splice(idx, 1); 
-    renderCandles(); 
+    if (idx !== -1) window.DB_CANDLES.splice(idx, 1);
+    renderCandles();
     if (document.body.classList.contains('admin-mode')) hasUnsavedChanges = true;
-  }); 
+  });
 }
 
-function editCandle(id) { 
+function editCandle(id) {
   const index = window.DB_CANDLES.findIndex(c => c.id === id);
   if (index === -1) return;
-  document.getElementById('cName').value = currentLang === 'ua' ? (c.name_ua || c.name_ru || c.name) : (c.name_ru || c.name_ua || c.name); 
-  document.getElementById('cMessage').value = currentLang === 'ua' ? (c.message_ua || c.message_ru || c.message || '') : (c.message_ru || c.message_ua || c.message || ''); 
-  document.querySelector(`input[name="cType"][value="${c.type}"]`).checked = true; 
-  editCandleIndex = index; 
-  const wrapper = document.getElementById('candleFormWrapper'); 
-  if (!wrapper.classList.contains('active')) toggleCandleForm(); 
-  wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+  const c = window.DB_CANDLES[index]; // ИСПРАВЛЕНО: объявление переменной c (ранее вызывало ReferenceError)
+  document.getElementById('cName').value = currentLang === 'ua' ? (c.name_ua || c.name_ru || c.name) : (c.name_ru || c.name_ua || c.name);
+  document.getElementById('cMessage').value = currentLang === 'ua' ? (c.message_ua || c.message_ru || c.message || '') : (c.message_ru || c.message_ua || c.message || '');
+  document.querySelector(`input[name="cType"][value="${c.type}"]`).checked = true;
+  editCandleIndex = index;
+  const wrapper = document.getElementById('candleFormWrapper');
+  if (!wrapper.classList.contains('active')) toggleCandleForm();
+  wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function toggleCandlesExpand() { isCandlesExpanded = !isCandlesExpanded; renderCandles(); }
@@ -837,12 +897,12 @@ function toggleAccordion(button) {
 // ==========================================
 // 8. УМНЫЙ QR-ГЕНЕРАТОР С МАСКОЙ ЗАЩИТЫ
 // ==========================================
-function openQrModal() { 
+function openQrModal() {
   const currentUrl = window.location.href.split('#')[0];
   document.getElementById('qrUrlInput').value = currentUrl;
   document.getElementById('qrPrintArea').style.display = 'none';
   document.getElementById('printBtnWrap').style.display = 'none';
-  document.getElementById('qrModal').classList.add('active'); 
+  document.getElementById('qrModal').classList.add('active');
 }
 
 function closeQrModal() { document.getElementById('qrModal').classList.remove('active'); }
@@ -850,32 +910,32 @@ function closeQrModal() { document.getElementById('qrModal').classList.remove('a
 function generateQr() {
   let url = document.getElementById('qrUrlInput').value.trim();
   if (!url) { showToast(currentLang === 'ua' ? 'Введіть посилання!' : 'Введите ссылку!'); return; }
-  
+
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
     url = 'https://' + url;
     document.getElementById('qrUrlInput').value = url;
   }
-  
+
   const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
   if (!urlPattern.test(url)) {
     showToast(currentLang === 'ua' ? '❌ Некоректний формат посилання!' : '❌ Некорректный формат ссылки!');
     return;
   }
-  
+
   const qrContainer = document.getElementById('qrCodeImg');
-  qrContainer.innerHTML = ''; 
-  
+  qrContainer.innerHTML = '';
+
   const urlDisplay = document.getElementById('qrUrlDisplay');
   if (urlDisplay) urlDisplay.innerText = url;
-  
+
   new QRCode(qrContainer, {
     text: url, width: 180, height: 180,
-    colorDark : "#322108", colorLight : "#ffffff",
-    correctLevel : QRCode.CorrectLevel.H
+    colorDark: "#322108", colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
   });
 
-  document.getElementById('qrPrintArea').style.display = 'flex'; 
-  document.getElementById('printBtnWrap').style.display = 'flex'; 
+  document.getElementById('qrPrintArea').style.display = 'flex';
+  document.getElementById('printBtnWrap').style.display = 'flex';
 }
 
 function downloadQr() {
@@ -891,183 +951,180 @@ function downloadQr() {
 // ==========================================
 // 9. СБОР ДАННЫХ И ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
 // ==========================================
-async function downloadSiteData() {
-  if (!window.SITE_CONTENT) return;
+async function harvestData(doTranslate = false) {
+  if (!window.SITE_CONTENT) return false;
   const isUa = currentLang === 'ua';
   const langSuffix = isUa ? 'Ua' : 'Ru';
-  
-  // Определяем параметры для возможного перевода
+  const oppSuffix = isUa ? 'Ru' : 'Ua';
   const fromL = isUa ? 'uk' : 'ru';
   const toL = isUa ? 'ru' : 'uk';
-  const oppSuffix = isUa ? 'Ru' : 'Ua';
 
-  window.SITE_CONTENT.hero['title' + langSuffix] = document.getElementById('hero-title').innerText.trim();
-  window.SITE_CONTENT.hero['subtitle' + langSuffix] = document.getElementById('hero-subtitle').innerText.trim();
-  window.SITE_CONTENT.hero['quote' + langSuffix] = document.getElementById('hero-quote').innerText.trim();
+  async function syncField(domText, obj, key) {
+    if (!obj || domText == null) return;
+    if (domText !== obj[key + langSuffix]) {
+      if (doTranslate) {
+         obj[key + oppSuffix] = await apiTranslateText(domText, fromL, toL);
+      }
+      obj[key + langSuffix] = domText;
+    }
+  }
 
-  // 1. Динамический сбор данных по людям (People & Bios)
-  window.SITE_CONTENT.people.forEach(person => {
-    const nameEl = document.getElementById(`${person.id}-name`);
-    const datesEl = document.getElementById(`${person.id}-dates`);
-    const bioPrevEl = document.getElementById(`${person.id}-bio-preview`);
-    
-    if (nameEl) person['name' + langSuffix] = nameEl.innerText.trim();
-    if (datesEl) person['dates' + langSuffix] = datesEl.innerText.trim();
-    if (bioPrevEl) person['bio' + langSuffix] = bioPrevEl.innerText.trim();
+  async function syncArray(domArr, obj, key) {
+    if (!obj || !domArr) return;
+    if (JSON.stringify(domArr) !== JSON.stringify(obj[key + langSuffix])) {
+      if (doTranslate) {
+         obj[key + oppSuffix] = await Promise.all(domArr.map(p => apiTranslateText(p, fromL, toL)));
+      }
+      obj[key + langSuffix] = domArr;
+    }
+  }
+
+  // Hero
+  await syncField(document.getElementById('hero-title')?.innerText.trim(), window.SITE_CONTENT.hero, 'title');
+  await syncField(document.getElementById('hero-subtitle')?.innerText.trim(), window.SITE_CONTENT.hero, 'subtitle');
+  await syncField(document.getElementById('hero-quote')?.innerText.trim(), window.SITE_CONTENT.hero, 'quote');
+
+  // People
+  for (const person of window.SITE_CONTENT.people) {
+    await syncField(document.getElementById(`${person.id}-name`)?.innerText.trim(), person, 'name');
+    await syncField(document.getElementById(`${person.id}-dates`)?.innerText.trim(), person, 'dates');
+    await syncField(document.getElementById(`${person.id}-bio-preview`)?.innerText.trim(), person, 'bio');
 
     const bioData = window.SITE_CONTENT[person.bioKey];
     if (bioData) {
-      bioData['name' + langSuffix] = person['name' + langSuffix]; // Синхрон имен
+      bioData['name' + langSuffix] = person['name' + langSuffix];
+      if (doTranslate && bioData['name' + langSuffix] !== person['name' + langSuffix]) {
+         bioData['name' + oppSuffix] = person['name' + oppSuffix];
+      }
       bioData['dates' + langSuffix] = person['dates' + langSuffix];
-      
-      const qEl = document.getElementById(`${person.id}-modal-personal-quote`);
-      const iEl = document.getElementById(`${person.id}-modal-intro`);
-      if (qEl) bioData['personalQuote' + langSuffix] = qEl.innerText.trim();
-      if (iEl) bioData['intro' + langSuffix] = iEl.innerText.trim();
+      if (doTranslate && bioData['dates' + langSuffix] !== person['dates' + langSuffix]) {
+         bioData['dates' + oppSuffix] = person['dates' + oppSuffix];
+      }
+
+      await syncField(document.getElementById(`${person.id}-modal-personal-quote`)?.innerText.trim(), bioData, 'personalQuote');
+      await syncField(document.getElementById(`${person.id}-modal-intro`)?.innerText.trim(), bioData, 'intro');
 
       const accItems = document.querySelectorAll(`#${person.id}-modal-accordion .accordion-item`);
-      accItems.forEach((item, idx) => {
+      for (let idx = 0; idx < accItems.length; idx++) {
         if (bioData.accordion[idx]) {
-          bioData.accordion[idx]['title' + langSuffix] = item.querySelector('.accordion-header span').innerText.trim();
-          const pEls = item.querySelectorAll('.accordion-inner p');
-          bioData.accordion[idx]['paragraphs' + langSuffix] = Array.from(pEls).map(p => p.innerText.trim());
+          await syncField(accItems[idx].querySelector('.accordion-header span')?.innerText.trim(), bioData.accordion[idx], 'title');
+          const pEls = accItems[idx].querySelectorAll('.accordion-inner p');
+          await syncArray(Array.from(pEls).map(p => p.innerText.trim()), bioData.accordion[idx], 'paragraphs');
         }
-      });
+      }
 
       const qCards = document.querySelectorAll(`#${person.id}-modal-quotes .quote-card`);
-      qCards.forEach((card, idx) => {
+      for (let idx = 0; idx < qCards.length; idx++) {
         if (bioData.quotes[idx]) {
-          bioData.quotes[idx]['text' + langSuffix] = card.querySelector('.quote-text').innerText.trim();
-          bioData.quotes[idx]['author' + langSuffix] = card.querySelector('.quote-author').innerText.trim();
+          await syncField(qCards[idx].querySelector('.quote-text')?.innerText.trim(), bioData.quotes[idx], 'text');
+          await syncField(qCards[idx].querySelector('.quote-author')?.innerText.trim(), bioData.quotes[idx], 'author');
         }
-      });
+      }
     }
-  });
+  }
 
-  // 2. Сбор Таймлайна
+  // Timeline
   const tlContainer = document.getElementById('timeline-container');
   if (tlContainer && window.SITE_CONTENT.timeline) {
+    const th = window.SITE_CONTENT.timeline.header;
+    await syncField(document.getElementById('timeline-main-title')?.innerText.trim(), th, 'title');
+    await syncField(document.getElementById('timeline-subtitle')?.innerText.trim(), th, 'subtitle');
+    await syncField(document.getElementById('timeline-epoch-btn')?.innerText.trim(), th, 'btn');
+    
     const tlItems = tlContainer.querySelectorAll('.timeline-item');
-    tlItems.forEach((item, idx) => {
-       if (window.SITE_CONTENT.timeline.events[idx]) {
-          window.SITE_CONTENT.timeline.events[idx]['year' + langSuffix] = item.querySelector('.timeline-date').innerText.trim();
-          window.SITE_CONTENT.timeline.events[idx]['title' + langSuffix] = item.querySelector('.timeline-content h4').innerText.trim();
-          const pEl = item.querySelector('.timeline-content p, .timeline-content .timeline-epitaph');
-          if (pEl) window.SITE_CONTENT.timeline.events[idx]['text' + langSuffix] = pEl.innerText.trim();
-       }
-    });
+    for (let idx = 0; idx < tlItems.length; idx++) {
+      if (window.SITE_CONTENT.timeline.events[idx]) {
+        const item = tlItems[idx];
+        await syncField(item.querySelector('.timeline-date')?.innerText.trim(), window.SITE_CONTENT.timeline.events[idx], 'year');
+        await syncField(item.querySelector('.timeline-content h4')?.innerText.trim(), window.SITE_CONTENT.timeline.events[idx], 'title');
+        await syncField(item.querySelector('.timeline-content p, .timeline-content .timeline-epitaph')?.innerText.trim(), window.SITE_CONTENT.timeline.events[idx], 'text');
+      }
+    }
   }
 
-  // 3. Сбор Эпохи
+  // Epoch
   const epochContainer = document.getElementById('epoch-timeline-container');
   if (epochContainer && window.SITE_CONTENT.epochData) {
-    const epData = window.SITE_CONTENT.epochData;
+    const ed = window.SITE_CONTENT.epochData;
     const epItems = epochContainer.querySelectorAll('.timeline-item');
-    epItems.forEach((item, idx) => {
-      if (!epData.events[idx]) return;
-      epData.events[idx]['date' + langSuffix] = item.querySelector('.timeline-date').innerText.trim();
-      epData.events[idx]['title' + langSuffix] = item.querySelector('.timeline-content h4').innerText.trim();
-      
-      const pEls = item.querySelectorAll('.timeline-content p');
-      epData.events[idx]['paragraphs' + langSuffix] = Array.from(pEls).map(p => p.innerText.trim());
-    });
+    for (let idx = 0; idx < epItems.length; idx++) {
+      if (ed.events[idx]) {
+        const item = epItems[idx];
+        await syncField(item.querySelector('.timeline-date')?.innerText.trim(), ed.events[idx], 'date');
+        await syncField(item.querySelector('.timeline-content h4')?.innerText.trim(), ed.events[idx], 'title');
+        const pEls = item.querySelectorAll('.timeline-content p');
+        await syncArray(Array.from(pEls).map(p => p.innerText.trim()), ed.events[idx], 'paragraphs');
+      }
+    }
   }
 
-  // 4. Сбор Галерей
+  // Galleries
   const updatedGalleries = {};
   if (window.SITE_CONTENT.people) {
-    window.SITE_CONTENT.people.forEach(person => {
+    for (const person of window.SITE_CONTENT.people) {
       const galId = person.galleryKey;
       updatedGalleries[galId] = [];
       const container = document.getElementById(galId);
-      if (!container) return;
-
-      container.querySelectorAll('.gallery-item-wrap').forEach(wrap => {
-      const img = wrap.querySelector('img[id]');
-      const cap = wrap.querySelector('.gallery-caption');
-      if (img) updatedGalleries[galId].push({ 
-        id: img.id, 
-          ru: cap.getAttribute('data-ru') || (currentLang === 'ru' ? cap.innerText.trim() : ''), 
-          ua: cap.getAttribute('data-ua') || (currentLang === 'ua' ? cap.innerText.trim() : '') 
-      });
-      });
-    });
+      if (container) {
+        const wraps = container.querySelectorAll('.gallery-item-wrap');
+        for (let wrap of wraps) {
+          const img = wrap.querySelector('img[id]');
+          const cap = wrap.querySelector('.gallery-caption');
+          if (img) {
+            const domCap = cap.innerText.trim();
+            const oldCap = isUa ? cap.getAttribute('data-ua') : cap.getAttribute('data-ru');
+            
+            let finalRu = cap.getAttribute('data-ru') || '';
+            let finalUa = cap.getAttribute('data-ua') || '';
+            
+            if (domCap !== oldCap) {
+              if (doTranslate) {
+                const translated = await apiTranslateText(domCap, fromL, toL);
+                if (isUa) { finalUa = domCap; finalRu = translated; }
+                else { finalRu = domCap; finalUa = translated; }
+              } else {
+                if (isUa) finalUa = domCap; else finalRu = domCap;
+              }
+            } else {
+               if (isUa) finalUa = domCap; else finalRu = domCap;
+            }
+            
+            updatedGalleries[galId].push({ id: img.id, ru: finalRu, ua: finalUa });
+            cap.setAttribute('data-ru', finalRu);
+            cap.setAttribute('data-ua', finalUa);
+          }
+        }
+      } else {
+        updatedGalleries[galId] = window.DB_GALLERIES[galId] || [];
+      }
+    }
   }
+  window.DB_GALLERIES = updatedGalleries;
+}
 
+async function runAutoTranslate() {
+  const isUa = currentLang === 'ua';
   const msgTranslate = isUa
-    ? 'Бажаєте автоматично перекласти оновлені тексти на іншу мовну версію?\n(ОК — перекласти, Скасувати — зберегти поточні ручні правки окремо для кожної мови)'
-    : 'Хотите автоматически перевести обновленные тексты на другую языковую версию?\n(ОК — перевести, Отмена — сохранить текущие ручные правки отдельно для каждого языка)';
+    ? 'УВАГА: Це розумний автопереклад!\nВін знайде тільки ЗМІНЕНІ вами тексти на цій сторінці і перекладе тільки їх на російську.\nВсі ваші минулі ручні правки російською залишаться недоторканими.\n\nПродовжити?'
+    : 'ВНИМАНИЕ: Это умный автоперевод!\nОн найдет только ИЗМЕНЕННЫЕ вами тексты на этой странице и переведет только их на украинский.\nВсе ваши прошлые ручные правки на украинском останутся нетронутыми.\n\nПродолжить?';
+
+  if (!confirm(msgTranslate)) return;
+
+  showToast(currentLang === 'ua' ? 'Виконуємо розумний автопереклад...' : 'Выполняем умный автоперевод...');
   
-  if (confirm(msgTranslate)) {
-    showToast(currentLang === 'ua' ? 'Виконуємо автопереклад...' : 'Выполняем автоперевод...');
+  await harvestData(true);
+  
+  hasUnsavedChanges = true;
+  showLongWarningToast(currentLang === 'ua' 
+    ? '✅ УСПІХ! Змінені блоки успішно перекладені.<br><br><b>ОБОВ\'ЯЗКОВО натисніть "Зберегти на GitHub", щоб зафіксувати переклад.</b>' 
+    : '✅ УСПЕХ! Измененные блоки успешно переведены.<br><br><b>ОБЯЗАТЕЛЬНО нажмите "Сохранить на GitHub", чтобы зафиксировать перевод.</b>');
+}
 
-    // Переводим Hero
-    window.SITE_CONTENT.hero['title' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['title' + langSuffix], fromL, toL);
-    window.SITE_CONTENT.hero['subtitle' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['subtitle' + langSuffix], fromL, toL);
-    window.SITE_CONTENT.hero['quote' + oppSuffix] = await apiTranslateText(window.SITE_CONTENT.hero['quote' + langSuffix], fromL, toL);
-
-    // Переводим Timeline
-    if (window.SITE_CONTENT.timeline) {
-      const th = window.SITE_CONTENT.timeline.header;
-      th['title' + oppSuffix] = await apiTranslateText(th['title' + langSuffix], fromL, toL);
-      th['subtitle' + oppSuffix] = await apiTranslateText(th['subtitle' + langSuffix], fromL, toL);
-      th['btn' + oppSuffix] = await apiTranslateText(th['btn' + langSuffix], fromL, toL);
-      for (const ev of window.SITE_CONTENT.timeline.events) {
-        ev['year' + oppSuffix] = await apiTranslateText(ev['year' + langSuffix], fromL, toL);
-        ev['title' + oppSuffix] = await apiTranslateText(ev['title' + langSuffix], fromL, toL);
-        ev['text' + oppSuffix] = await apiTranslateText(ev['text' + langSuffix], fromL, toL);
-      }
-    }
-
-    for (const person of window.SITE_CONTENT.people) {
-      person['name' + oppSuffix] = await apiTranslateText(person['name' + langSuffix], fromL, toL);
-      person['dates' + oppSuffix] = await apiTranslateText(person['dates' + langSuffix], fromL, toL);
-      person['bio' + oppSuffix] = await apiTranslateText(person['bio' + langSuffix], fromL, toL);
-
-      const dataObj = window.SITE_CONTENT[person.bioKey];
-      if (dataObj) {
-        dataObj['name' + oppSuffix] = person['name' + oppSuffix];
-        dataObj['dates' + oppSuffix] = person['dates' + oppSuffix];
-        dataObj['personalQuote' + oppSuffix] = await apiTranslateText(dataObj['personalQuote' + langSuffix], fromL, toL);
-        dataObj['intro' + oppSuffix] = await apiTranslateText(dataObj['intro' + langSuffix], fromL, toL);
-        if (dataObj.accordion) {
-          for (const item of dataObj.accordion) {
-            item['title' + oppSuffix] = await apiTranslateText(item['title' + langSuffix], fromL, toL);
-            item['paragraphs' + oppSuffix] = await Promise.all(item['paragraphs' + langSuffix].map(p => apiTranslateText(p, fromL, toL)));
-          }
-        }
-        if (dataObj.quotes) {
-          for (const q of dataObj.quotes) {
-            q['text' + oppSuffix] = await apiTranslateText(q['text' + langSuffix], fromL, toL);
-            q['author' + oppSuffix] = await apiTranslateText(q['author' + langSuffix], fromL, toL);
-          }
-        }
-      }
-
-      // Перевод подписей галерей
-      if (updatedGalleries[person.galleryKey]) {
-        for (const item of updatedGalleries[person.galleryKey]) {
-          const fromText = isUa ? item.ua : item.ru;
-          if (fromText) {
-            const trans = await apiTranslateText(fromText, fromL, toL);
-            if (isUa) item.ru = trans; else item.ua = trans;
-          }
-        }
-      }
-    }
-
-    // Переводим EpochData
-    if (window.SITE_CONTENT.epochData) {
-      const ed = window.SITE_CONTENT.epochData;
-      ed.header['title' + oppSuffix] = await apiTranslateText(ed.header['title' + langSuffix], fromL, toL);
-      ed.header['subtitle' + oppSuffix] = await apiTranslateText(ed.header['subtitle' + langSuffix], fromL, toL);
-      for (const ev of ed.events) {
-        ev['date' + oppSuffix] = await apiTranslateText(ev['date' + langSuffix], fromL, toL);
-        ev['title' + oppSuffix] = await apiTranslateText(ev['title' + langSuffix], fromL, toL);
-        ev['paragraphs' + oppSuffix] = await Promise.all(ev['paragraphs' + langSuffix].map(p => apiTranslateText(p, fromL, toL)));
-      }
-    }
-  }
+async function downloadSiteData() {
+  if (!window.SITE_CONTENT) return;
+  
+  // Просто собираем данные текущего языка, без перевода
+  await harvestData(false);
 
   // Перед сохранением переводим все новые свечи в статус "одобрено" и убираем локальные флаги
   window.DB_CANDLES.forEach(c => {
@@ -1075,23 +1132,18 @@ async function downloadSiteData() {
     if (c.isLocal) delete c.isLocal;
   });
 
-  const dataJsContent = `// === БАЗА ТЕКСТОВОГО КОНТЕНТА ===\nwindow.SITE_CONTENT = ${JSON.stringify(window.SITE_CONTENT, null, 2)};\n\n// === БАЗА ДАННЫХ СВЕЧЕЙ ===\nwindow.DB_CANDLES = ${JSON.stringify(window.DB_CANDLES, null, 2)};\n\n// === БАЗА ДАННЫХ ФОТОГАЛЕРЕЙ И ПОДПИСЕЙ ===\nwindow.DB_GALLERIES = ${JSON.stringify(updatedGalleries, null, 2)};`;
+  const dataJsContent = `// === КОНФИГУРАЦИЯ САЙТА (БИЗНЕС-МОДЕЛЬ) ===\nwindow.SITE_CONFIG = ${JSON.stringify(window.SITE_CONFIG, null, 2)};\n\n// === БАЗА ТЕКСТОВОГО КОНТЕНТА ===\nwindow.SITE_CONTENT = ${JSON.stringify(window.SITE_CONTENT, null, 2)};\n\n// === БАЗА ДАННЫХ СВЕЧЕЙ ===\nwindow.DB_CANDLES = ${JSON.stringify(window.DB_CANDLES, null, 2)};\n\n// === БАЗА ДАННЫХ ФОТОГАЛЕРЕЙ И ПОДПИСЕЙ ===\nwindow.DB_GALLERIES = ${JSON.stringify(window.DB_GALLERIES, null, 2)};`;
 
-  let ghOwner = localStorage.getItem('gh_owner');
-  let ghRepo = localStorage.getItem('gh_repo');
+  let ghOwner = window.SITE_CONFIG.githubOwner;
+  let ghRepo = window.SITE_CONFIG.githubRepo;
   let ghToken = localStorage.getItem('gh_token');
 
-  if (!ghOwner || !ghRepo || !ghToken) {
-    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub:", ghOwner || "");
-    if (!ghOwner) return;
-    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория:", ghRepo || "");
-    if (!ghRepo) return;
-    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token:", ghToken || "");
-    if (!ghToken) return;
-
-    localStorage.setItem('gh_owner', ghOwner.trim());
-    localStorage.setItem('gh_repo', ghRepo.trim());
-    localStorage.setItem('gh_token', ghToken.trim());
+  if (!ghToken) {
+    alert(currentLang === 'ua' 
+      ? "Будь ласка, вкажіть GitHub Token у Налаштуваннях (кнопка ⚙️ Налаштування в адмінці)." 
+      : "Пожалуйста, укажите GitHub Token в Настройках (кнопка ⚙️ Настройки в админке).");
+    openSettingsModal();
+    return;
   }
 
   showToast(currentLang === 'ua' ? 'Відправка файлів на GitHub...' : 'Отправка файлов на GitHub...');
@@ -1099,7 +1151,7 @@ async function downloadSiteData() {
   try {
     const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/js/data.js`;
     const getRes = await fetch(url, { headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' } });
-    
+
     let sha = null;
     if (getRes.ok) {
       const fileData = await getRes.json();
@@ -1116,8 +1168,8 @@ async function downloadSiteData() {
     if (!putRes.ok) throw new Error(`Ошибка при записи js/data.js`);
 
     hasUnsavedChanges = false;
-    showLongWarningToast(currentLang === 'ua' 
-      ? '✅ УСПІХ! Дані оновлено на GitHub.<br><br><b>УВАГА: Не оновлюйте сторінку найближчі 2-3 хвилини!</b>' 
+    showLongWarningToast(currentLang === 'ua'
+      ? '✅ УСПІХ! Дані оновлено на GitHub.<br><br><b>УВАГА: Не оновлюйте сторінку найближчі 2-3 хвилини!</b>'
       : '✅ УСПЕХ! Данные обновлены на GitHub.<br><br><b>ВНИМАНИЕ: Не обновляйте страницу ближайшие 2-3 минуты!</b>');
   } catch (error) {
     console.error(error);
@@ -1126,10 +1178,10 @@ async function downloadSiteData() {
 }
 
 function initializeMemorialApp() {
-  initGalleries(); 
+  initGalleries();
   renderCandles();
-  createSparks(); 
-  
+  createSparks();
+
   const savedTheme = localStorage.getItem('memorial_theme');
   if (savedTheme === 'light' && document.body.classList.contains('dark-theme')) {
     toggleTheme();
@@ -1141,7 +1193,7 @@ function initializeMemorialApp() {
 
   setLang('ua');
 
-  document.addEventListener('input', function(e) {
+  document.addEventListener('input', function (e) {
     if (e.target.classList.contains('editable-text')) {
       hasUnsavedChanges = true;
       // Синхронизируем текст подписи с атрибутами данных
@@ -1151,15 +1203,15 @@ function initializeMemorialApp() {
     }
   });
 
-  document.addEventListener('keydown', function(e) {
+  document.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
-      e.preventDefault(); 
-      document.execCommand('insertText', false, '\n'); 
-      hasUnsavedChanges = true; 
+      e.preventDefault();
+      document.execCommand('insertText', false, '\n');
+      hasUnsavedChanges = true;
     }
   });
 
-  document.addEventListener('paste', function(e) {
+  document.addEventListener('paste', function (e) {
     if (e.target.classList.contains('editable-text') && e.target.getAttribute('contenteditable') === 'true') {
       e.preventDefault();
       const text = (e.originalEvent || e).clipboardData.getData('text/plain');
@@ -1167,7 +1219,7 @@ function initializeMemorialApp() {
       hasUnsavedChanges = true;
     }
   });
-  
+
   const urlParams = new URLSearchParams(window.location.search);
   const adminParam = urlParams.get('admin');
   if (adminParam && btoa(adminParam) === 'MTk3OA==') {
@@ -1191,20 +1243,20 @@ function initializeMemorialApp() {
     }
   });
 
-  document.getElementById('file-uploader').addEventListener('change', function(e) {
+  document.getElementById('file-uploader').addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (file && currentUploadId) {
       const reader = new FileReader();
-      reader.onload = function(event) {
+      reader.onload = function (event) {
         const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas'); 
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
           let width = img.width, height = img.height; const maxWidth = 1600;
           if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
           canvas.width = width; canvas.height = height;
           ctx.drawImage(img, 0, 0, width, height);
-          
+
           canvas.toBlob((blob) => {
             if (!blob) return;
             const blobUrl = URL.createObjectURL(blob);
@@ -1217,7 +1269,7 @@ function initializeMemorialApp() {
           }, 'image/webp', 0.85);
         };
         img.src = event.target.result;
-      }; 
+      };
       reader.readAsDataURL(file);
     }
   });
@@ -1240,30 +1292,25 @@ checkAndStartApp();
 // 10. ЗАГРУЗКА ИЗОБРАЖЕНИЙ НА GITHUB API
 // ==========================================
 async function uploadImageToGitHub(blob, filename) {
-  let ghOwner = localStorage.getItem('gh_owner');
-  let ghRepo = localStorage.getItem('gh_repo');
+  let ghOwner = window.SITE_CONFIG.githubOwner;
+  let ghRepo = window.SITE_CONFIG.githubRepo;
   let ghToken = localStorage.getItem('gh_token');
 
-  if (!ghOwner || !ghRepo || !ghToken) {
-    ghOwner = prompt("Настройка GitHub (Шаг 1 из 3)\nВведите ваш логин на GitHub:", ghOwner || "");
-    if (!ghOwner) return;
-    ghRepo = prompt("Настройка GitHub (Шаг 2 из 3)\nВведите название репозитория:", ghRepo || "");
-    if (!ghRepo) return;
-    ghToken = prompt("Настройка GitHub (Шаг 3 из 3)\nВведите ваш Personal Access Token:", ghToken || "");
-    if (!ghToken) return;
-    
-    localStorage.setItem('gh_owner', ghOwner.trim());
-    localStorage.setItem('gh_repo', ghRepo.trim());
-    localStorage.setItem('gh_token', ghToken.trim());
+  if (!ghToken) {
+    alert(currentLang === 'ua' 
+      ? "Будь ласка, вкажіть GitHub Token у Налаштуваннях (кнопка ⚙️ Налаштування в адмінці)." 
+      : "Пожалуйста, укажите GitHub Token в Настройках (кнопка ⚙️ Настройки в админке).");
+    openSettingsModal();
+    return;
   }
 
   showToast(currentLang === 'ua' ? 'Відправка фото на GitHub...' : 'Отправка фото на GitHub...');
 
   const reader = new FileReader();
   reader.readAsDataURL(blob);
-  reader.onloadend = async function() {
-    const base64data = reader.result.split(',')[1]; 
-    
+  reader.onloadend = async function () {
+    const base64data = reader.result.split(',')[1];
+
     try {
       const url = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filename}`;
       let sha = null;
@@ -1273,7 +1320,7 @@ async function uploadImageToGitHub(blob, filename) {
           const fileData = await getRes.json();
           sha = fileData.sha;
         }
-      } catch(e) {}
+      } catch (e) { }
 
       const bodyData = { message: `Обновление фото: ${filename}`, content: base64data };
       if (sha) bodyData.sha = sha;
@@ -1285,7 +1332,7 @@ async function uploadImageToGitHub(blob, filename) {
       });
 
       if (!putRes.ok) throw new Error('Ошибка записи в репозиторий');
-      
+
       hasUnsavedChanges = false;
       showToast(currentLang === 'ua' ? '✅ Фото успішно завантажено!' : '✅ Фото успешно загружено!');
     } catch (error) {
