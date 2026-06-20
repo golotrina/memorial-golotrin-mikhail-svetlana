@@ -213,6 +213,10 @@ body.dark-theme {
   overflow-y: auto !important;
 }
 
+.body-overflow-hidden {
+  overflow: hidden !important;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -2169,7 +2173,7 @@ body.dark-theme .creator-brand {
 }
 
 .qr-container {
-  background: #FFFFFF;
+  background: var(--card-bg);
   border-radius: 24px;
   width: 100%;
   box-sizing: border-box;
@@ -2180,10 +2184,18 @@ body.dark-theme .creator-brand {
   margin-bottom: 5vh;
   padding: 40px 30px 30px;
   max-width: 500px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-hover);
 }
 
 .qr-container * {
-  color: #2C2A29 !important;
+  color: var(--text-color);
+}
+
+.qr-input::placeholder,
+.auth-input::placeholder {
+  color: var(--text-light);
+  opacity: 0.7;
 }
 
 .qr-close {
@@ -2556,6 +2568,10 @@ body:has(.bio-modal.active) {
     box-shadow: none !important;
     max-width: 100% !important;
     margin: 0 !important;
+  }
+  
+  #qrModal .qr-container * {
+    color: #000000 !important;
   }
 
   .qr-close,

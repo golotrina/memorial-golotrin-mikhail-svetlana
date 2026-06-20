@@ -11,8 +11,8 @@
   <meta property="og:title" content="Цифровий Меморіал родини Голотріних">
   <meta property="og:description"
     content="Світла пам'ять та історія родини Голотріних. Дбайливо збережена для майбутніх поколінь. Digital Legacy.">
-  <meta property="og:url" content="https://golotrina.github.io/memorial/">
-  <meta property="og:image" content="https://golotrina.github.io/memorial/img/photo-family.webp">
+  <meta property="og:url" content="https://golotrina.github.io/memorial-golotrin-mikhail-svetlana/">
+  <meta property="og:image" content="https://golotrina.github.io/memorial-golotrin-mikhail-svetlana/img/photo-family.webp">
   <meta property="og:type" content="website">
 
   <link rel="icon" type="image/svg+xml"
@@ -274,7 +274,7 @@
 
   <div class="qr-modal" id="adminAuthModal">
     <div class="qr-container auth-container">
-      <span class="qr-close" onclick="document.getElementById('adminAuthModal').classList.remove('active')">×</span>
+      <span class="qr-close" onclick="closeAdminAuthModal()">×</span>
       <h3 class="editable-text auth-title" data-ru="Доступ редактора" data-ua="Доступ редактора"
         contenteditable="false">Доступ редактора</h3>
       <input type="password" id="adminPwdInput" class="qr-input auth-input" placeholder="****">
@@ -296,6 +296,30 @@
         <h4 data-ru="GitHub Token (Ключ доступа)" data-ua="GitHub Token (Ключ доступу)">GitHub Token (Ключ доступу)</h4>
         <input type="password" id="ghTokenInput" class="qr-input auth-input" placeholder="ghp_xxxxxxxxxxxx">
         <p class="settings-hint" data-ru="Сохраняется только в вашем браузере" data-ua="Зберігається тільки у вашому браузері">Зберігається тільки у вашому браузері</p>
+      </div>
+
+      <div class="settings-section">
+        <h4 data-ru="Владелец GitHub" data-ua="Власник GitHub">Власник GitHub</h4>
+        <input type="text" id="ghOwnerInput" class="qr-input auth-input" placeholder="Например: golotrina">
+        <p class="settings-hint" data-ru="Логин аккаунта, где лежит репозиторий" data-ua="Логін акаунту, де лежить репозиторій">Логін акаунту, де лежить репозиторій</p>
+      </div>
+
+      <div class="settings-section">
+        <h4 data-ru="Название репозитория" data-ua="Назва репозиторію">Назва репозиторію</h4>
+        <input type="text" id="ghRepoInput" class="qr-input auth-input" placeholder="Например: memorial-site">
+        <p class="settings-hint" data-ru="Точное название вашего репозитория" data-ua="Точна назва вашого репозиторію">Точна назва вашого репозиторію</p>
+      </div>
+
+      <div class="settings-section">
+        <h4 data-ru="Telegram Bot Token" data-ua="Telegram Bot Token">Telegram Bot Token</h4>
+        <input type="password" id="tgBotTokenInput" class="qr-input auth-input" placeholder="123456789:ABCDefgh...">
+        <p class="settings-hint" data-ru="Токен бота от BotFather" data-ua="Токен бота від BotFather">Токен бота від BotFather</p>
+      </div>
+
+      <div class="settings-section">
+        <h4 data-ru="Telegram Chat ID" data-ua="Telegram Chat ID">Telegram Chat ID</h4>
+        <input type="text" id="tgChatIdInput" class="qr-input auth-input" placeholder="123456789">
+        <p class="settings-hint" data-ru="Ваш ID в Telegram (через @userinfobot)" data-ua="Ваш ID в Telegram (через @userinfobot)">Ваш ID в Telegram (через @userinfobot)</p>
       </div>
 
       <div class="settings-section">
@@ -374,7 +398,7 @@
       <h3 id="confirmModalText" class="confirm-title">Оновити переклад іншої версії автоматично? (Скасуйте, щоб зберегти
         ручні правки)</h3>
       <div class="confirm-actions">
-        <button class="cancel-btn" onclick="document.getElementById('confirmModal').classList.remove('active')"><span
+        <button class="cancel-btn" onclick="closeConfirmModal()"><span
             class="editable-text" data-ru="Отмена" data-ua="Скасувати" contenteditable="false">Скасувати</span></button>
         <button class="submit-btn confirm-btn-yes"
           onclick="if(window.currentConfirmCallback) window.currentConfirmCallback();"><span class="editable-text"

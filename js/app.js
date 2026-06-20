@@ -56,7 +56,16 @@ function showLongWarningToast(text) {
 function customConfirm(text, onConfirm) {
   document.getElementById('confirmModalText').innerText = text;
   document.getElementById('confirmModal').classList.add('active');
-  window.currentConfirmCallback = () => { document.getElementById('confirmModal').classList.remove('active'); onConfirm(); };
+  document.body.classList.add('body-overflow-hidden');
+  window.currentConfirmCallback = () => { 
+    closeConfirmModal();
+    onConfirm(); 
+  };
+}
+
+function closeConfirmModal() {
+  document.getElementById('confirmModal').classList.remove('active');
+  restoreBodyOverflow();
 }
 
 async function apiTranslateText(text, from, to) {
@@ -81,9 +90,15 @@ function shareSite() {
 
 // Умный скролл (обрабатывает и страницу, и модальные окна)
 function scrollToTop() {
-  const activeModal = document.querySelector('.bio-modal.active');
+  const activeModal = document.querySelector('.bio-modal.active, .qr-modal.active, .mobile-menu.active');
   if (activeModal) activeModal.scrollTo({ top: 0, behavior: 'smooth' });
   else window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restoreBodyOverflow() {
+  if (!document.querySelector('.bio-modal.active, .qr-modal.active, .mobile-menu.active, .lightbox.active')) {
+    document.body.classList.remove('body-overflow-hidden');
+  }
 }
 
 
@@ -92,7 +107,7 @@ function handleScroll() {
   const scrollBtn = document.getElementById('scrollTopBtn');
   if (!scrollBtn) return;
 
-  const activeModal = document.querySelector('.bio-modal.active');
+  const activeModal = document.querySelector('.bio-modal.active, .qr-modal.active, .mobile-menu.active');
   let scrolled = 0;
 
   if (activeModal) {
@@ -111,7 +126,7 @@ function handleScroll() {
 window.addEventListener('scroll', handleScroll);
 
 // Навешиваем шпиона на все модальные окна, чтобы кнопка появлялась внутри них
-document.querySelectorAll('.bio-modal').forEach(modal => {
+document.querySelectorAll('.bio-modal, .qr-modal, .mobile-menu').forEach(modal => {
   modal.addEventListener('scroll', handleScroll);
 });
 
@@ -397,11 +412,23 @@ function setLang(lang) {
   if (typeof updateGalleryVisibility === 'function' && window.SITE_CONTENT?.people) {
     window.SITE_CONTENT.people.forEach(p => updateGalleryVisibility(p.galleryKey));
   }
+
+  // Обновляем слушатели скролла для динамически созданных модальных окон
+  document.querySelectorAll('.bio-modal, .qr-modal, .mobile-menu').forEach(modal => {
+    modal.addEventListener('scroll', handleScroll);
+  });
 }
 
 function toggleMobileMenu() {
   const menu = document.getElementById('mobileMenu');
-  if (menu) menu.classList.toggle('active');
+  if (menu) {
+    menu.classList.toggle('active');
+    if (menu.classList.contains('active')) {
+      document.body.classList.add('body-overflow-hidden');
+    } else {
+      restoreBodyOverflow();
+    }
+  }
 }
 
 function createSparks() {
@@ -453,8 +480,14 @@ function toggleTheme() {
 // ==========================================
 function promptAdmin() {
   document.getElementById('adminAuthModal').classList.add('active');
+  document.body.classList.add('body-overflow-hidden');
   document.getElementById('adminPwdInput').value = '';
   document.getElementById('adminPwdInput').focus();
+}
+
+function closeAdminAuthModal() {
+  document.getElementById('adminAuthModal').classList.remove('active');
+  restoreBodyOverflow();
 }
 
 async function sha256(message) {
@@ -467,18 +500,28 @@ async function sha256(message) {
 
 function openSettingsModal() {
   document.getElementById('settingsModal').classList.add('active');
+  document.body.classList.add('body-overflow-hidden');
   const token = localStorage.getItem('gh_token');
   document.getElementById('ghTokenInput').value = token ? token : '';
   document.getElementById('newAdminPwdInput').value = '';
+  document.getElementById('ghOwnerInput').value = window.SITE_CONFIG.githubOwner || '';
+  document.getElementById('ghRepoInput').value = window.SITE_CONFIG.githubRepo || '';
+  document.getElementById('tgBotTokenInput').value = window.SITE_CONFIG.telegramBotToken || '';
+  document.getElementById('tgChatIdInput').value = window.SITE_CONFIG.telegramChatId || '';
 }
 
 function closeSettingsModal() {
   document.getElementById('settingsModal').classList.remove('active');
+  restoreBodyOverflow();
 }
 
 async function saveSettings() {
   const token = document.getElementById('ghTokenInput').value.trim();
   const newPwd = document.getElementById('newAdminPwdInput').value.trim();
+  const ghOwner = document.getElementById('ghOwnerInput').value.trim();
+  const ghRepo = document.getElementById('ghRepoInput').value.trim();
+  const tgBotToken = document.getElementById('tgBotTokenInput').value.trim();
+  const tgChatId = document.getElementById('tgChatIdInput').value.trim();
   
   if (token) {
     localStorage.setItem('gh_token', token);
@@ -486,6 +529,26 @@ async function saveSettings() {
   
   if (newPwd) {
     window.SITE_CONFIG.adminPasswordHash = await sha256(newPwd);
+    hasUnsavedChanges = true;
+  }
+  
+  if (ghOwner && ghOwner !== window.SITE_CONFIG.githubOwner) {
+    window.SITE_CONFIG.githubOwner = ghOwner;
+    hasUnsavedChanges = true;
+  }
+
+  if (ghRepo && ghRepo !== window.SITE_CONFIG.githubRepo) {
+    window.SITE_CONFIG.githubRepo = ghRepo;
+    hasUnsavedChanges = true;
+  }
+
+  if (tgBotToken !== window.SITE_CONFIG.telegramBotToken) {
+    window.SITE_CONFIG.telegramBotToken = tgBotToken;
+    hasUnsavedChanges = true;
+  }
+
+  if (tgChatId !== window.SITE_CONFIG.telegramChatId) {
+    window.SITE_CONFIG.telegramChatId = tgChatId;
     hasUnsavedChanges = true;
   }
   
@@ -497,7 +560,7 @@ async function checkAdminPassword() {
   const pwd = document.getElementById('adminPwdInput').value;
   const hashed = await sha256(pwd);
   if (hashed === window.SITE_CONFIG.adminPasswordHash) {
-    document.getElementById('adminAuthModal').classList.remove('active');
+    closeAdminAuthModal();
     document.getElementById('adminPanel').style.display = 'flex';
     if (!document.body.classList.contains('admin-mode')) toggleAdmin();
     showToast(currentLang === 'ua' ? 'Режим редактора увімкнено!' : 'Режим редактора включен!');
@@ -627,12 +690,12 @@ function openLightbox(wrapper) {
   }
   document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex];
   lb.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  document.body.classList.add('body-overflow-hidden');
 }
 
 function nextImage(e) { if (e) e.stopPropagation(); if (currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
 function prevImage(e) { if (e) e.stopPropagation(); if (currentGalleryImages.length <= 1) return; currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length; document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex]; }
-function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); if (!document.querySelector('.bio-modal.active')) document.body.style.overflow = 'auto'; }
+function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); restoreBodyOverflow(); }
 
 // ==========================================
 // 6. СВЕЧИ И РИТУАЛ ПАМЯТИ (ИСПРАВЛЕННАЯ ЛОГИКА)
@@ -840,16 +903,16 @@ async function handleCandleSubmit(e) {
 }
 
 function sendTelegramNotification(candle) {
-  // Данные бота и администратора
-  const botToken = '8863285747:AAEq4GUDP4okakCw21-jeR4XfX2XxKrdHys';
-  const chatId = '439903828';
+  // Данные бота и администратора берутся из глобальных настроек
+  const botToken = window.SITE_CONFIG.telegramBotToken || '';
+  const chatId = window.SITE_CONFIG.telegramChatId || '';
 
   if (!botToken || botToken.includes('ВАШ_ТОКЕН')) return;
 
   const typeInfo = candleData[candle.type] || candleData['classic'];
   const typeName = typeInfo.nameRu;
   const siteUrl = window.location.origin + window.location.pathname;
-  const text = `🕯️ *Новая свеча на Мемориале Родителей!*\n\n*От:* ${candle.name_ru}\n*Тип:* ${typeName}\n*Текст:* ${candle.message_ru || '—'}\n\n🔗 Открыть Мемориал`;
+  const text = `🕯️ *Новая свеча на Мемориале Родителей!*\n\n*От:* ${candle.name_ru}\n*Тип:* ${typeName}\n*Текст:* ${candle.message_ru || '—'}\n\n[🔗 Открыть Мемориал](${siteUrl})`;
 
   // Используем parse_mode=Markdown для красоты (жирный текст и ссылка)
   fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}&parse_mode=Markdown`)
@@ -883,8 +946,8 @@ function toggleCandlesExpand() { isCandlesExpanded = !isCandlesExpanded; renderC
 // ==========================================
 // 7. МОДАЛКИ И АККОРДЕОНЫ
 // ==========================================
-function openBio(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
-function closeBio(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = 'auto'; }
+function openBio(id) { document.getElementById(id).classList.add('active'); document.body.classList.add('body-overflow-hidden'); }
+function closeBio(id) { document.getElementById(id).classList.remove('active'); restoreBodyOverflow(); }
 function toggleAccordion(button) {
   const item = button.parentElement;
   if (!item.classList.contains('active')) {
@@ -903,9 +966,13 @@ function openQrModal() {
   document.getElementById('qrPrintArea').style.display = 'none';
   document.getElementById('printBtnWrap').style.display = 'none';
   document.getElementById('qrModal').classList.add('active');
+  document.body.classList.add('body-overflow-hidden');
 }
 
-function closeQrModal() { document.getElementById('qrModal').classList.remove('active'); }
+function closeQrModal() {
+  document.getElementById('qrModal').classList.remove('active');
+  restoreBodyOverflow();
+}
 
 function generateQr() {
   let url = document.getElementById('qrUrlInput').value.trim();
