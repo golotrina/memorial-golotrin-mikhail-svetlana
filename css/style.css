@@ -2498,6 +2498,12 @@ body:has(.bio-modal.active) {
     font-size: 1.3rem;
   }
 
+  .accordion-inner p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 15px;
+  }
+
   .qr-container {
     padding: 25px 15px;
     width: 95%;
