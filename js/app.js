@@ -689,6 +689,17 @@ function openLightbox(wrapper) {
     document.querySelector('.lightbox-prev').style.display = 'none'; document.querySelector('.lightbox-next').style.display = 'none';
   }
   document.getElementById('lightbox-img').src = currentGalleryImages[currentGalleryIndex];
+  
+  const caption = document.getElementById('lightbox-caption');
+  if (caption) {
+    if (img.id === 'photo-crest') {
+      caption.style.display = 'block';
+      caption.innerText = currentLang === 'ua' ? caption.getAttribute('data-ua') : caption.getAttribute('data-ru');
+    } else {
+      caption.style.display = 'none';
+    }
+  }
+
   lb.classList.add('active');
   document.body.classList.add('body-overflow-hidden');
 }

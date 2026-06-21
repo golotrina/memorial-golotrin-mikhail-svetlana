@@ -12,7 +12,8 @@
   <meta property="og:description"
     content="Світла пам'ять та історія родини Голотріних. Дбайливо збережена для майбутніх поколінь. Digital Legacy.">
   <meta property="og:url" content="https://golotrina.github.io/memorial-golotrin-mikhail-svetlana/">
-  <meta property="og:image" content="https://golotrina.github.io/memorial-golotrin-mikhail-svetlana/img/photo-family.webp">
+  <meta property="og:image"
+    content="https://golotrina.github.io/memorial-golotrin-mikhail-svetlana/img/photo-family.webp">
   <meta property="og:type" content="website">
 
   <link rel="icon" type="image/svg+xml"
@@ -225,7 +226,15 @@
     <div class="c-sparks-wrap sparks-lightbox"></div>
     <span class="lightbox-close">×</span>
     <span class="lightbox-nav lightbox-prev" onclick="prevImage(event)">❮</span>
-    <img id="lightbox-img" src="img/photo-tombstone.webp" alt="Full photo" onclick="event.stopPropagation();">
+    <div class="lightbox-content-wrapper" onclick="event.stopPropagation();">
+      <img id="lightbox-img" src="img/photo-tombstone.webp" alt="Full photo">
+      <div id="lightbox-caption" class="lightbox-caption editable-text" contenteditable="false"
+        data-ru="Родовой герб семьи Голотриных. Символизирует неразрывное слияние судеб, выносливость и созидательную энергию поколений. Каждая деталь опирается на архивные документы и отражает судьбы предков. Создан как вечный символ памяти."
+        data-ua="Родовий герб родини Голотріних. Символізує нерозривне злиття доль, витривалість та творчу енергію поколінь. Кожна деталь спирається на архівні документи та відображає долі предків. Створений як вічний символ пам'яті."
+        style="display: none;">Родовой герб семьи Голотриных. Символизирует неразрывное слияние судеб, выносливость и
+        созидательную энергию поколений. Каждая деталь опирается на архивные документы и отражает судьбы предков. Создан
+        как вечный символ памяти.</div>
+    </div>
     <span class="lightbox-nav lightbox-next" onclick="nextImage(event)">❯</span>
   </div>
 
@@ -291,45 +300,52 @@
       <span class="qr-close" onclick="closeSettingsModal()">×</span>
       <h3 class="editable-text auth-title" data-ru="Настройки сайта" data-ua="Налаштування сайту"
         contenteditable="false">Налаштування сайту</h3>
-      
+
       <div class="settings-section">
         <h4 data-ru="GitHub Token (Ключ доступа)" data-ua="GitHub Token (Ключ доступу)">GitHub Token (Ключ доступу)</h4>
         <input type="password" id="ghTokenInput" class="qr-input auth-input" placeholder="ghp_xxxxxxxxxxxx">
-        <p class="settings-hint" data-ru="Сохраняется только в вашем браузере" data-ua="Зберігається тільки у вашому браузері">Зберігається тільки у вашому браузері</p>
+        <p class="settings-hint" data-ru="Сохраняется только в вашем браузере"
+          data-ua="Зберігається тільки у вашому браузері">Зберігається тільки у вашому браузері</p>
       </div>
 
       <div class="settings-section">
         <h4 data-ru="Владелец GitHub" data-ua="Власник GitHub">Власник GitHub</h4>
         <input type="text" id="ghOwnerInput" class="qr-input auth-input" placeholder="Например: golotrina">
-        <p class="settings-hint" data-ru="Логин аккаунта, где лежит репозиторий" data-ua="Логін акаунту, де лежить репозиторій">Логін акаунту, де лежить репозиторій</p>
+        <p class="settings-hint" data-ru="Логин аккаунта, где лежит репозиторий"
+          data-ua="Логін акаунту, де лежить репозиторій">Логін акаунту, де лежить репозиторій</p>
       </div>
 
       <div class="settings-section">
         <h4 data-ru="Название репозитория" data-ua="Назва репозиторію">Назва репозиторію</h4>
         <input type="text" id="ghRepoInput" class="qr-input auth-input" placeholder="Например: memorial-site">
-        <p class="settings-hint" data-ru="Точное название вашего репозитория" data-ua="Точна назва вашого репозиторію">Точна назва вашого репозиторію</p>
+        <p class="settings-hint" data-ru="Точное название вашего репозитория" data-ua="Точна назва вашого репозиторію">
+          Точна назва вашого репозиторію</p>
       </div>
 
       <div class="settings-section">
         <h4 data-ru="Telegram Bot Token" data-ua="Telegram Bot Token">Telegram Bot Token</h4>
         <input type="password" id="tgBotTokenInput" class="qr-input auth-input" placeholder="123456789:ABCDefgh...">
-        <p class="settings-hint" data-ru="Токен бота от BotFather" data-ua="Токен бота від BotFather">Токен бота від BotFather</p>
+        <p class="settings-hint" data-ru="Токен бота от BotFather" data-ua="Токен бота від BotFather">Токен бота від
+          BotFather</p>
       </div>
 
       <div class="settings-section">
         <h4 data-ru="Telegram Chat ID" data-ua="Telegram Chat ID">Telegram Chat ID</h4>
         <input type="text" id="tgChatIdInput" class="qr-input auth-input" placeholder="123456789">
-        <p class="settings-hint" data-ru="Ваш ID в Telegram (через @userinfobot)" data-ua="Ваш ID в Telegram (через @userinfobot)">Ваш ID в Telegram (через @userinfobot)</p>
+        <p class="settings-hint" data-ru="Ваш ID в Telegram (через @userinfobot)"
+          data-ua="Ваш ID в Telegram (через @userinfobot)">Ваш ID в Telegram (через @userinfobot)</p>
       </div>
 
       <div class="settings-section">
         <h4 data-ru="Смена пароля админа" data-ua="Зміна пароля адміна">Зміна пароля адміна</h4>
         <input type="password" id="newAdminPwdInput" class="qr-input auth-input" placeholder="Новий пароль">
-        <p class="settings-hint" data-ru="Оставьте пустым, если не хотите менять" data-ua="Залиште порожнім, якщо не хочете змінювати">Залиште порожнім, якщо не хочете змінювати</p>
+        <p class="settings-hint" data-ru="Оставьте пустым, если не хотите менять"
+          data-ua="Залиште порожнім, якщо не хочете змінювати">Залиште порожнім, якщо не хочете змінювати</p>
       </div>
 
-      <button class="submit-btn auth-btn" onclick="saveSettings()"><span class="editable-text" data-ru="Сохранить настройки"
-          data-ua="Зберегти налаштування" contenteditable="false">Зберегти налаштування</span></button>
+      <button class="submit-btn auth-btn" onclick="saveSettings()"><span class="editable-text"
+          data-ru="Сохранить настройки" data-ua="Зберегти налаштування" contenteditable="false">Зберегти
+          налаштування</span></button>
     </div>
   </div>
 
@@ -398,8 +414,8 @@
       <h3 id="confirmModalText" class="confirm-title">Оновити переклад іншої версії автоматично? (Скасуйте, щоб зберегти
         ручні правки)</h3>
       <div class="confirm-actions">
-        <button class="cancel-btn" onclick="closeConfirmModal()"><span
-            class="editable-text" data-ru="Отмена" data-ua="Скасувати" contenteditable="false">Скасувати</span></button>
+        <button class="cancel-btn" onclick="closeConfirmModal()"><span class="editable-text" data-ru="Отмена"
+            data-ua="Скасувати" contenteditable="false">Скасувати</span></button>
         <button class="submit-btn confirm-btn-yes"
           onclick="if(window.currentConfirmCallback) window.currentConfirmCallback();"><span class="editable-text"
             data-ru="Да" data-ua="Так" contenteditable="false">Так</span></button>

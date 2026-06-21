@@ -1782,9 +1782,36 @@ body.dark-theme .modal-personal-quote {
 
 .lightbox img {
   max-width: 90vw;
-  max-height: 85vh;
+  max-height: 80vh;
   border-radius: 16px;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+}
+
+.lightbox-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.lightbox-caption {
+  color: #FFF;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  padding: 0 20px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
+}
+
+.lightbox.active .lightbox-caption {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .lightbox-close {
