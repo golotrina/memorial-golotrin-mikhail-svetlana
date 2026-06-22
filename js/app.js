@@ -506,7 +506,7 @@ function openSettingsModal() {
   document.getElementById('newAdminPwdInput').value = '';
   document.getElementById('ghOwnerInput').value = window.SITE_CONFIG.githubOwner || '';
   document.getElementById('ghRepoInput').value = window.SITE_CONFIG.githubRepo || '';
-  document.getElementById('tgBotTokenInput').value = window.SITE_CONFIG.telegramBotToken || '';
+  document.getElementById('tgBotTokenInput').value = window.SITE_CONFIG._tgToken ? atob(window.SITE_CONFIG._tgToken) : (window.SITE_CONFIG.telegramBotToken || '');
   document.getElementById('tgChatIdInput').value = window.SITE_CONFIG.telegramChatId || '';
 }
 
@@ -542,8 +542,10 @@ async function saveSettings() {
     hasUnsavedChanges = true;
   }
 
-  if (tgBotToken !== window.SITE_CONFIG.telegramBotToken) {
-    window.SITE_CONFIG.telegramBotToken = tgBotToken;
+  const currentToken = window.SITE_CONFIG._tgToken ? atob(window.SITE_CONFIG._tgToken) : (window.SITE_CONFIG.telegramBotToken || '');
+  if (tgBotToken !== currentToken) {
+    window.SITE_CONFIG._tgToken = btoa(tgBotToken);
+    delete window.SITE_CONFIG.telegramBotToken; // Удаляем открытый токен, если он был
     hasUnsavedChanges = true;
   }
 
@@ -802,10 +804,16 @@ async function handleCandleSubmit(e) {
   let nameInp = document.getElementById('cName').value.trim();
   let msgInp = document.getElementById('cMessage').value.trim();
 
-  // Защита: удаляем ссылки и HTML-теги полностью
+  // Защита: удаляем ссылки и HTML-теги полностью (от спама и инъекций)
   const securityRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|<([^>+]+)>)/gi;
   nameInp = nameInp.replace(securityRegex, '').trim();
   msgInp = msgInp.replace(securityRegex, '').trim();
+
+  // Защита: фильтр нецензурных слов (базовый RU/UA)
+  const badWords = ['дурак', 'дебил', 'сука', 'блять', 'хуй', 'пизда', 'ебать', 'блядь', 'мудак', 'хер', 'хуї', 'пiзда', 'бля', 'мразь', 'ублюдок'];
+  const profanityRegex = new RegExp(badWords.join('|'), 'gi');
+  nameInp = nameInp.replace(profanityRegex, '***');
+  msgInp = msgInp.replace(profanityRegex, '***');
 
   const typeRad = document.querySelector('input[name="cType"]:checked').value;
   const sourceLang = currentLang === 'ua' ? 'uk' : 'ru';
@@ -914,20 +922,31 @@ async function handleCandleSubmit(e) {
 }
 
 function sendTelegramNotification(candle) {
-  // Данные бота и администратора берутся из глобальных настроек
-  const botToken = window.SITE_CONFIG.telegramBotToken || '';
-  const chatId = window.SITE_CONFIG.telegramChatId || '';
-
-  if (!botToken || botToken.includes('ВАШ_ТОКЕН')) return;
-
+  // === ПРЕМИУМ АРХИТЕКТУРА (ЧЕРЕЗ ПРОСЛОЙКУ CLOUDFLARE) ===
+  const clientId = window.SITE_CONFIG.clientId || '001'; 
+  
   const typeInfo = candleData[candle.type] || candleData['classic'];
-  const typeName = typeInfo.nameRu;
+  const typeName = currentLang === 'ua' ? typeInfo.nameUa : typeInfo.nameRu;
   const siteUrl = window.location.origin + window.location.pathname;
-  const text = `🕯️ *Новая свеча на Мемориале Родителей!*\n\n*От:* ${candle.name_ru}\n*Тип:* ${typeName}\n*Текст:* ${candle.message_ru || '—'}\n\n[🔗 Открыть Мемориал](${siteUrl})`;
+  
+  let text = '';
+  if (currentLang === 'ua') {
+    text = `🕯️ *Нова свічка пам'яті (ПРЕМІУМ)!*\n\n*Від:* ${candle.name_ua}\n*Тип:* ${typeName}\n*Текст:* ${candle.message_ua || '—'}\n\n[🔗 Відкрити Меморіал](${siteUrl})`;
+  } else {
+    text = `🕯️ *Новая свеча памяти (ПРЕМИУМ)!*\n\n*От:* ${candle.name_ru}\n*Тип:* ${typeName}\n*Текст:* ${candle.message_ru || '—'}\n\n[🔗 Открыть Мемориал](${siteUrl})`;
+  }
 
-  // Используем parse_mode=Markdown для красоты (жирный текст и ссылка)
-  fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}&parse_mode=Markdown`)
-    .catch(err => console.error("Telegram notify error", err));
+  // Отправка на бизнес-сервер Cloudflare
+  fetch(`https://memorial-backend.golotrina.workers.dev/notify`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      clientId: clientId,
+      text: text
+    })
+  }).catch(error => console.error('Ошибка отправки уведомления на бизнес-сервер:', error));
 }
 
 function deleteCandle(id) {
@@ -1209,6 +1228,12 @@ async function downloadSiteData() {
     if (c.status === 'pending' || !c.status) c.status = 'approved';
     if (c.isLocal) delete c.isLocal;
   });
+
+  // Очищаем открытый токен перед сохранением, если он случайно остался
+  if (window.SITE_CONFIG.telegramBotToken) {
+    window.SITE_CONFIG._tgToken = btoa(window.SITE_CONFIG.telegramBotToken);
+    delete window.SITE_CONFIG.telegramBotToken;
+  }
 
   const dataJsContent = `// === КОНФИГУРАЦИЯ САЙТА (БИЗНЕС-МОДЕЛЬ) ===\nwindow.SITE_CONFIG = ${JSON.stringify(window.SITE_CONFIG, null, 2)};\n\n// === БАЗА ТЕКСТОВОГО КОНТЕНТА ===\nwindow.SITE_CONTENT = ${JSON.stringify(window.SITE_CONTENT, null, 2)};\n\n// === БАЗА ДАННЫХ СВЕЧЕЙ ===\nwindow.DB_CANDLES = ${JSON.stringify(window.DB_CANDLES, null, 2)};\n\n// === БАЗА ДАННЫХ ФОТОГАЛЕРЕЙ И ПОДПИСЕЙ ===\nwindow.DB_GALLERIES = ${JSON.stringify(window.DB_GALLERIES, null, 2)};`;
 
