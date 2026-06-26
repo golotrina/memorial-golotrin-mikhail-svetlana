@@ -2180,6 +2180,8 @@ body.dark-theme .creator-brand {
   margin: 0;
 }
 
+/* === QR-МОДАЛ И МОДАЛЫ АВТОРИЗАЦИИ === */
+
 .qr-modal {
   position: fixed;
   top: 0;
@@ -2193,12 +2195,14 @@ body.dark-theme .creator-brand {
   justify-content: center;
   padding: 20px;
   overflow-y: auto;
+  backdrop-filter: blur(10px);
 }
 
 .qr-modal.active {
   display: flex;
 }
 
+/* Контейнер QR-модала: фон через CSS-переменные, корректно работает в обеих темах */
 .qr-container {
   background: var(--card-bg);
   border-radius: 24px;
@@ -2215,32 +2219,57 @@ body.dark-theme .creator-brand {
   box-shadow: var(--shadow-hover);
 }
 
+/* Все дочерние элементы контейнера наследуют цвет текста темы */
+.qr-container,
 .qr-container * {
   color: var(--text-color);
 }
 
+/* Заголовки и параграфы QR-контента */
+.qr-title {
+  color: var(--text-color) !important;
+  font-family: 'Playfair Display', serif;
+}
+
+.qr-desc {
+  font-size: 0.95rem;
+  color: var(--text-light) !important;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* Плейсхолдеры */
 .qr-input::placeholder,
 .auth-input::placeholder {
   color: var(--text-light);
   opacity: 0.7;
 }
 
+/* Кнопка закрытия */
 .qr-close {
   position: absolute;
   top: 10px;
   right: 20px;
   font-size: 2.5rem;
   cursor: pointer;
-  color: #888 !important;
+  color: var(--text-light) !important;
   z-index: 10;
-  transition: color 0.3s;
+  transition: color 0.3s, transform 0.2s;
   line-height: 1;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 
 .qr-close:hover {
-  color: var(--gold-dark) !important;
+  color: var(--gold) !important;
+  transform: rotate(90deg) scale(1.1);
 }
 
+/* Кнопки внутри QR-контейнера */
 .qr-container .submit-btn,
 .qr-container .action-btn {
   min-width: auto;
@@ -2249,21 +2278,114 @@ body.dark-theme .creator-brand {
   margin-top: 15px;
 }
 
+/* === СТРОКА ВВОДА URL + КНОПКА СОЗДАТЬ === */
+.qr-input-group {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* Поле ввода URL — адаптировано под обе темы */
+.url-input {
+  flex-grow: 1;
+  padding: 12px 15px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.url-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(194, 155, 73, 0.15);
+}
+
+.url-input::placeholder {
+  color: var(--text-light);
+  opacity: 0.6;
+}
+
+/* КНОПКА «Создать QR» — была полностью отсутствующим классом, отсюда и пустой белый блок */
+.qr-btn {
+  position: relative;
+  overflow: hidden;
+  background: var(--btn-volumetric-bg);
+  color: var(--btn-text-dark) !important;
+  border: 1px solid var(--btn-border);
+  border-radius: 12px;
+  box-shadow: var(--btn-shadow);
+  text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+  padding: 12px 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+}
+
+.qr-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 100%);
+  transform: skewX(-25deg);
+  animation: buttonSheen 6s infinite ease-in-out;
+}
+
+.qr-btn:hover {
+  background: var(--btn-volumetric-hover);
+  box-shadow: var(--btn-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.qr-btn span {
+  color: var(--btn-text-dark) !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* === ОБЛАСТЬ ПРЕДПРОСМОТРА QR-ТАБЛИЧКИ === */
+/* Всегда светлая (для корректного отображения QR и печати) */
 .qr-print-area {
   margin-top: 20px;
   padding: 40px 30px;
   border: 2px dashed var(--gold);
   border-radius: 16px;
-  background: #FAFAFA;
+  background: #FAFAFA !important;
   display: none;
   flex-direction: column;
   align-items: center;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Все тексты внутри print-area — тёмные, для контраста на белом фоне */
+.qr-print-area * {
+  color: #2C2A29 !important;
 }
 
 .qr-print-area.active {
   display: flex;
 }
 
+/* Кнопки «Печать» и «Скачать» */
 .print-btn-wrap {
   margin-top: 20px;
   width: 100%;
@@ -2283,16 +2405,7 @@ body.dark-theme .creator-brand {
   font-size: 1rem;
 }
 
-.url-input {
-  flex-grow: 1;
-  padding: 12px 15px;
-  border: 1px solid #EBE5D9;
-  border-radius: 12px;
-  width: 100%;
-  box-sizing: border-box;
-  background: #FFFFFF !important;
-}
-
+/* QR-код обёртка: всегда белый фон (сам QR-код чёрно-белый) */
 .qr-code-wrapper {
   width: 200px;
   height: 200px;
@@ -2303,6 +2416,7 @@ body.dark-theme .creator-brand {
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .qr-url-display {
@@ -2313,6 +2427,7 @@ body.dark-theme .creator-brand {
   word-wrap: break-word;
   word-break: break-all;
   width: 100%;
+  color: var(--text-light) !important;
 }
 
 /* === ТОСТ-УВЕДОМЛЕНИЯ === */
@@ -2546,6 +2661,21 @@ body:has(.bio-modal.active) {
   .qr-container {
     padding: 25px 15px;
     width: 95%;
+  }
+
+  .qr-input-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .qr-btn {
+    width: 100%;
+    min-width: auto;
+    border-radius: 12px;
+  }
+
+  .url-input {
+    width: 100%;
   }
 
   .print-btn-wrap {
