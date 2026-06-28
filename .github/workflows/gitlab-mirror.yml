@@ -1,9 +1,9 @@
 name: Mirror to GitLab
 
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main # ВРЕМЕННО ОТКЛЮЧЕНО НА ЭТАПЕ РАЗРАБОТКИ
   workflow_dispatch:
 
 jobs:
