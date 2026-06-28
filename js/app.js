@@ -908,6 +908,14 @@ async function handleCandleSubmit(e) {
     isLocal: !isAdmin // Флаг, чтобы человек видел свою свечу до обновления страницы
   };
 
+  if (!isAdmin) {
+    try {
+      let localC = JSON.parse(localStorage.getItem('local_pending_candles') || '[]');
+      localC.unshift(newCandle);
+      localStorage.setItem('local_pending_candles', JSON.stringify(localC));
+    } catch(e) { console.error('Ошибка сохранения локальной свечи', e); }
+  }
+
   window.DB_CANDLES.unshift(newCandle);
   renderCandles();
   toggleCandleForm();
@@ -944,7 +952,11 @@ function sendTelegramNotification(candle) {
     },
     body: JSON.stringify({
       clientId: clientId,
-      text: text
+      text: text,
+      candle: candle,
+      ghToken: localStorage.getItem('gh_token'),
+      ghOwner: window.SITE_CONFIG.githubOwner,
+      ghRepo: window.SITE_CONFIG.githubRepo
     })
   }).catch(error => console.error('Ошибка отправки уведомления на бизнес-сервер:', error));
 }
@@ -1282,6 +1294,26 @@ async function downloadSiteData() {
 
 function initializeMemorialApp() {
   initGalleries();
+  
+  // Загружаем локальные свечи перед первым рендером
+  let localCandles = [];
+  try {
+    const saved = localStorage.getItem('local_pending_candles');
+    if (saved) {
+      localCandles = JSON.parse(saved);
+      // Очищаем те, которые уже появились в публичной БД
+      localCandles = localCandles.filter(lc => !window.DB_CANDLES.some(pub => pub.id === lc.id));
+      localStorage.setItem('local_pending_candles', JSON.stringify(localCandles));
+      
+      // Добавляем оставшиеся локальные в начало массива для отображения
+      // Разворачиваем, чтобы после unshift они сохранили правильный порядок (самые новые первыми)
+      localCandles.slice().reverse().forEach(lc => {
+        lc.isLocal = true;
+        window.DB_CANDLES.unshift(lc);
+      });
+    }
+  } catch(e) { console.error('Ошибка загрузки локальных свечей', e); }
+
   renderCandles();
   createSparks();
 
