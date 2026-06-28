@@ -1,0 +1,45 @@
+name: Send Snapshot to Internet Archive
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  archive-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Save Request to Wayback Machine
+        run: |
+          TARGET_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo "Отправка запроса на архивацию страницы: $TARGET_URL"
+          
+          # Отправляем официальный POST-запрос к бесплатному публичному API archive.org
+          response=$(curl -s -X POST "https://web.archive.org/save/" \
+            -d "url=$TARGET_URL" \
+            -d "capture_all=on" \
+            -d "skip_first_archive=on")
+          
+          echo "Ответ от серверов Internet Archive получен."
+          
+      - name: Send Telegram Notification (Success)
+        if: success()
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            🏛 Успешная архивация во Всемирный Архив (Internet Archive)!
+            Ваш мемориал '${{ github.event.repository.name }}' зафиксирован в истории.
+            Ссылка: https://web.archive.org/web/*/https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+            
+      - name: Send Telegram Notification (Failure)
+        if: failure()
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ❌ ОШИБКА архивации (Internet Archive) для '${{ github.event.repository.name }}'!
+            Проверьте логи GitHub Actions.

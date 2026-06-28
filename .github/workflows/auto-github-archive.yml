@@ -41,3 +41,23 @@ jobs:
           Автоматический слепок цифрового мемориала семьи Голотриных.
           Архив создан автономным роботом GitHub Actions внутри кода сайта.
         files: family-archive-${{ env.DATE }}.zip
+
+    - name: Send Telegram Notification (Success)
+      if: success()
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          📦 Новый ZIP-архив мемориала создан на GitHub!
+          Архив: family-archive-${{ env.DATE }}.zip
+          Ссылка: https://github.com/${{ github.repository }}/releases/tag/release-${{ env.DATE }}
+
+    - name: Send Telegram Notification (Failure)
+      if: failure()
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          ❌ ОШИБКА создания ZIP-архива на GitHub для '${{ github.event.repository.name }}'!
