@@ -491,6 +491,16 @@ window.SITE_CONTENT = {
 // === БАЗА ДАННЫХ СВЕЧЕЙ ===
 window.DB_CANDLES = [
   {
+  "id": "c_1782665257146",
+  "name_ru": "Tanya-Tango",
+  "name_ua": "Tanya-Tango",
+  "message_ru": "Я помню ❤️",
+  "message_ua": "Я пам'ятаю ❤️",
+  "type": "unquenchable",
+  "timestamp": 1782665257146,
+  "status": "approved"
+},
+  {
     "id": "c_1780387101725",
     "name_ru": "Ирина",
     "name_ua": "Ірина",
