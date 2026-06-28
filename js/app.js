@@ -13,10 +13,10 @@ let currentUploadId = null;
 let hasUnsavedChanges = false;
 
 const candleData = {
-  classic: { glow: 'rgba(255, 180, 0, 0.4)', flame: 'linear-gradient(to bottom, #FFF, #FFB400)', nameRu: 'Свеча памяти', nameUa: "Свічка пам'яті" },
-  amber: { glow: 'rgba(255, 100, 0, 0.4)', flame: 'linear-gradient(to bottom, #FFD700, #FF6400)', nameRu: 'Янтарный свет', nameUa: 'Бурштинове світло' },
-  heavenly: { glow: 'rgba(200, 230, 255, 0.4)', flame: 'linear-gradient(to bottom, #FFF, #87CEEB)', nameRu: 'Небесное сияние', nameUa: 'Небесне сяйво' },
-  unquenchable: { glow: 'rgba(255, 0, 50, 0.5)', flame: 'linear-gradient(to bottom, #FFB6C1, #E60026)', nameRu: 'Неугасаемое пламя', nameUa: "Незгасне полум'я" }
+  classic: { glow: 'rgba(255, 180, 0, 0.4)', flame: 'radial-gradient(ellipse at bottom, #0044FF 0%, #FFB400 40%, #FFF 80%)', nameRu: 'Свеча памяти', nameUa: "Свічка пам'яті" },
+  amber: { glow: 'rgba(255, 100, 0, 0.4)', flame: 'radial-gradient(ellipse at bottom, #0044FF 0%, #FF6400 40%, #FFD700 70%, #FFF 100%)', nameRu: 'Янтарный свет', nameUa: 'Бурштинове світло' },
+  heavenly: { glow: 'rgba(200, 230, 255, 0.4)', flame: 'radial-gradient(ellipse at bottom, #0044FF 0%, #87CEEB 40%, #FFF 80%)', nameRu: 'Небесное сияние', nameUa: 'Небесне сяйво' },
+  unquenchable: { glow: 'rgba(255, 0, 50, 0.5)', flame: 'radial-gradient(ellipse at bottom, #0044FF 0%, #E60026 40%, #FFB6C1 70%, #FFF 100%)', nameRu: 'Неугасаемое пламя', nameUa: "Незгасне полум'я" }
 };
 
 // ==========================================
@@ -761,7 +761,13 @@ function renderCandles() {
       </div>
       <div class="c-sparks-wrap"></div>
       <div style="display: flex; gap: 20px; flex-grow: 1; margin-bottom: 25px; z-index: 1; position: relative;">
-        <div class="css-candle"><div class="c-glow" style="background: radial-gradient(circle, ${typeInfo.glow} 0%, transparent 60%);"></div><div class="c-flame" style="background: ${typeInfo.flame};"></div><div class="c-body"></div><div class="c-base"></div></div>
+        <div class="css-candle">
+          <div class="c-glow" style="background: radial-gradient(circle, ${typeInfo.glow} 0%, transparent 60%);"></div>
+          <div class="c-flame" style="background: ${typeInfo.flame}; box-shadow: 0 0 15px ${typeInfo.glow.replace('0.4', '0.8').replace('0.5', '0.8')};"></div>
+          <div class="c-wick"></div>
+          <div class="c-body"><div class="c-drip"></div></div>
+          <div class="c-base"></div>
+        </div>
         <div style="flex-grow: 1;">
           <div style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; color: #FFF; margin-bottom: 15px;">🕯️ <span>${cName}</span></div>
           ${msgHtml}
