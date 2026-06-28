@@ -1,0 +1,43 @@
+name: Automatic GitHub Repository Archive
+
+on:
+  schedule: 
+    # Робот будет сам просыпаться в 00:00, первого числа каждого месяца
+    - cron: '0 0 1 * *'
+  push:
+    branches:
+      - main # А также срабатывать при каждом вашем изменении на сайте
+  workflow_dispatch: # Позволяет запустить архивацию вручную кнопкой из админки
+
+permissions:
+  contents: write # Разрешение роботу записывать архивы в ваш аккаунт
+
+jobs:
+  build-archive:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Робот скачивает текущую версию вашего сайта со всеми фото
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Робот генерирует текущую дату для названия файла
+    - name: Get current date
+      id: date
+      run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+    # 3. Робот упаковывает весь сайт в один ZIP-архив (исключая скрытые папки)
+    - name: Create ZIP Archive
+      run: |
+        zip -r family-archive-${{ env.DATE }}.zip ./* -x ".git/*" ".github/*"
+
+    # 4. Робот публикует этот ZIP в вечный и неизменяемый раздел Releases на GitHub
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: release-${{ env.DATE }}
+        name: Срез памяти от ${{ env.DATE }}
+        body: |
+          Автоматический слепок цифрового мемориала семьи Голотриных.
+          Архив создан автономным роботом GitHub Actions внутри кода сайта.
+        files: family-archive-${{ env.DATE }}.zip
