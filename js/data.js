@@ -1,14 +1,13 @@
 // === КОНФИГУРАЦИЯ САЙТА (БИЗНЕС-МОДЕЛЬ) ===
 window.SITE_CONFIG = {
   adminPasswordHash: "2926a2731f4b312c08982cacf8061eb14bf65c1a87cc5d70e864e079c6220731",
-  githubOwner: "golotrina", // Замените на логин владельца репозитория
-  githubRepo: "memorial-golotrin-mikhail-svetlana", // Замените на название репозитория
-  _tgToken: "ODg2MzI4NTc0NzpBQUVxNEdVRFA0b2tha0N3MjEtamVSNFhmWDJYeEtyZEh5cw==",
-  telegramChatId: "439903828",
+  githubOwner: "golotrina",
+  githubRepo: "memorial-golotrin-mikhail-svetlana",
+  clientId: "golotrina_parents",
   features: {
-    languages: ["ru", "ua"],
+    languages: ["ru", "ua", "en"],
     hasEpochBlock: true,
-    maxGalleryPhotos: -1, // -1 значит безлимит
+    maxGalleryPhotos: -1,
     themes: ["light", "sepia", "dark"]
   }
 };

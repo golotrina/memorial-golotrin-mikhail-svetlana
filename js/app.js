@@ -716,7 +716,7 @@ function addGalleryPhoto(galleryId) {
   const isAdm = document.body.classList.contains('admin-mode');
   wrap.innerHTML = `
     <div class="gallery-item" onclick="openLightbox(this)">
-      <img id="${newId}" src="https://images.unsplash.com/photo-1506869640319-fea1a278e0db?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Фото" loading="lazy">
+      <img id="${newId}" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'><rect width='100%25' height='100%25' fill='%231a1a1a'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23c29b49' font-size='20' font-family='sans-serif'>Фото</text></svg>" alt="Фото" loading="lazy">
       <button class="move-photo-btn move-photo-left" onclick="moveGalleryPhoto(this, -1); event.stopPropagation();" data-title-ru="Сдвинуть влево" data-title-ua="Зсунути ліворуч" title="${getT('Зсунути ліворуч', 'Move left', 'Сдвинуть влево')}">&#10094;</button>
       <button class="move-photo-btn move-photo-right" onclick="moveGalleryPhoto(this, 1); event.stopPropagation();" data-title-ru="Сдвинуть вправо" data-title-ua="Зсунути праворуч" title="${getT('Зсунути праворуч', 'Move right', 'Сдвинуть вправо')}">&#10095;</button>
       <button class="edit-photo-btn" onclick="triggerUpload('${newId}'); event.stopPropagation();">📷 Загрузить</button>
@@ -1226,7 +1226,23 @@ async function harvestData(doTranslate = false) {
         const item = tlItems[idx];
         await syncField(item.querySelector('.timeline-date')?.innerText.trim(), window.SITE_CONTENT.timeline.events[idx], 'year');
         await syncField(item.querySelector('.timeline-content h4')?.innerText.trim(), window.SITE_CONTENT.timeline.events[idx], 'title');
-        await syncField(item.querySelector('.timeline-content p, .timeline-content .timeline-epitaph')?.innerText.trim(), window.SITE_CONTENT.timeline.events[idx], 'text');
+        
+        const textEl = item.querySelector('.timeline-content p, .timeline-content .timeline-epitaph');
+        let domVal = textEl ? textEl.innerText.trim() : '';
+        const currentEvent = window.SITE_CONTENT.timeline.events[idx];
+        const currentLangVal = currentEvent['text' + langSuffix] || '';
+        
+        // Institutional preservation of rich inline elements (video triggers, links)
+        if (currentLangVal.includes('<span') || item.querySelector('.inline-video-trigger')) {
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = currentLangVal;
+          if (tempDiv.innerText.trim() === domVal) {
+            domVal = currentLangVal; // No user edits occurred; preserve pristine HTML
+          } else if (textEl) {
+            domVal = textEl.innerHTML.trim(); // Preserve HTML tags on edit
+          }
+        }
+        await syncField(domVal, window.SITE_CONTENT.timeline.events[idx], 'text');
       }
     }
   }
@@ -1235,19 +1251,23 @@ async function harvestData(doTranslate = false) {
   const epochContainer = document.getElementById('epoch-timeline-container');
   if (epochContainer && window.SITE_CONTENT.epochData) {
     const ed = window.SITE_CONTENT.epochData;
-    const epItems = epochContainer.querySelectorAll('.timeline-item');
+    if (ed.header) {
+      await syncField(document.getElementById('epoch-main-title')?.innerText.trim(), ed.header, 'title');
+      await syncField(document.getElementById('epoch-subtitle')?.innerText.trim(), ed.header, 'subtitle');
+    }
+    const epItems = epochContainer.querySelectorAll('.accordion-item');
     for (let idx = 0; idx < epItems.length; idx++) {
       if (ed.events[idx]) {
         const item = epItems[idx];
-        await syncField(item.querySelector('.timeline-date')?.innerText.trim(), ed.events[idx], 'date');
-        await syncField(item.querySelector('.timeline-content h4')?.innerText.trim(), ed.events[idx], 'title');
-        const pEls = item.querySelectorAll('.timeline-content p');
+        await syncField(item.querySelector('[data-epoch-date-idx]')?.innerText.trim(), ed.events[idx], 'date');
+        await syncField(item.querySelector('[data-epoch-title-idx]')?.innerText.trim(), ed.events[idx], 'title');
+        const pEls = item.querySelectorAll('.accordion-inner p');
         await syncArray(Array.from(pEls).map(p => p.innerText.trim()), ed.events[idx], 'paragraphs');
       }
     }
   }
 
-  // Galleries
+  // Galleries (Full multi-language support: ru, ua, en)
   const updatedGalleries = {};
   if (window.SITE_CONTENT.people) {
     for (const person of window.SITE_CONTENT.people) {
@@ -1261,26 +1281,46 @@ async function harvestData(doTranslate = false) {
           const cap = wrap.querySelector('.gallery-caption');
           if (img) {
             const domCap = cap.innerText.trim();
-            const oldCap = isUa ? cap.getAttribute('data-ua') : cap.getAttribute('data-ru');
+            const oldCap = isUa ? cap.getAttribute('data-ua') : (currentLang === 'en' ? cap.getAttribute('data-en') : cap.getAttribute('data-ru'));
             
             let finalRu = cap.getAttribute('data-ru') || '';
             let finalUa = cap.getAttribute('data-ua') || '';
+            let finalEn = cap.getAttribute('data-en') || '';
+
+            // Fallback to existing database entries to ensure zero data loss
+            const existingItem = (window.DB_GALLERIES[galId] || []).find(it => it.id === img.id);
+            if (existingItem) {
+              if (!finalEn && existingItem.en) finalEn = existingItem.en;
+              if (!finalRu && existingItem.ru) finalRu = existingItem.ru;
+              if (!finalUa && existingItem.ua) finalUa = existingItem.ua;
+            }
             
             if (domCap !== oldCap) {
               if (doTranslate) {
-                const translated = await apiTranslateText(domCap, fromL, toL);
-                if (isUa) { finalUa = domCap; finalRu = translated; }
-                else { finalRu = domCap; finalUa = translated; }
+                if (isUa) {
+                  finalUa = domCap;
+                  finalRu = await apiTranslateText(domCap, 'uk', 'ru');
+                } else if (currentLang === 'ru') {
+                  finalRu = domCap;
+                  finalUa = await apiTranslateText(domCap, 'ru', 'uk');
+                } else {
+                  finalEn = domCap;
+                }
               } else {
-                if (isUa) finalUa = domCap; else finalRu = domCap;
+                if (isUa) finalUa = domCap;
+                else if (currentLang === 'en') finalEn = domCap;
+                else finalRu = domCap;
               }
             } else {
-               if (isUa) finalUa = domCap; else finalRu = domCap;
+               if (isUa) finalUa = domCap;
+               else if (currentLang === 'en') finalEn = domCap;
+               else finalRu = domCap;
             }
             
-            updatedGalleries[galId].push({ id: img.id, ru: finalRu, ua: finalUa });
+            updatedGalleries[galId].push({ id: img.id, ru: finalRu, ua: finalUa, en: finalEn });
             cap.setAttribute('data-ru', finalRu);
             cap.setAttribute('data-ua', finalUa);
+            cap.setAttribute('data-en', finalEn);
           }
         }
       } else {
@@ -1429,13 +1469,7 @@ function initializeMemorialApp() {
     }
   });
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const adminParam = urlParams.get('admin');
-  if (adminParam && btoa(adminParam) === 'MTk3OA==') {
-    document.getElementById('adminPanel').style.display = 'flex';
-    if (!document.body.classList.contains('admin-mode')) toggleAdmin();
-    showToast(getT('Режим редактора увімкнено через посилання!', 'Editor mode enabled via link!', 'Режим редактора включен по ссылке!'));
-  }
+  // Backdoor admin parameter removed for institutional security
 
   const pwdInput = document.getElementById('adminPwdInput');
   if (pwdInput) {

@@ -26,10 +26,10 @@ jobs:
       id: date
       run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
-    # 3. Робот упаковывает весь сайт в один ZIP-архив (исключая скрытые папки)
+    # 3. Робот упаковывает строго публичные ассеты сайта (без внутренних папок)
     - name: Create ZIP Archive
       run: |
-        zip -r family-archive-${{ env.DATE }}.zip ./* -x ".git/*" ".github/*"
+        zip -r family-archive-${{ env.DATE }}.zip index.html css/ js/ img/ fonts/ media/ -x "*.git*"
 
     # 4. Робот публикует этот ZIP в вечный и неизменяемый раздел Releases на GitHub
     - name: Create GitHub Release
